@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "651794069374",
+    "project_id": "collectionapp-d4e51",
+    "storage_bucket": "collectionapp-d4e51.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651794069374:android:df3023d4c037072f60652f",
+        "android_client_info": {
+          "package_name": "com.example.collectionapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVrbWaMlKEaUe6QKNhL_LtOtUN5EdDSfo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
