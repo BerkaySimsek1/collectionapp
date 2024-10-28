@@ -149,7 +149,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // sign in button
+                // sign up button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: GestureDetector(
@@ -158,7 +158,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                           color: Colors.deepPurple,
-                          borderRadius: BorderRadius.circular(25)),
+                          borderRadius: BorderRadius.circular(15)),
                       child: const Center(
                         child: Text(
                           "Sign Up",
@@ -172,7 +172,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 const SizedBox(height: 25),
-                // not a member? register now
+                // already a member? log in
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
