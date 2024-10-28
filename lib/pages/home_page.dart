@@ -8,7 +8,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-// the page that appears after user logs in
+// the page that appears after user logs in --- home page --- feed
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
   @override
