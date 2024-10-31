@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:collectionapp/countdown_timer.dart';
 import 'package:collectionapp/firebase_methods/firestore_methods/auction_creation.dart';
 import 'package:collectionapp/image_picker.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuctionUploadScreen extends StatefulWidget {
   const AuctionUploadScreen({Key? key}) : super(key: key);
