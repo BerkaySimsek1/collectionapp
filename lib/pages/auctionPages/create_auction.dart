@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:collectionapp/firebase_methods/firestore_methods/auction_creation.dart';
 import 'package:collectionapp/image_picker.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -50,7 +51,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text,
         startingPrice: double.parse(_priceController.text),
-        creatorId: 'user_id', // Bu alanı kullanıcı kimliği ile güncelleyin
+        creatorId: FirebaseAuth.instance.currentUser!.uid,
         endTime: _endTime!,
         description: _descriptionController.text,
         imageUrl: '',
