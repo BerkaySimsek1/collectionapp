@@ -1,6 +1,5 @@
 import 'package:collectionapp/firebase_methods/auth/auth_page.dart';
 import 'package:collectionapp/pages/auctionPages/auction_mainpage.dart';
-import 'package:collectionapp/pages/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
