@@ -4,11 +4,12 @@ import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:collectionapp/models/UserInfoModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 
 class AuctionDetail extends StatefulWidget {
   final AuctionModel auction;
 
-  const AuctionDetail({super.key, required this.auction});
+  const AuctionDetail({Key? key, required this.auction}) : super(key: key);
 
   @override
   _AuctionDetailState createState() => _AuctionDetailState();
@@ -23,7 +24,6 @@ class _AuctionDetailState extends State<AuctionDetail> {
   @override
   void initState() {
     super.initState();
-    // creator ve bidder bilgilerini al
     getUserInfo(user.uid, (info) => currentUser = info);
     getUserInfo(widget.auction.creatorId, (info) => creatorInfo = info);
     if (widget.auction.bidderId.isNotEmpty) {
@@ -48,6 +48,29 @@ class _AuctionDetailState extends State<AuctionDetail> {
     } catch (e) {
       print("Hata oluştu: $e");
     }
+  }
+
+  Future<void> _showPhotoDialog(String imageUrl) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.black,
+            child: PhotoView(
+              imageProvider: NetworkImage(imageUrl),
+              minScale: PhotoViewComputedScale.contained,
+              maxScale: PhotoViewComputedScale.covered * 2,
+              backgroundDecoration: const BoxDecoration(
+                color: Colors.black,
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _showBidDialog() async {
@@ -111,12 +134,29 @@ class _AuctionDetailState extends State<AuctionDetail> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Image.network(
-                widget.auction.imageUrl,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            // Fotoğrafları yatay kaydırmalı olarak gösteren alan
+            SizedBox(
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: widget.auction.imageUrls.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      // Fotoğrafa tıklanınca detaylı görüntüleme açılır
+                      _showPhotoDialog(widget.auction.imageUrls[index]);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Image.network(
+                        widget.auction.imageUrls[index],
+                        height: 200,
+                        width: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 16),
@@ -143,7 +183,10 @@ class _AuctionDetailState extends State<AuctionDetail> {
                   'Time Left: ',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
-                CountdownTimer(endTime: widget.auction.endTime),
+                CountdownTimer(
+                  endTime: widget.auction.endTime,
+                  auctionId: widget.auction.id,
+                ),
               ],
             ),
             const Spacer(),

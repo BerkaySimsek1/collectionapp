@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:collectionapp/firebase_methods/firestore_methods/auction_creation.dart';
-import 'package:collectionapp/image_picker.dart';
+import 'package:collectionapp/firebase_methods/firestore_methods/auction_firestoremethods.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,21 +18,24 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  XFile? _selectedImage;
-  int _selectedDays = 1; // Varsayılan olarak 1 gün
+  List<XFile> _selectedImages = [];
+  int _selectedDays = 1;
   DateTime? _endTime;
 
-  Future<void> _pickImage() async {
-    final image = await pickImage();
-    if (image != null) {
+  Future<void> _pickImages() async {
+    final picker = ImagePicker();
+    final images = await picker.pickMultiImage();
+    if (images.length <= 7) {
       setState(() {
-        _selectedImage = image;
+        _selectedImages = images;
       });
+    } else {
+      // Kullanıcıyı 7'den fazla resim seçemeyeceği konusunda bilgilendirin
+      print("En fazla 7 resim seçebilirsiniz.");
     }
   }
 
   void _setEndTime() {
-    // "Açık Artırmayı Yükle" tuşuna basılınca gün sayısına göre bitiş zamanını hesapla
     final now = DateTime.now();
     setState(() {
       _endTime = now.add(Duration(days: _selectedDays));
@@ -41,11 +43,10 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
   }
 
   Future<void> _uploadAuction() async {
-    // Gün sayısına göre endTime'i hesapla
     _setEndTime();
 
     if (_formKey.currentState!.validate() &&
-        _selectedImage != null &&
+        _selectedImages.isNotEmpty &&
         _endTime != null) {
       final auction = AuctionModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -54,11 +55,26 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         creatorId: FirebaseAuth.instance.currentUser!.uid,
         endTime: _endTime!,
         description: _descriptionController.text,
-        imageUrl: '',
+        imageUrls: [],
+        isAuctionEnd: false,
       );
 
-      await uploadAuctionWithImage(auction, _selectedImage!);
-      print("Açık artırma yüklendi ve geri sayım başlatıldı.");
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(child: CircularProgressIndicator());
+        },
+      );
+
+      try {
+        await uploadAuctionWithImages(auction, _selectedImages);
+        Navigator.of(context).pop();
+        print("Açık artırma başarıyla yüklendi.");
+      } catch (e) {
+        Navigator.of(context).pop();
+        print("Yükleme sırasında hata oluştu: $e");
+      }
     } else {
       print("Form geçerli değil, resim veya süre seçilmedi.");
     }
@@ -67,9 +83,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Auction Upload"),
-      ),
+      appBar: AppBar(title: const Text("Auction Upload")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -78,33 +92,31 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration:
-                    const InputDecoration(labelText: "Açık Artırma İsmi"),
+                decoration: const InputDecoration(labelText: "Auction Name"),
                 validator: (value) =>
-                    value!.isEmpty ? "Bu alan zorunludur" : null,
+                    value!.isEmpty ? "This field is required" : null,
               ),
               TextFormField(
                 controller: _priceController,
-                decoration:
-                    const InputDecoration(labelText: "Başlangıç Fiyatı"),
+                decoration: const InputDecoration(labelText: "Starting Price"),
                 keyboardType: TextInputType.number,
                 validator: (value) =>
-                    value!.isEmpty ? "Bu alan zorunludur" : null,
+                    value!.isEmpty ? "This field is required" : null,
               ),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: "Açıklama"),
+                decoration: const InputDecoration(labelText: "Description"),
                 maxLines: 3,
                 validator: (value) =>
-                    value!.isEmpty ? "Bu alan zorunludur" : null,
+                    value!.isEmpty ? "This field is required" : null,
               ),
               const SizedBox(height: 10),
               DropdownButton<int>(
                 value: _selectedDays,
                 items: const [
-                  DropdownMenuItem(value: 1, child: Text("1 Gün")),
-                  DropdownMenuItem(value: 2, child: Text("2 Gün")),
-                  DropdownMenuItem(value: 3, child: Text("3 Gün")),
+                  DropdownMenuItem(value: 1, child: Text("1 Day")),
+                  DropdownMenuItem(value: 2, child: Text("2 Days")),
+                  DropdownMenuItem(value: 3, child: Text("3 Days")),
                 ],
                 onChanged: (value) {
                   setState(() {
@@ -112,16 +124,19 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                   });
                 },
               ),
-              _selectedImage == null
-                  ? ElevatedButton(
-                      onPressed: _pickImage,
-                      child: const Text("Resim Seç"),
-                    )
-                  : Image.file(File(_selectedImage!.path), height: 150),
+              ElevatedButton(
+                onPressed: _pickImages,
+                child: const Text("Select Images"),
+              ),
+              Wrap(
+                children: _selectedImages.map((image) {
+                  return Image.file(File(image.path), width: 100, height: 100);
+                }).toList(),
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _uploadAuction,
-                child: const Text("Açık Artırmayı Yükle"),
+                child: const Text("Upload Auction"),
               ),
             ],
           ),

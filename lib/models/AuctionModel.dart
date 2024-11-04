@@ -4,19 +4,21 @@ class AuctionModel {
   double startingPrice;
   String creatorId;
   String bidderId;
-  DateTime endTime; // Açık artırmanın biteceği zaman
+  DateTime endTime;
   String description;
-  String imageUrl;
+  List<String> imageUrls; // Tek resim yerine liste yapısına dönüştürdük
+  bool isAuctionEnd;
 
   AuctionModel({
     required this.id,
     required this.name,
     required this.startingPrice,
     required this.creatorId,
-    this.bidderId = '', // Başlangıçta boş olacak
+    this.bidderId = '',
     required this.endTime,
     required this.description,
-    required this.imageUrl,
+    required this.imageUrls,
+    required this.isAuctionEnd,
   });
 
   // Firestore'a eklemek için veriyi Map'e dönüştürme
@@ -29,8 +31,9 @@ class AuctionModel {
       'bidder_id': bidderId,
       'end_time': endTime.millisecondsSinceEpoch,
       'description': description,
-      'image_url': imageUrl,
+      'image_urls': imageUrls, // Liste olarak kaydediliyor
       'created_at': DateTime.now().millisecondsSinceEpoch,
+      'isAuctionEnd': isAuctionEnd,
     };
   }
 
@@ -44,7 +47,9 @@ class AuctionModel {
       bidderId: map['bidder_id'] ?? '',
       endTime: DateTime.fromMillisecondsSinceEpoch(map['end_time'] ?? 0),
       description: map['description'] ?? '',
-      imageUrl: map['image_url'] ?? '',
+      imageUrls:
+          List<String>.from(map['image_urls'] ?? []), // Listeye dönüştürme
+      isAuctionEnd: map['isAuctionEnd'] ?? false,
     );
   }
 }
