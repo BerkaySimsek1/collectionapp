@@ -1,18 +1,21 @@
 import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class CountdownTimer extends StatefulWidget {
   final DateTime endTime;
+  final String auctionId; // Auction ID'yi CountdownTimer'a ekledik
 
-  const CountdownTimer({super.key, required this.endTime});
+  const CountdownTimer(
+      {super.key, required this.endTime, required this.auctionId});
 
   @override
-  // ignore: library_private_types_in_public_api
   _CountdownTimerState createState() => _CountdownTimerState();
 }
 
 class _CountdownTimerState extends State<CountdownTimer> {
-  Timer? _timer; // Timer'ı nullable yaptık
+  Timer? _timer;
   Duration _remainingDuration = const Duration();
 
   @override
@@ -31,13 +34,26 @@ class _CountdownTimerState extends State<CountdownTimer> {
       if (_remainingDuration.isNegative) {
         _timer?.cancel(); // Süre dolduğunda timer'ı durdur
         _remainingDuration = Duration.zero;
+        _endAuction(); // Auction bittiğinde Firestore'da güncelleme yap
       }
     });
   }
 
+  Future<void> _endAuction() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('auctions')
+          .doc(widget.auctionId)
+          .update({'isAuctionEnd': true});
+      print("Auction ended successfully!");
+    } catch (e) {
+      print("Failed to end auction: $e");
+    }
+  }
+
   @override
   void dispose() {
-    _timer?.cancel(); // Null kontrolü ile timer'ı iptal et
+    _timer?.cancel(); // Timer'ı iptal et
     super.dispose();
   }
 
@@ -49,14 +65,10 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
     var timerText = "";
     if (hours == 0 && minutes == 0 && seconds == 0) {
-      timerText = ("The auction has ended.");
+      timerText = "The auction has ended.";
     } else {
-      if (hours != 1) {
-        timerText =
-            ("$hours:${minutes < 10 ? "0$minutes" : minutes}:${seconds < 10 ? "0$seconds" : seconds}");
-      } else {
-        timerText = ("$minutes:$seconds left");
-      }
+      timerText =
+          "$hours:${minutes < 10 ? "0$minutes" : minutes}:${seconds < 10 ? "0$seconds" : seconds}";
     }
     return Text(timerText);
   }
