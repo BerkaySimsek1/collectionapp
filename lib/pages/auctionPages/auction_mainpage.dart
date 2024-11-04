@@ -1,6 +1,7 @@
 import 'package:collectionapp/countdown_timer.dart';
 import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
 import 'package:collectionapp/pages/auctionPages/create_auction.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
@@ -31,6 +32,15 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Auctions"),
+        leading: TextButton(
+          onPressed: () {
+            FirebaseAuth.instance.signOut();
+          },
+          child: const Text(
+            "Log out",
+            style: TextStyle(fontSize: 13),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () {
