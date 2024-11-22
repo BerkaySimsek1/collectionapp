@@ -7,12 +7,13 @@ class AddItemScreen extends StatefulWidget {
   final String collectionName;
 
   const AddItemScreen({
-    Key? key,
+    super.key,
     required this.userId,
     required this.collectionName,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddItemScreenState createState() => _AddItemScreenState();
 }
 
@@ -22,9 +23,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final TextEditingController _rarityController = TextEditingController();
 
   List<Map<String, String>> _predefinedFields = [];
-  Map<String, dynamic> _predefinedFieldValues = {};
-  List<Map<String, dynamic>> _customFields = [];
-  Map<String, dynamic> _customFieldValues = {};
+  final Map<String, dynamic> _predefinedFieldValues = {};
+  final List<Map<String, dynamic>> _customFields = [];
+  final Map<String, dynamic> _customFieldValues = {};
 
   @override
   void initState() {
@@ -46,17 +47,17 @@ class _AddItemScreenState extends State<AddItemScreen> {
         String fieldName = '';
         String fieldType = 'TextField';
         return AlertDialog(
-          title: Text('Yeni Alan Ekle'),
+          title: const Text('Yeni Alan Ekle'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: InputDecoration(labelText: 'Alan Adı'),
+                decoration: const InputDecoration(labelText: 'Alan Adı'),
                 onChanged: (value) {
                   fieldName = value;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: fieldType,
                 items: ['TextField', 'DatePicker', 'NumberField']
@@ -68,14 +69,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     fieldType = value;
                   }
                 },
-                decoration: InputDecoration(labelText: 'Alan Türü'),
+                decoration: const InputDecoration(labelText: 'Alan Türü'),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('İptal'),
+              child: const Text('İptal'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -87,7 +88,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   Navigator.pop(context);
                 }
               },
-              child: Text('Ekle'),
+              child: const Text('Ekle'),
             ),
           ],
         );
@@ -122,6 +123,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           .collection(widget.collectionName)
           .add(itemData);
 
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     }
   }
@@ -129,7 +131,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Widget _buildPredefinedFieldInputs() {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: _predefinedFields.length,
       itemBuilder: (context, index) {
         final field = _predefinedFields[index];
@@ -187,7 +189,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             },
           );
         }
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       },
     );
   }
@@ -195,7 +197,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Widget _buildCustomFieldInputs() {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: _customFields.length,
       itemBuilder: (context, index) {
         final field = _customFields[index];
@@ -238,7 +240,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             },
           );
         }
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       },
     );
   }
@@ -246,7 +248,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Yeni Ürün Ekle')),
+      appBar: AppBar(title: const Text('Yeni Ürün Ekle')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -255,7 +257,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Ürün İsmi'),
+                decoration: const InputDecoration(labelText: 'Ürün İsmi'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Lütfen bir isim girin.';
@@ -265,21 +267,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ),
               TextFormField(
                 controller: _rarityController,
-                decoration: InputDecoration(labelText: 'Nadirlik'),
+                decoration: const InputDecoration(labelText: 'Nadirlik'),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildPredefinedFieldInputs(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _addCustomField,
-                child: Text('Özel Alan Ekle'),
+                child: const Text('Özel Alan Ekle'),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildCustomFieldInputs(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => _saveItem(context),
-                child: Text('Kaydet'),
+                child: const Text('Kaydet'),
               ),
             ],
           ),

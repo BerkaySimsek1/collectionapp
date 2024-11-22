@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 class AddCollectionScreen extends StatefulWidget {
   final String userId;
 
-  const AddCollectionScreen({Key? key, required this.userId}) : super(key: key);
+  const AddCollectionScreen({super.key, required this.userId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddCollectionScreenState createState() => _AddCollectionScreenState();
 }
 
@@ -52,28 +53,10 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
     }
   }
 
-  Widget _buildCustomFieldList() {
-    if (_customFields.isEmpty) {
-      return Text('Bu koleksiyon için özel alanlar tanımlı değil.');
-    }
-
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: _customFields.length,
-      itemBuilder: (context, index) {
-        final field = _customFields[index];
-        return ListTile(
-          title: Text(field['name']!),
-          subtitle: Text('Tür: ${field['type']}'),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Koleksiyon Ekle')),
+      appBar: AppBar(title: const Text('Koleksiyon Ekle')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -81,14 +64,12 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
           child: ListView(
             children: [
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Koleksiyon Türü'),
+                decoration: const InputDecoration(labelText: 'Koleksiyon Türü'),
                 value: _selectedCollection,
                 items: [
-                  ...predefinedCollections.keys
-                      .map((type) =>
-                          DropdownMenuItem(value: type, child: Text(type)))
-                      .toList(),
-                  DropdownMenuItem(value: 'Diğer', child: Text('Diğer')),
+                  ...predefinedCollections.keys.map((type) =>
+                      DropdownMenuItem(value: type, child: Text(type))),
+                  const DropdownMenuItem(value: 'Diğer', child: Text('Diğer')),
                 ],
                 onChanged: _onCollectionTypeChanged,
                 validator: (value) =>
@@ -97,7 +78,8 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
               if (_selectedCollection == 'Diğer')
                 TextFormField(
                   controller: _customCollectionController,
-                  decoration: InputDecoration(labelText: 'Koleksiyon İsmi'),
+                  decoration:
+                      const InputDecoration(labelText: 'Koleksiyon İsmi'),
                   validator: (value) {
                     if (_selectedCollection == 'Diğer' &&
                         (value == null || value.isEmpty)) {
@@ -106,16 +88,10 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                     return null;
                   },
                 ),
-              SizedBox(height: 16),
-              Text(
-                'Bu koleksiyon için özel alanlar:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              _buildCustomFieldList(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => _saveCollection(context),
-                child: Text('Kaydet'),
+                child: const Text('Kaydet'),
               ),
             ],
           ),

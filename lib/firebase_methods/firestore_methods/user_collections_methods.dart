@@ -20,6 +20,24 @@ class FirestoreService {
     }
   }
 
+  Future<DocumentSnapshot> getDocument({
+    required String userId,
+    required String collectionName,
+    required String docId,
+  }) async {
+    try {
+      return await _db
+          .collection('userCollections')
+          .doc(userId)
+          .collection(collectionName)
+          .doc(docId)
+          .get();
+    } catch (e) {
+      print('Error fetching document: $e');
+      rethrow;
+    }
+  }
+
   Stream<QuerySnapshot> getCollectionItems({
     required String userId,
     required String collectionName,
