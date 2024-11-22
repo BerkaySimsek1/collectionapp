@@ -6,13 +6,12 @@ import 'collection_items_screen.dart';
 class UserCollectionsScreen extends StatelessWidget {
   final String userId;
 
-  const UserCollectionsScreen({Key? key, required this.userId})
-      : super(key: key);
+  const UserCollectionsScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Koleksiyonlarım')),
+      appBar: AppBar(title: const Text('Koleksiyonlarım')),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('userCollections')
@@ -21,11 +20,12 @@ class UserCollectionsScreen extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('Henüz bir koleksiyon eklenmemiş.'));
+            return const Center(
+                child: Text('Henüz bir koleksiyon eklenmemiş.'));
           }
 
           final collections = snapshot.data!.docs;
@@ -61,7 +61,7 @@ class UserCollectionsScreen extends StatelessWidget {
             ),
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
