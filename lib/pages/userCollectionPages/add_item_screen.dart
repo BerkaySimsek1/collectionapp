@@ -102,8 +102,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
       final rarity = _rarityController.text.trim();
 
       final Map<String, dynamic> itemData = {
-        'name': itemName,
-        'rarity': rarity,
+        'İsim': itemName,
+        'Nadirlik': rarity,
         'customFields': _customFields,
       };
 
