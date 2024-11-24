@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart'; // Fotoğraf seçimi için
 import 'package:collectionapp/models/predefined_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,7 +15,6 @@ class AddItemScreen extends StatefulWidget {
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _AddItemScreenState createState() => _AddItemScreenState();
 }
 
@@ -27,6 +28,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final List<Map<String, dynamic>> _customFields = [];
   final Map<String, dynamic> _customFieldValues = {};
 
+  List<XFile> _selectedImages = [];
   @override
   void initState() {
     super.initState();
@@ -96,15 +98,32 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final images = await picker.pickMultiImage();
+    if (images.length <= 5) {
+      setState(() {
+        _selectedImages = images;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('En fazla 5 fotoğraf ekleyebilirsiniz.')),
+      );
+    }
+  }
+
   Future<void> _saveItem(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final itemName = _nameController.text.trim();
       final rarity = _rarityController.text.trim();
 
+      final List<String> photoPaths =
+          _selectedImages.map((photo) => photo.path).toList();
+
       final Map<String, dynamic> itemData = {
         'İsim': itemName,
         'Nadirlik': rarity,
-        'customFields': _customFields,
+        'Photos': photoPaths, // Fotoğraf yollarını kaydet
       };
 
       // Önceden tanımlı alanları ekle
@@ -123,7 +142,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
           .collection(widget.collectionName)
           .add(itemData);
 
-      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     }
   }
@@ -268,6 +286,34 @@ class _AddItemScreenState extends State<AddItemScreen> {
               TextFormField(
                 controller: _rarityController,
                 decoration: const InputDecoration(labelText: 'Nadirlik'),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: const Text('Fotoğraf Ekle'),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Eklenen Fotoğraflar (${_selectedImages.length}/5):',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                height: 100,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _selectedImages.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Wrap(
+                        children: _selectedImages.map((image) {
+                          return Image.file(File(image.path),
+                              width: 100, height: 100);
+                        }).toList(),
+                      ),
+                    );
+                  },
+                ),
               ),
               const SizedBox(height: 16),
               _buildPredefinedFieldInputs(),
