@@ -1,7 +1,9 @@
-import 'package:collectionapp/pages/userCollectionPages/add_item_screen.dart';
-import 'package:collectionapp/pages/userCollectionPages/item_details_screen.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/pages/userCollectionPages/item_details_screen.dart';
+import 'package:collectionapp/pages/userCollectionPages/add_item_screen.dart';
 
 class CollectionItemsScreen extends StatelessWidget {
   final String userId;
@@ -25,11 +27,11 @@ class CollectionItemsScreen extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('Henüz ürün eklenmemiş.'));
+            return const Center(child: Text('Henüz ürün eklenmemiş.'));
           }
 
           final items = snapshot.data!.docs;
@@ -38,8 +40,60 @@ class CollectionItemsScreen extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (context, index) {
               final item = items[index];
+              final photos = item['Photos'] as List<dynamic>?;
+
               return ListTile(
-                title: Text(item['name'] ?? 'İsimsiz Ürün'),
+                leading: photos != null && photos.isNotEmpty
+                    ? photos[0].startsWith(
+                            'http') // URL olup olmadığını kontrol et
+                        ? Image.network(
+                            photos[0], // URL varsa network kullan
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(photos[0]), // Lokal dosya yoluysa file kullan
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          )
+                    : const Icon(Icons.image_not_supported),
+                title: Text(item['İsim'] ?? 'İsimsiz Ürün'),
+                trailing: PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'Düzenle') {
+                      // Düzenle işlemi
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddItemScreen(
+                            userId: userId,
+                            collectionName: collectionName,
+                          ),
+                        ),
+                      );
+                    } else if (value == 'Sil') {
+                      // Silme işlemi
+                      FirebaseFirestore.instance
+                          .collection('userCollections')
+                          .doc(userId)
+                          .collection(collectionName)
+                          .doc(item.id)
+                          .delete();
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'Düzenle',
+                      child: Text('Düzenle'),
+                    ),
+                    const PopupMenuItem(
+                      value: 'Sil',
+                      child: Text('Sil'),
+                    ),
+                  ],
+                ),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -69,7 +123,7 @@ class CollectionItemsScreen extends StatelessWidget {
             ),
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
