@@ -65,7 +65,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
     var timerText = "";
     if (hours == 0 && minutes == 0 && seconds == 0) {
-      timerText = "The auction has ended.";
+      timerText = "This auction has ended.";
     } else {
       timerText =
           "$hours:${minutes < 10 ? "0$minutes" : minutes}:${seconds < 10 ? "0$seconds" : seconds}";

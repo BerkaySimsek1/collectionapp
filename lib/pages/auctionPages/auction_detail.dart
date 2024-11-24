@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/countdown_timer.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:collectionapp/models/UserInfoModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class AuctionDetail extends StatefulWidget {
@@ -42,8 +42,6 @@ class _AuctionDetailState extends State<AuctionDetail> {
         setState(() {
           onSuccess(UserInfoModel.fromJson(doc.data() as Map<String, dynamic>));
         });
-      } else {
-        print("Kullanıcı bulunamadı: $userId");
       }
     } catch (e) {
       print("Hata oluştu: $e");
@@ -79,11 +77,20 @@ class _AuctionDetailState extends State<AuctionDetail> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter Your Bid'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Place Your Bid',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           content: TextField(
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              hintText: 'Current Price: \$${widget.auction.startingPrice + 1}',
+              hintText: 'Minimum Bid: \$${widget.auction.startingPrice + 1}',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             onChanged: (value) {
               newBid = double.tryParse(value);
@@ -111,7 +118,7 @@ class _AuctionDetailState extends State<AuctionDetail> {
                   Navigator.of(context).pop();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter a valid bid!')),
+                    const SnackBar(content: Text('Invalid bid!')),
                   );
                 }
               },
@@ -127,32 +134,66 @@ class _AuctionDetailState extends State<AuctionDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.auction.name),
+        title: Text(
+          widget.auction.name,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            )),
+        backgroundColor: Colors.deepPurple,
       ),
-      body: Padding(
+      body: Container(
         padding: const EdgeInsets.all(16.0),
+        color: Colors.grey[200],
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Fotoğrafları yatay kaydırmalı olarak gösteren alan
-            SizedBox(
-              height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
+            // Horizontal image carousel
+            Container(
+              height: 250,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.4),
+                    spreadRadius: 2,
+                    blurRadius: 6,
+                  ),
+                ],
+              ),
+              child: PageView.builder(
                 itemCount: widget.auction.imageUrls.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: () {
-                      // Fotoğrafa tıklanınca detaylı görüntüleme açılır
-                      _showPhotoDialog(widget.auction.imageUrls[index]);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    onTap: () =>
+                        _showPhotoDialog(widget.auction.imageUrls[index]),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
                       child: Image.network(
                         widget.auction.imageUrls[index],
-                        height: 200,
-                        width: 200,
                         fit: BoxFit.cover,
+                        loadingBuilder: (context, child, progress) {
+                          return progress == null
+                              ? child
+                              : Center(
+                                  child: CircularProgressIndicator(
+                                    value: progress.expectedTotalBytes != null
+                                        ? progress.cumulativeBytesLoaded /
+                                            progress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                        },
                       ),
                     ),
                   );
@@ -160,48 +201,95 @@ class _AuctionDetailState extends State<AuctionDetail> {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
-              widget.auction.description,
-              style: const TextStyle(fontSize: 16),
+            //auction details
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.auction.description,
+                      style:
+                          const TextStyle(fontSize: 16, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 16),
+                    RichText(
+                      text: TextSpan(
+                        text: 'Price: ',
+                        style: const TextStyle(
+                            fontSize: 18, color: Colors.black87),
+                        children: [
+                          TextSpan(
+                            text:
+                                '\$${widget.auction.startingPrice.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepPurple),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      bidderInfo != null
+                          ? "Last Bidder: ${bidderInfo!.firstName}"
+                          : "No bids yet",
+                      style:
+                          const TextStyle(fontSize: 16, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      creatorInfo != null
+                          ? "Created by: ${creatorInfo!.firstName}"
+                          : "",
+                      style:
+                          const TextStyle(fontSize: 16, color: Colors.black54),
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 16),
-            Text(
-              'Price: \$${widget.auction.startingPrice.toStringAsFixed(2)}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            bidderInfo != null
-                ? Text("Last bidder: ${bidderInfo!.firstName}")
-                : const Text("No one bidded yet"),
-            const SizedBox(height: 8),
-            creatorInfo != null
-                ? Text("Auction created by: ${creatorInfo!.firstName}")
-                : const Text(""),
-            const SizedBox(height: 8),
             Row(
               children: [
-                const Text(
-                  'Time Left: ',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
+                const Icon(Icons.timer, color: Colors.deepPurple),
+                const SizedBox(width: 8),
                 CountdownTimer(
                   endTime: widget.auction.endTime,
                   auctionId: widget.auction.id,
                 ),
               ],
             ),
-            const Spacer(),
-            (user.uid != widget.auction.creatorId)
-                ? SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _showBidDialog,
-                      child: const Text("Make Bid"),
-                    ),
-                  )
-                : const Text(""),
           ],
         ),
       ),
+      floatingActionButton: (user.uid != widget.auction.creatorId)
+          ? GestureDetector(
+              onTap: _showBidDialog,
+              child: Container(
+                height: 50,
+                width: 380,
+                decoration: BoxDecoration(
+                    color: Colors.deepPurple,
+                    borderRadius: BorderRadius.circular(16)),
+                child: const Center(
+                  child: Text(
+                    "Place a Bid",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
+                ),
+              ),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
