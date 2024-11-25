@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
@@ -30,110 +29,130 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Auctions",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
+        backgroundColor: Colors.grey[200],
+        appBar: AppBar(
+          title: const Text(
+            "Auctions",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Colors.white,
+            ),
           ),
-        ),
-        backgroundColor: Colors.deepPurple,
-        leading: IconButton(
-          icon: const Icon(Icons.logout, color: Colors.white),
-          onPressed: () {
-            FirebaseAuth.instance.signOut();
-          },
-        ),
-        actions: [
-          IconButton(
+          backgroundColor: Colors.deepPurple,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const AuctionUploadScreen()),
-              );
+              Navigator.of(context).pop();
             },
-            icon: const Icon(Icons.add, color: Colors.white),
           ),
-        ],
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        color: Colors.grey[200],
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  FilterButton(
-                    label: "All",
-                    isSelected: _filter == 'all',
-                    onTap: () => setState(() => _filter = 'all'),
-                  ),
-                  FilterButton(
-                    label: "Active",
-                    isSelected: _filter == 'active',
-                    onTap: () => setState(() => _filter = 'active'),
-                  ),
-                  FilterButton(
-                    label: "Ended",
-                    isSelected: _filter == 'ended',
-                    onTap: () => setState(() => _filter = 'ended'),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _getAuctionStream(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        "There is no auction yet.",
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                      ),
-                    );
-                  }
-
-                  final auctionDocs = snapshot.data!.docs;
-
-                  return ListView.builder(
-                    itemCount: auctionDocs.length,
-                    itemBuilder: (context, index) {
-                      final auctionData =
-                          auctionDocs[index].data() as Map<String, dynamic>;
-                      final auction = AuctionModel.fromMap(auctionData);
-
-                      return AuctionCard(auction: auction);
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
         ),
-      ),
-    );
+        body: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    FilterButton(
+                      label: "All",
+                      isSelected: _filter == 'all',
+                      onTap: () => setState(() => _filter = 'all'),
+                    ),
+                    FilterButton(
+                      label: "Active",
+                      isSelected: _filter == 'active',
+                      onTap: () => setState(() => _filter = 'active'),
+                    ),
+                    FilterButton(
+                      label: "Ended",
+                      isSelected: _filter == 'ended',
+                      onTap: () => setState(() => _filter = 'ended'),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _getAuctionStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "There is no auction yet.",
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                        ),
+                      );
+                    }
+
+                    final auctionDocs = snapshot.data!.docs;
+
+                    return ListView.builder(
+                      itemCount: auctionDocs.length,
+                      itemBuilder: (context, index) {
+                        final auctionData =
+                            auctionDocs[index].data() as Map<String, dynamic>;
+                        final auction = AuctionModel.fromMap(auctionData);
+
+                        return AuctionCard(auction: auction);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButton: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AuctionUploadScreen()),
+            );
+          },
+          child: Container(
+            height: 50,
+            width: 150,
+            decoration: BoxDecoration(
+                color: Colors.deepPurple,
+                borderRadius: BorderRadius.circular(8)),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                Text(
+                  "Create auction",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }
 

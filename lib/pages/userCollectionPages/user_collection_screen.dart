@@ -11,6 +11,7 @@ class UserCollectionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(title: const Text('Koleksiyonlarım')),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
