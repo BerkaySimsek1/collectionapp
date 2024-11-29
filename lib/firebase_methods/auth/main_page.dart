@@ -1,124 +1,163 @@
 import 'package:collectionapp/firebase_methods/auth/auth_page.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:collectionapp/pages/auctionPages/auction_mainpage.dart';
 import 'package:collectionapp/pages/userCollectionPages/user_collection_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+  const MainPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance
-        .currentUser; // IMPORTANT: Old variant is "final user = FirebaseAuth.instance.currentUser!;"
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
-      body: StreamBuilder<User?>(
+    final user = FirebaseAuth.instance.currentUser;
+
+    return StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FilledButton(
-                      style: ButtonStyle(
-                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(16.0), // Köşe yarıçapı
-                          ),
-                        ),
-                        backgroundColor:
-                            WidgetStateProperty.all<Color>(Colors.deepPurple),
-                        elevation: WidgetStateProperty.all<double>(
-                            3), // Örnek olarak 4.0 yüksekliği
+            // if the user has already signed in
+            return Scaffold(
+              backgroundColor: Colors.grey[200],
+              body: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 64, horizontal: 16),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Karşılama Mesajı
+                      Text(
+                        'Welcome, ${user?.email}!',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple,
+                            ),
                       ),
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const AuctionListScreen();
-                        }));
-                      },
-                      child: const Text(
-                        "Auctions",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15),
-                      )),
-                  FilledButton(
-                    style: ButtonStyle(
-                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(16.0), // Köşe yarıçapı
-                        ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Here you can manage your auctions, view collections, and connect with others.',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(color: Colors.grey[700]),
                       ),
-                      backgroundColor:
-                          WidgetStateProperty.all<Color>(Colors.deepPurple),
-                      elevation: WidgetStateProperty.all<double>(
-                          3), // Örnek olarak 4.0 yüksekliği
-                    ),
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return UserCollectionsScreen(userId: user!.uid);
-                      }));
-                    },
-                    child: const Text(
-                      "Collections",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
-                    ),
-                  ),
-                  FilledButton(
-                    style: ButtonStyle(
-                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(16.0), // Köşe yarıçapı
-                        ),
-                      ),
-                      backgroundColor:
-                          WidgetStateProperty.all<Color>(Colors.deepPurple),
-                      elevation: WidgetStateProperty.all<double>(
-                          3), // Örnek olarak 4.0 yüksekliği
-                    ),
-                    onPressed: () {
-                      FirebaseAuth.instance.signOut();
-                    },
-                    child: const SizedBox(
-                      width: 100,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      const SizedBox(height: 128),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Icon(
-                            Icons.logout,
-                            color: Colors.white,
+                          _buildCardButton(
+                            context,
+                            title: 'Auctions',
+                            subtitle: 'Browse or create auctions',
+                            icon: Icons.gavel,
+                            color: Colors.deepPurple,
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return const AuctionListScreen();
+                              }));
+                            },
                           ),
-                          Text(
-                            "Log out",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15),
+                          const SizedBox(height: 16),
+                          _buildCardButton(
+                            context,
+                            title: 'Collections',
+                            subtitle: 'View and manage your collections',
+                            icon: Icons.collections,
+                            color: Colors.indigo,
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return UserCollectionsScreen(userId: user!.uid);
+                              }));
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _buildCardButton(
+                            context,
+                            title: 'Social Media',
+                            subtitle: 'Connect with others',
+                            icon: Icons.people,
+                            color: Colors.teal,
+                            onTap: () {
+                              // Social Media screen placeholder
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Social Media Page coming soon!')),
+                              );
+                            },
                           ),
                         ],
                       ),
-                    ),
+                    ],
+                  ),
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                },
+                backgroundColor: Colors.deepPurple,
+                child: const Icon(Icons.logout, color: Colors.white),
+              ),
+            );
+          } else {
+            return const AuthPage(); // if the user has not signed in yet
+          }
+        });
+  }
+
+  // Card Buton Widget'ı
+  Widget _buildCardButton(BuildContext context,
+      {required String title,
+      required String subtitle,
+      required IconData icon,
+      required Color color,
+      required VoidCallback onTap}) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: color,
+                child: Icon(icon, color: Colors.white, size: 30),
+              ),
+              const SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: Colors.grey[600]),
                   ),
                 ],
               ),
-            );
-
-            // the page that appears if the user already logged in
-          } else {
-            return const AuthPage(); // the page that appears if the user is not yet logged in
-          }
-        },
+            ],
+          ),
+        ),
       ),
     );
   }
