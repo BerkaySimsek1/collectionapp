@@ -31,43 +31,44 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
     return Scaffold(
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           title: const Text(
-            "Auctions",
+            'Auctions',
             style: TextStyle(
+              fontSize: 24,
               fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: Colors.white,
+              color: Colors.deepPurple,
             ),
           ),
-          backgroundColor: Colors.deepPurple,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.deepPurple,
+              )),
         ),
         body: Container(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               Container(
-                margin: const EdgeInsets.symmetric(vertical: 8.0),
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 4,
-                    ),
-                  ],
+                  border: Border.all(width: 0.5),
+                  color: const Color(0xFFF7F2FA),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    const Icon(Icons.filter_alt_outlined),
+                    Container(
+                      height: 30,
+                      width: 1,
+                      color: Colors.black,
+                    ),
                     FilterButton(
                       label: "All",
                       isSelected: _filter == 'all',
@@ -173,10 +174,10 @@ class FilterButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         decoration: BoxDecoration(
           color: isSelected ? Colors.deepPurple : Colors.white,
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected ? Colors.deepPurple : Colors.grey,
           ),
@@ -201,9 +202,9 @@ class AuctionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
         onTap: () {
@@ -214,7 +215,7 @@ class AuctionCard extends StatelessWidget {
           );
         },
         leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(8),
           child: Image.network(
             auction.imageUrls.first,
             width: 50,
