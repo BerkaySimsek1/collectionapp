@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart'; // Kalıcı dosyalar için gerekli
 import 'package:collectionapp/pages/userCollectionPages/item_details_screen.dart';
 import 'package:collectionapp/pages/userCollectionPages/add_item_screen.dart';
 
@@ -14,6 +15,23 @@ class CollectionItemsScreen extends StatelessWidget {
     required this.userId,
     required this.collectionName,
   }) : super(key: key);
+
+  Future<String> _ensureLocalCopy(String filePath) async {
+    // Eğer dosya geçiciyse, kalıcı bir yere kopyala
+    final appDir = await getApplicationDocumentsDirectory();
+    final fileName = filePath.split('/').last;
+    final newFilePath = '${appDir.path}/$fileName';
+
+    final file = File(filePath);
+    if (await file.exists()) {
+      if (!await File(newFilePath).exists()) {
+        await file.copy(newFilePath);
+      }
+      return newFilePath;
+    } else {
+      return ''; // Dosya mevcut değilse boş bir yol döndür
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,68 +60,81 @@ class CollectionItemsScreen extends StatelessWidget {
               final item = items[index];
               final photos = item['Photos'] as List<dynamic>?;
 
-              return ListTile(
-                leading: photos != null && photos.isNotEmpty
-                    ? photos[0].startsWith(
-                            'http') // URL olup olmadığını kontrol et
-                        ? Image.network(
-                            photos[0], // URL varsa network kullan
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.file(
-                            File(photos[0]), // Lokal dosya yoluysa file kullan
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          )
-                    : const Icon(Icons.image_not_supported),
-                title: Text(item['İsim'] ?? 'İsimsiz Ürün'),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == 'Düzenle') {
-                      // Düzenle işlemi
+              return FutureBuilder<String>(
+                future: photos != null && photos.isNotEmpty
+                    ? _ensureLocalCopy(photos[0])
+                    : Future.value(''),
+                builder: (context, fileSnapshot) {
+                  if (fileSnapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  final localPath = fileSnapshot.data ?? '';
+
+                  return ListTile(
+                    leading: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: photos != null && photos.isNotEmpty
+                            ? Image.network(
+                                photos[0].toString(),
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              )
+                            : localPath.isNotEmpty
+                                ? Image.file(
+                                    File(localPath.toString()),
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const Icon(Icons.broken_image)),
+                    title: Text(item['İsim'] ?? 'İsimsiz Ürün'),
+                    trailing: PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'Düzenle') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddItemScreen(
+                                userId: userId,
+                                collectionName: collectionName,
+                              ),
+                            ),
+                          );
+                        } else if (value == 'Sil') {
+                          FirebaseFirestore.instance
+                              .collection('userCollections')
+                              .doc(userId)
+                              .collection(collectionName)
+                              .doc(item.id)
+                              .delete();
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'Düzenle',
+                          child: Text('Düzenle'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'Sil',
+                          child: Text('Sil'),
+                        ),
+                      ],
+                    ),
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddItemScreen(
+                          builder: (context) => ItemDetailsScreen(
                             userId: userId,
                             collectionName: collectionName,
+                            itemId: item.id,
                           ),
                         ),
                       );
-                    } else if (value == 'Sil') {
-                      // Silme işlemi
-                      FirebaseFirestore.instance
-                          .collection('userCollections')
-                          .doc(userId)
-                          .collection(collectionName)
-                          .doc(item.id)
-                          .delete();
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'Düzenle',
-                      child: Text('Düzenle'),
-                    ),
-                    const PopupMenuItem(
-                      value: 'Sil',
-                      child: Text('Sil'),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ItemDetailsScreen(
-                        userId: userId,
-                        collectionName: collectionName,
-                        itemId: item.id,
-                      ),
-                    ),
+                    },
                   );
                 },
               );

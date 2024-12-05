@@ -89,10 +89,14 @@ class ItemDetailsScreen extends StatelessWidget {
                         child: photo.startsWith('http')
                             ? Image.network(
                                 photo, // URL ise network
+                                height: 200,
+                                width: 200,
                                 fit: BoxFit.cover,
                               )
                             : Image.file(
                                 File(photo), // Lokal dosya ise file
+                                height: 200,
+                                width: 200,
                                 fit: BoxFit.cover,
                               ),
                       );

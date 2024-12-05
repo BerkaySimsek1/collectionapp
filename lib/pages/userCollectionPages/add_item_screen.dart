@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart'; // Fotoğraf seçimi için
 import 'package:collectionapp/models/predefined_collections.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final Map<String, dynamic> _customFieldValues = {};
 
   List<XFile> _selectedImages = [];
+  bool _isUploading = false; // Yükleme durumunu izlemek için
+
   @override
   void initState() {
     super.initState();
@@ -114,11 +117,30 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   Future<void> _saveItem(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isUploading = true; // Yükleme başlatıldı
+      });
+
       final itemName = _nameController.text.trim();
       final rarity = _rarityController.text.trim();
+      final List<String> photoPaths = [];
 
-      final List<String> photoPaths =
-          _selectedImages.map((photo) => photo.path).toList();
+      // Fotoğrafları paralel olarak yükle
+      final List<Future> uploadTasks = _selectedImages.map((image) async {
+        final storageRef = FirebaseStorage.instance.ref().child(
+            'item_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}');
+
+        final uploadTask = await storageRef.putFile(File(image.path));
+        if (uploadTask.state == TaskState.success) {
+          final downloadURL = await storageRef.getDownloadURL();
+          photoPaths.add(downloadURL);
+        } else {
+          throw Exception("Yüklenemedi");
+        }
+      }).toList();
+
+      // Tüm yüklemeler tamamlanana kadar bekleyin
+      await Future.wait(uploadTasks);
 
       final Map<String, dynamic> itemData = {
         'İsim': itemName,
@@ -141,6 +163,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
           .doc(widget.userId)
           .collection(widget.collectionName)
           .add(itemData);
+
+      setState(() {
+        _isUploading = false; // Yükleme bitti
+      });
 
       Navigator.pop(context);
     }
@@ -298,18 +324,20 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(
-                height: 100,
+                height: 150,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: _selectedImages.length,
+                  itemCount: _selectedImages
+                      .length, // itemCount'u _selectedImages.length olarak ayarla
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Wrap(
-                        children: _selectedImages.map((image) {
-                          return Image.file(File(image.path),
-                              width: 100, height: 100);
-                        }).toList(),
+                      child: Image.file(
+                        File(_selectedImages[index]
+                            .path), // Doğrudan item'dan image al
+                        width: 150,
+                        height: 150,
+                        fit: BoxFit.cover,
                       ),
                     );
                   },
@@ -326,8 +354,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
               _buildCustomFieldInputs(),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => _saveItem(context),
-                child: const Text('Kaydet'),
+                onPressed: _isUploading ? null : () => _saveItem(context),
+                child: _isUploading
+                    ? const CircularProgressIndicator() // Yükleme sırasında göstergenin görünmesini sağla
+                    : const Text('Kaydet'),
               ),
             ],
           ),
