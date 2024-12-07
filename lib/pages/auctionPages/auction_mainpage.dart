@@ -121,6 +121,8 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
             ],
           ),
         ),
+
+        // create auction button
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: GestureDetector(
           onTap: () {

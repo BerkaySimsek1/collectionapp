@@ -133,13 +133,15 @@ class _AuctionDetailState extends State<AuctionDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(
           widget.auction.name,
           style: const TextStyle(
+            fontSize: 24,
             fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
+            color: Colors.deepPurple,
           ),
         ),
         leading: IconButton(
@@ -148,13 +150,11 @@ class _AuctionDetailState extends State<AuctionDetail> {
             },
             icon: const Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: Colors.deepPurple,
             )),
-        backgroundColor: Colors.deepPurple,
       ),
       body: Container(
         padding: const EdgeInsets.all(16.0),
-        color: Colors.grey[200],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

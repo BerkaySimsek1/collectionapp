@@ -72,12 +72,12 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         await uploadAuctionWithImages(auction, _selectedImages);
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Açık artırma başarıyla yüklendi.")),
+          const SnackBar(content: Text("Auction loaded successfully.")),
         );
       } catch (e) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Yükleme sırasında hata oluştu: $e")),
+          SnackBar(content: Text("An error occurred: $e")),
         );
       }
     } else {
@@ -85,7 +85,8 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         context: context,
         builder: (context) {
           return const AlertDialog(
-            content: Text("Form geçerli değil, eksik bilgileri tamamlayınız."),
+            content: Text(
+                "The form is not valid, please complete the missing information."),
           );
         },
       );
@@ -97,12 +98,13 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text(
-          "Upload Auction",
+          'Create Auction',
           style: TextStyle(
+            fontSize: 24,
             fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
+            color: Colors.deepPurple,
           ),
         ),
         leading: IconButton(
@@ -111,9 +113,8 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             },
             icon: const Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: Colors.deepPurple,
             )),
-        backgroundColor: Colors.deepPurple,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -253,7 +254,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
               ),
             ),
             child: const Text(
-              "Upload Auction",
+              "Create Auction",
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

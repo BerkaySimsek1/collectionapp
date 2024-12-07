@@ -36,126 +36,167 @@ class CollectionItemsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('$collectionName Koleksiyonu')),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('userCollections')
-            .doc(userId)
-            .collection(collectionName)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('Henüz ürün eklenmemiş.'));
-          }
-
-          final items = snapshot.data!.docs;
-
-          return ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              final photos = item['Photos'] as List<dynamic>?;
-
-              return FutureBuilder<String>(
-                future: photos != null && photos.isNotEmpty
-                    ? _ensureLocalCopy(photos[0])
-                    : Future.value(''),
-                builder: (context, fileSnapshot) {
-                  if (fileSnapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
-
-                  final localPath = fileSnapshot.data ?? '';
-
-                  return ListTile(
-                    leading: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: photos != null && photos.isNotEmpty
-                            ? Image.network(
-                                photos[0].toString(),
-                                width: 50,
-                                height: 50,
-                                fit: BoxFit.cover,
-                              )
-                            : localPath.isNotEmpty
-                                ? Image.file(
-                                    File(localPath.toString()),
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                  )
-                                : const Icon(Icons.broken_image)),
-                    title: Text(item['İsim'] ?? 'İsimsiz Ürün'),
-                    trailing: PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == 'Düzenle') {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddItemScreen(
-                                userId: userId,
-                                collectionName: collectionName,
-                              ),
-                            ),
-                          );
-                        } else if (value == 'Sil') {
-                          FirebaseFirestore.instance
-                              .collection('userCollections')
-                              .doc(userId)
-                              .collection(collectionName)
-                              .doc(item.id)
-                              .delete();
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'Düzenle',
-                          child: Text('Düzenle'),
-                        ),
-                        const PopupMenuItem(
-                          value: 'Sil',
-                          child: Text('Sil'),
-                        ),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ItemDetailsScreen(
-                            userId: userId,
-                            collectionName: collectionName,
-                            itemId: item.id,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddItemScreen(
-                userId: userId,
-                collectionName: collectionName,
-              ),
+        backgroundColor: Colors.grey[200],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: Text(
+            '$collectionName Koleksiyonu',
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurple,
             ),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
+          ),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.deepPurple,
+              )),
+        ),
+        body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('userCollections')
+              .doc(userId)
+              .collection(collectionName)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(child: Text('No items added yet.'));
+            }
+
+            final items = snapshot.data!.docs;
+
+            return ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index];
+                final photos = item['Photos'] as List<dynamic>?;
+
+                return FutureBuilder<String>(
+                  future: photos != null && photos.isNotEmpty
+                      ? _ensureLocalCopy(photos[0])
+                      : Future.value(''),
+                  builder: (context, fileSnapshot) {
+                    if (fileSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    final localPath = fileSnapshot.data ?? '';
+
+                    return ListTile(
+                      leading: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: photos != null && photos.isNotEmpty
+                              ? Image.network(
+                                  photos[0].toString(),
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                )
+                              : localPath.isNotEmpty
+                                  ? Image.file(
+                                      File(localPath.toString()),
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const Icon(Icons.broken_image)),
+                      title: Text(item['İsim'] ?? 'İsimsiz Ürün'),
+                      trailing: PopupMenuButton<String>(
+                        onSelected: (value) {
+                          if (value == 'Düzenle') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddItemScreen(
+                                  userId: userId,
+                                  collectionName: collectionName,
+                                ),
+                              ),
+                            );
+                          } else if (value == 'Sil') {
+                            FirebaseFirestore.instance
+                                .collection('userCollections')
+                                .doc(userId)
+                                .collection(collectionName)
+                                .doc(item.id)
+                                .delete();
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'Düzenle',
+                            child: Text('Düzenle'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'Sil',
+                            child: Text('Sil'),
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ItemDetailsScreen(
+                              userId: userId,
+                              collectionName: collectionName,
+                              itemId: item.id,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
+        floatingActionButton: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddItemScreen(
+                  userId: userId,
+                  collectionName: collectionName,
+                ),
+              ),
+            );
+          },
+          child: Container(
+            height: 50,
+            width: 150,
+            decoration: BoxDecoration(
+                color: Colors.deepPurple,
+                borderRadius: BorderRadius.circular(8)),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                Text(
+                  "Add item",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }
