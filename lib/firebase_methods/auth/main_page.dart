@@ -1,4 +1,5 @@
 import 'package:collectionapp/firebase_methods/auth/auth_page.dart';
+import 'package:collectionapp/pages/socialMediaPages/SM_main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:collectionapp/pages/auctionPages/auction_mainpage.dart';
@@ -84,12 +85,10 @@ class MainPage extends StatelessWidget {
                             icon: Icons.people,
                             color: Colors.teal,
                             onTap: () {
-                              // Social Media screen placeholder
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text('Social Media Page coming soon!')),
-                              );
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return GroupsListPage();
+                              }));
                             },
                           ),
                         ],
