@@ -68,7 +68,14 @@ class CollectionItemsScreen extends StatelessWidget {
             }
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(child: Text('No items added yet.'));
+              return Center(
+                  child: Text(
+                'No items added yet.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[700],
+                ),
+              ));
             }
 
             final items = snapshot.data!.docs;
@@ -192,7 +199,7 @@ class CollectionItemsScreen extends StatelessWidget {
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 15),
+                      fontSize: 16),
                 ),
               ],
             ),

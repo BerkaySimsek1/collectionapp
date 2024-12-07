@@ -52,7 +52,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
         String fieldName = '';
         String fieldType = 'TextField';
         return AlertDialog(
-          title: const Text('Yeni Alan Ekle'),
+          title: const Text(
+            'Yeni Alan Ekle',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurple,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -81,10 +88,16 @@ class _AddItemScreenState extends State<AddItemScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('İptal'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.deepPurple,
+                ),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
+            GestureDetector(
+              // save button
+              onTap: () {
                 if (fieldName.isNotEmpty) {
                   setState(() {
                     _customFields.add({'name': fieldName, 'type': fieldType});
@@ -93,7 +106,23 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   Navigator.pop(context);
                 }
               },
-              child: const Text('Ekle'),
+              child: Container(
+                height: 40,
+                width: 60,
+                decoration: BoxDecoration(
+                    color: Colors.deepPurple,
+                    borderRadius: BorderRadius.circular(16)),
+                child: Center(
+                  child: _isUploading
+                      ? const CircularProgressIndicator() // indicator appears when loading
+                      : const Text(
+                          "Add",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                ),
+              ),
             ),
           ],
         );
@@ -250,14 +279,28 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
         if (fieldType == 'TextField') {
           return TextFormField(
-            decoration: InputDecoration(labelText: fieldName),
+            decoration: InputDecoration(
+              labelText: fieldName,
+              // filled: true, // optional decoration
+              // fillColor: Colors.white,
+              // border: OutlineInputBorder(
+              //   borderRadius: BorderRadius.circular(10),
+              // ),
+            ),
             onChanged: (value) {
               _customFieldValues[fieldName] = value;
             },
           );
         } else if (fieldType == 'NumberField') {
           return TextFormField(
-            decoration: InputDecoration(labelText: fieldName),
+            decoration: InputDecoration(
+              labelText: fieldName,
+              //filled: true, // optional decoration
+              //fillColor: Colors.white,
+              //border: OutlineInputBorder(
+              //  borderRadius: BorderRadius.circular(10),
+              //),
+            ),
             keyboardType: TextInputType.number,
             onChanged: (value) {
               _customFieldValues[fieldName] = int.tryParse(value) ?? 0;
@@ -320,8 +363,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
           child: ListView(
             children: [
               TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Item Name'),
+                controller: _rarityController,
+                decoration: InputDecoration(
+                  labelText: "Item Name",
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a name.';
@@ -329,29 +379,42 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _rarityController,
-                decoration: const InputDecoration(labelText: 'Rarity'),
-              ),
               const SizedBox(height: 16),
-              GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  height: 50,
-                  width: 380,
-                  decoration: BoxDecoration(
-                      color: Colors.deepPurple,
-                      borderRadius: BorderRadius.circular(16)),
-                  child: const Center(
-                    child: Text(
-                      "Add Photo",
+              TextFormField(
+                  controller: _rarityController,
+                  decoration: InputDecoration(
+                    labelText: "Rarity",
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  )),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _pickImage,
+                    icon: const Icon(
+                      Icons.image,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      "Select Images",
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 20),
+                          fontSize: 16),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      elevation: 4,
+                      backgroundColor: Colors.deepPurple,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 16),
               Text(
@@ -381,51 +444,57 @@ class _AddItemScreenState extends State<AddItemScreen> {
               const SizedBox(height: 16),
               _buildPredefinedFieldInputs(),
               const SizedBox(height: 16),
-              GestureDetector(
-                onTap: _addCustomField,
-                child: Container(
-                  height: 50,
-                  width: 380,
-                  decoration: BoxDecoration(
-                      color: Colors.deepPurple,
-                      borderRadius: BorderRadius.circular(16)),
-                  child: const Center(
-                    child: Text(
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _addCustomField,
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
                       "Add Custom Field",
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 20),
+                          fontSize: 16),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      elevation: 4,
+                      backgroundColor: Colors.deepPurple,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 16),
-              _buildCustomFieldInputs(),
+              _buildCustomFieldInputs(), // view adjustable custom fields
               const SizedBox(height: 16),
-              GestureDetector(
-                // save button
-                onTap: _isUploading ? null : () => _saveItem(context),
-                child: Container(
-                  height: 50,
-                  width: 380,
-                  decoration: BoxDecoration(
-                      color: Colors.deepPurple,
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Center(
-                    child: _isUploading
-                        ? const CircularProgressIndicator() // indicator appears when loading
-                        : const Text(
-                            "Save",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
-                          ),
-                  ),
-                ),
-              )
             ],
+          ),
+        ),
+      ),
+      floatingActionButton: GestureDetector(
+        // save button
+        onTap: _isUploading ? null : () => _saveItem(context),
+        child: Container(
+          height: 50,
+          width: 380,
+          decoration: BoxDecoration(
+              color: Colors.deepPurple,
+              borderRadius: BorderRadius.circular(16)),
+          child: Center(
+            child: _isUploading
+                ? const CircularProgressIndicator() // indicator appears when loading
+                : const Text(
+                    "Save",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
           ),
         ),
       ),
