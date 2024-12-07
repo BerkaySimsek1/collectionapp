@@ -110,7 +110,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('En fazla 5 fotoğraf ekleyebilirsiniz.')),
+        const SnackBar(content: Text('You can add up to 5 photos.')),
       );
     }
   }
@@ -118,14 +118,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Future<void> _saveItem(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isUploading = true; // Yükleme başlatıldı
+        _isUploading = true; // loading started
       });
 
       final itemName = _nameController.text.trim();
       final rarity = _rarityController.text.trim();
       final List<String> photoPaths = [];
 
-      // Fotoğrafları paralel olarak yükle
+      // upload multiple photos at the same time
       final List<Future> uploadTasks = _selectedImages.map((image) async {
         final storageRef = FirebaseStorage.instance.ref().child(
             'item_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}');
@@ -135,7 +135,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           final downloadURL = await storageRef.getDownloadURL();
           photoPaths.add(downloadURL);
         } else {
-          throw Exception("Yüklenemedi");
+          throw Exception("Couldn't loaded.");
         }
       }).toList();
 
@@ -267,7 +267,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
           return ListTile(
             title: Text(fieldName),
             subtitle: Text(
-              _customFieldValues[fieldName]?.toString() ?? 'Tarih seçilmedi',
+              _customFieldValues[fieldName]?.toString() ??
+                  'Date must be selected.',
             ),
             onTap: () async {
               final date = await showDatePicker(
@@ -292,7 +293,26 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Yeni Ürün Ekle')),
+      backgroundColor: Colors.grey[200],
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          'Add New Item',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.deepPurple,
+          ),
+        ),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.deepPurple,
+            )),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -301,26 +321,41 @@ class _AddItemScreenState extends State<AddItemScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Ürün İsmi'),
+                decoration: const InputDecoration(labelText: 'Item Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Lütfen bir isim girin.';
+                    return 'Please enter a name.';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _rarityController,
-                decoration: const InputDecoration(labelText: 'Nadirlik'),
+                decoration: const InputDecoration(labelText: 'Rarity'),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: const Text('Fotoğraf Ekle'),
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  height: 50,
+                  width: 380,
+                  decoration: BoxDecoration(
+                      color: Colors.deepPurple,
+                      borderRadius: BorderRadius.circular(16)),
+                  child: const Center(
+                    child: Text(
+                      "Add Photo",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               Text(
-                'Eklenen Fotoğraflar (${_selectedImages.length}/5):',
+                'Added Photos (${_selectedImages.length}/5):',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(
@@ -346,19 +381,50 @@ class _AddItemScreenState extends State<AddItemScreen> {
               const SizedBox(height: 16),
               _buildPredefinedFieldInputs(),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _addCustomField,
-                child: const Text('Özel Alan Ekle'),
+              GestureDetector(
+                onTap: _addCustomField,
+                child: Container(
+                  height: 50,
+                  width: 380,
+                  decoration: BoxDecoration(
+                      color: Colors.deepPurple,
+                      borderRadius: BorderRadius.circular(16)),
+                  child: const Center(
+                    child: Text(
+                      "Add Custom Field",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               _buildCustomFieldInputs(),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _isUploading ? null : () => _saveItem(context),
-                child: _isUploading
-                    ? const CircularProgressIndicator() // Yükleme sırasında göstergenin görünmesini sağla
-                    : const Text('Kaydet'),
-              ),
+              GestureDetector(
+                // save button
+                onTap: _isUploading ? null : () => _saveItem(context),
+                child: Container(
+                  height: 50,
+                  width: 380,
+                  decoration: BoxDecoration(
+                      color: Colors.deepPurple,
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Center(
+                    child: _isUploading
+                        ? const CircularProgressIndicator() // indicator appears when loading
+                        : const Text(
+                            "Save",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ),
+                  ),
+                ),
+              )
             ],
           ),
         ),
