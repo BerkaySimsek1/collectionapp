@@ -1,6 +1,7 @@
 import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
 import 'package:collectionapp/models/GroupModel.dart';
 import 'package:collectionapp/models/PostModel.dart';
+import 'package:collectionapp/pages/socialMediaPages/SM_group_admin.dart';
 import 'package:collectionapp/pages/socialMediaPages/create_post_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,10 @@ import 'package:flutter/material.dart';
 class GroupDetailPage extends StatefulWidget {
   final Group group;
 
-  const GroupDetailPage({Key? key, required this.group}) : super(key: key);
+  const GroupDetailPage({super.key, required this.group});
 
   @override
+  // ignore: library_private_types_in_public_api
   _GroupDetailPageState createState() => _GroupDetailPageState();
 }
 
@@ -43,28 +45,58 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         children: [
           // Grup Bilgileri
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.group.name,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                SizedBox(height: 8),
-                Text(widget.group.description),
-                SizedBox(height: 8),
-                Text('${widget.group.members.length} üye'),
-              ],
-            ),
-          ),
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  widget.group.coverImageUrl != null
+                      ? CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(widget.group.coverImageUrl!),
+                          minRadius: 50,
+                          maxRadius: 75,
+                        )
+                      : CircleAvatar(
+                          child: Text(widget.group.name[0]),
+                        ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.group.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(widget.group.description),
+                      const SizedBox(height: 8),
+                      Text('${widget.group.members.length} üye'),
+                    ],
+                  ),
+                  const Spacer(),
+                  widget.group.adminIds.contains(_currentUser!.uid)
+                      ? TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SmGroupAdmin(
+                                  groupId: widget.group.id,
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text("Admin işlemleri"))
+                      : const Text("")
+                ],
+              )),
 
           // Katılma/Gönderi Bölümü
           if (!_isMember)
             ElevatedButton(
               onPressed: () => _groupDetailService.sendJoinRequest(
-                  widget.group.id, _currentUser!.uid),
-              child: Text('Gruba Katılma İsteği Gönder'),
+                  widget.group.id, _currentUser.uid),
+              child: const Text('Gruba Katılma İsteği Gönder'),
             )
           else
             Expanded(
@@ -81,11 +113,12 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
 
                         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Center(child: Text('Henüz gönderi yok'));
+                          return const Center(child: Text('Henüz gönderi yok'));
                         }
 
                         return ListView.builder(
@@ -95,7 +128,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                             return PostWidget(
                               post: post,
                               onLike: () => _groupDetailService.toggleLike(
-                                  post.id, _currentUser!.uid),
+                                  post.id, _currentUser.uid),
                             );
                           },
                         );
