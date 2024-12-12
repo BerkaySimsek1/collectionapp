@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,14 +35,18 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
   }
 
   void _createPost() async {
+    var userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_currentUser!.uid)
+        .get();
     if (_postController.text.isNotEmpty || _imageFile != null) {
       try {
         await _postService.createPost(
           groupId: widget.groupId,
-          userId: _currentUser!.uid,
+          userId: _currentUser.uid,
           content: _postController.text,
           imageFile: _imageFile,
-          username: _currentUser.displayName ?? 'Kullanıcı',
+          username: userDoc["username"] ?? 'Kullanıcı',
           userProfilePic: _currentUser.photoURL ?? '',
         );
 
