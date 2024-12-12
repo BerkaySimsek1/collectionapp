@@ -83,12 +83,31 @@ class GroupDetailService {
 
   // Gruba Katılma İsteği Gönderme
   Future<void> sendJoinRequest(String groupId, String userId) async {
-    await _firestore.collection('group_join_requests').add({
+    await _firestore.collection('group_join_requests').doc(groupId).set({
       'groupId': groupId,
       'userId': userId,
       'status': 'pending',
       'requestedAt': FieldValue.serverTimestamp(),
     });
+  }
+
+  Future<Map<String, dynamic>?> getJoinRequest(
+      String groupId, String userId) async {
+    try {
+      DocumentSnapshot documentSnapshot =
+          await _firestore.collection('group_join_requests').doc(groupId).get();
+
+      if (documentSnapshot.exists && documentSnapshot.data() != null) {
+        Map<String, dynamic> requestData =
+            documentSnapshot.data() as Map<String, dynamic>;
+        return requestData;
+      } else {
+        return null; // Join request not found
+      }
+    } catch (e) {
+      print("Error retrieving join request: $e");
+      return null;
+    }
   }
 
   // Kullanıcının Gruba Üyelik Durumunu Kontrol Etme

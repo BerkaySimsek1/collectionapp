@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
@@ -8,9 +10,10 @@ import 'package:image_picker/image_picker.dart';
 class CreatePostWidget extends StatefulWidget {
   final String groupId;
 
-  const CreatePostWidget({Key? key, required this.groupId}) : super(key: key);
+  const CreatePostWidget({super.key, required this.groupId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _CreatePostWidgetState createState() => _CreatePostWidgetState();
 }
 
@@ -38,8 +41,8 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
           userId: _currentUser!.uid,
           content: _postController.text,
           imageFile: _imageFile,
-          username: _currentUser!.displayName ?? 'Kullanıcı',
-          userProfilePic: _currentUser!.photoURL ?? '',
+          username: _currentUser.displayName ?? 'Kullanıcı',
+          userProfilePic: _currentUser.photoURL ?? '',
         );
 
         // Gönderi sonrası temizlik
@@ -49,7 +52,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
         });
 
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Gönderi paylaşıldı')));
+            .showSnackBar(const SnackBar(content: Text('Gönderi paylaşıldı')));
       } catch (e) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Gönderi paylaşılamadı: $e')));
@@ -60,7 +63,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -75,13 +78,13 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
         children: [
           TextField(
             controller: _postController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Bir şeyler paylaş...',
               border: OutlineInputBorder(),
             ),
             maxLines: 3,
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
 
           // Seçilen Fotoğraf Önizlemesi
           if (_imageFile != null)
@@ -95,7 +98,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
                   fit: BoxFit.cover,
                 ),
                 IconButton(
-                  icon: Icon(Icons.close, color: Colors.white),
+                  icon: const Icon(Icons.close, color: Colors.white),
                   onPressed: () {
                     setState(() {
                       _imageFile = null;
@@ -108,13 +111,13 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
           Row(
             children: [
               IconButton(
-                icon: Icon(Icons.photo_library),
+                icon: const Icon(Icons.photo_library),
                 onPressed: _pickImage,
               ),
-              Spacer(),
+              const Spacer(),
               ElevatedButton(
                 onPressed: _createPost,
-                child: Text('Paylaş'),
+                child: const Text('Paylaş'),
               ),
             ],
           ),

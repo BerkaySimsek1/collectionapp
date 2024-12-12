@@ -1,18 +1,19 @@
 import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
 import 'package:collectionapp/models/GroupModel.dart';
 import 'package:collectionapp/pages/socialMediaPages/SM_creategroup_page.dart';
-import 'package:collectionapp/pages/socialMediaPages/SM_grup_detail_page.dart';
+import 'package:collectionapp/pages/socialMediaPages/SM_group_detail_page.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class GroupsListPage extends StatefulWidget {
+  const GroupsListPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _GroupsListPageState createState() => _GroupsListPageState();
 }
 
 class _GroupsListPageState extends State<GroupsListPage> {
   final _groupService = GroupService();
-  final _currentUser = FirebaseAuth.instance.currentUser;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
@@ -26,7 +27,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
             hintText: 'Grupları ara...',
             border: InputBorder.none,
             suffixIcon: IconButton(
-              icon: Icon(Icons.clear),
+              icon: const Icon(Icons.clear),
               onPressed: () {
                 _searchController.clear();
                 setState(() {
@@ -43,7 +44,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(
                 context,
@@ -57,11 +58,11 @@ class _GroupsListPageState extends State<GroupsListPage> {
         stream: _groupService.getGroups(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
+            return const Center(
               child: Text('Henüz hiç grup yok'),
             );
           }
@@ -89,12 +90,12 @@ class _GroupsListPageState extends State<GroupsListPage> {
 class GroupListItem extends StatelessWidget {
   final Group group;
 
-  const GroupListItem({Key? key, required this.group}) : super(key: key);
+  const GroupListItem({super.key, required this.group});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
         leading: group.coverImageUrl != null
             ? CircleAvatar(
@@ -106,9 +107,9 @@ class GroupListItem extends StatelessWidget {
         title: Text(group.name),
         subtitle: Text(
           '${group.members.length} üye',
-          style: TextStyle(fontSize: 12),
+          style: const TextStyle(fontSize: 12),
         ),
-        trailing: Icon(Icons.chevron_right),
+        trailing: const Icon(Icons.chevron_right),
         onTap: () {
           Navigator.push(
             context,
