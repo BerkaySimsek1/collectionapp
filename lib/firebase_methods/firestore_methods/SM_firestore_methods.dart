@@ -81,6 +81,35 @@ class GroupService {
 class GroupDetailService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<void> addCommentToPost(String postId, Comment comment) async {
+    try {
+      final postRef =
+          FirebaseFirestore.instance.collection('posts').doc(postId);
+
+      await postRef.update({
+        'comments': FieldValue.arrayUnion([comment.toMap()])
+      });
+    } catch (e) {
+      print('Error adding comment: $e');
+      throw Exception('Failed to add comment');
+    }
+  }
+
+  Stream<List<Comment>> getPostComments(String groupId, String postId) {
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .snapshots()
+        .map((snapshot) {
+      final data = snapshot.data();
+      if (data == null || data['comments'] == null) return [];
+
+      return (data['comments'] as List)
+          .map((commentMap) => Comment.fromMap(commentMap))
+          .toList();
+    });
+  }
+
   // Gruba Katılma İsteği Gönderme
   Future<void> sendJoinRequest(String groupId, String userId) async {
     await _firestore.collection('group_join_requests').doc(groupId).set({
