@@ -62,6 +62,7 @@ class Post {
 
 class Comment {
   final String id;
+  final String groupId;
   final String userId;
   final String content;
   final DateTime createdAt;
@@ -70,6 +71,7 @@ class Comment {
 
   Comment({
     required this.id,
+    required this.groupId,
     required this.userId,
     required this.content,
     required this.createdAt,
@@ -80,6 +82,7 @@ class Comment {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'groupId': groupId,
       'userId': userId,
       'content': content,
       'createdAt': createdAt,
@@ -91,6 +94,7 @@ class Comment {
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
       id: map['id'],
+      groupId: map['groupId'],
       userId: map['userId'],
       content: map['content'],
       createdAt: (map['createdAt'] as Timestamp).toDate(),

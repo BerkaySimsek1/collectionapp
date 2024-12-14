@@ -2,6 +2,7 @@ import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_me
 import 'package:collectionapp/models/GroupModel.dart';
 import 'package:collectionapp/models/PostModel.dart';
 import 'package:collectionapp/pages/socialMediaPages/SM_group_admin.dart';
+import 'package:collectionapp/pages/socialMediaPages/comment_bottom_sheet.dart';
 import 'package:collectionapp/pages/socialMediaPages/create_post_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,27 +13,48 @@ class GroupDetailPage extends StatefulWidget {
   const GroupDetailPage({super.key, required this.group});
 
   @override
-  // ignore: library_private_types_in_public_api
   _GroupDetailPageState createState() => _GroupDetailPageState();
 }
 
 class _GroupDetailPageState extends State<GroupDetailPage> {
   final _groupDetailService = GroupDetailService();
   final _currentUser = FirebaseAuth.instance.currentUser;
-  bool _isMember = false;
+  bool? _isMember;
+  bool? hasJoinRequest;
 
   @override
   void initState() {
     super.initState();
-    _checkMemberStatus();
+    _initializeStatus();
   }
 
-  Future<void> _checkMemberStatus() async {
+  Future<void> _initializeStatus() async {
     final isMember = await _groupDetailService.isUserMember(
+        widget.group.id, _currentUser!.uid);
+    final joinRequest = await _groupDetailService.getJoinRequest(
         widget.group.id, _currentUser!.uid);
     setState(() {
       _isMember = isMember;
+      hasJoinRequest = joinRequest != null;
     });
+  }
+
+  void _sendJoinRequest() async {
+    setState(() {
+      hasJoinRequest = true;
+    });
+
+    try {
+      await _groupDetailService.sendJoinRequest(
+          widget.group.id, _currentUser!.uid);
+    } catch (e) {
+      setState(() {
+        hasJoinRequest = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('İstek gönderilemedi: $e')),
+      );
+    }
   }
 
   @override
@@ -45,59 +67,62 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         children: [
           // Grup Bilgileri
           Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  widget.group.coverImageUrl != null
-                      ? CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(widget.group.coverImageUrl!),
-                          minRadius: 50,
-                          maxRadius: 75,
-                        )
-                      : CircleAvatar(
-                          child: Text(widget.group.name[0]),
-                        ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.group.name,
-                        style: Theme.of(context).textTheme.titleLarge,
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                widget.group.coverImageUrl != null
+                    ? CircleAvatar(
+                        backgroundImage:
+                            NetworkImage(widget.group.coverImageUrl!),
+                        minRadius: 50,
+                        maxRadius: 75,
+                      )
+                    : CircleAvatar(
+                        child: Text(widget.group.name[0]),
                       ),
-                      const SizedBox(height: 8),
-                      Text(widget.group.description),
-                      const SizedBox(height: 8),
-                      Text('${widget.group.members.length} üye'),
-                    ],
-                  ),
-                  const Spacer(),
-                  widget.group.adminIds.contains(_currentUser!.uid)
-                      ? TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SmGroupAdmin(
-                                  groupId: widget.group.id,
-                                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.group.name,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(widget.group.description),
+                    const SizedBox(height: 8),
+                    Text('${widget.group.members.length} üye'),
+                  ],
+                ),
+                const Spacer(),
+                widget.group.adminIds.contains(_currentUser!.uid)
+                    ? TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SmGroupAdmin(
+                                groupId: widget.group.id,
                               ),
-                            );
-                          },
-                          child: const Text("Admin işlemleri"))
-                      : const Text("")
-                ],
-              )),
+                            ),
+                          );
+                        },
+                        child: const Text("Admin işlemleri"))
+                    : const Text("")
+              ],
+            ),
+          ),
 
-          // Katılma/Gönderi Bölümü
-          if (!_isMember)
-            ElevatedButton(
-              onPressed: () => _groupDetailService.sendJoinRequest(
-                  widget.group.id, _currentUser.uid),
-              child: const Text('Gruba Katılma İsteği Gönder'),
-            )
+          if (_isMember == null || hasJoinRequest == null)
+            const Center(child: CircularProgressIndicator())
+          else if (!_isMember!)
+            hasJoinRequest!
+                ? const Text("İstek Gönderildi")
+                : ElevatedButton(
+                    onPressed: _sendJoinRequest,
+                    child: const Text('Gruba Katılma İsteği Gönder'),
+                  )
           else
             Expanded(
               child: Column(
@@ -129,6 +154,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                               post: post,
                               onLike: () => _groupDetailService.toggleLike(
                                   post.id, _currentUser.uid),
+                              groupDetailService: _groupDetailService,
                             );
                           },
                         );
@@ -147,15 +173,73 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 class PostWidget extends StatelessWidget {
   final Post post;
   final VoidCallback onLike;
+  final GroupDetailService groupDetailService;
 
-  const PostWidget({Key? key, required this.post, required this.onLike})
+  const PostWidget(
+      {Key? key,
+      required this.post,
+      required this.onLike,
+      required this.groupDetailService})
       : super(key: key);
+
+  void _showComments(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Comments Stream
+          StreamBuilder<List<Comment>>(
+            stream: groupDetailService.getPostComments(post.groupId, post.id),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('Henüz yorum yok'));
+              }
+
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final comment = snapshot.data![index];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: comment.userProfilePic.isNotEmpty
+                          ? NetworkImage(comment.userProfilePic)
+                          : null,
+                      child: comment.userProfilePic.isEmpty
+                          ? Text(comment.username[0])
+                          : null,
+                    ),
+                    title: Text(comment.username),
+                    subtitle: Text(comment.content),
+                    trailing: Text(
+                      '${comment.createdAt.day}.${comment.createdAt.month} '
+                      '${comment.createdAt.hour}:${comment.createdAt.minute.toString().padLeft(2, '0')}',
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+
+          // Comment Input
+          CommentBottomSheet(
+              post: post, groupDetailService: groupDetailService),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final _currentUser = FirebaseAuth.instance.currentUser;
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -205,13 +289,12 @@ class PostWidget extends StatelessWidget {
                   onPressed: onLike,
                 ),
                 Text('${post.likes.length} beğeni'),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 IconButton(
-                  icon: Icon(Icons.comment),
-                  onPressed: () {
-                    // Yorum ekleme sayfasına yönlendirme
-                  },
+                  icon: const Icon(Icons.comment),
+                  onPressed: () => _showComments(context),
                 ),
+                Text('${post.comments.length} yorum'),
               ],
             ),
           ),
