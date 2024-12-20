@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/design_elements.dart';
 import 'package:collectionapp/models/predefined_collections.dart';
 import 'package:flutter/material.dart';
 
@@ -56,7 +57,9 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Koleksiyon Ekle')),
+      appBar: const ProjectAppbar(
+        titletext: "Add New Collection",
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

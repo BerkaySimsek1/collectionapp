@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collectionapp/design_elements.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart'; // Kalıcı dosyalar için gerekli
@@ -37,24 +38,8 @@ class CollectionItemsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey[200],
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Text(
-            '$collectionName Koleksiyonu',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
-            ),
-          ),
-          leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.deepPurple,
-              )),
+        appBar: ProjectAppbar(
+          titletext: "$collectionName Koleksiyonu",
         ),
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
@@ -181,28 +166,8 @@ class CollectionItemsScreen extends StatelessWidget {
               ),
             );
           },
-          child: Container(
-            height: 50,
-            width: 150,
-            decoration: BoxDecoration(
-                color: Colors.deepPurple,
-                borderRadius: BorderRadius.circular(8)),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
-                Text(
-                  "Add item",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16),
-                ),
-              ],
-            ),
+          child: const AddFloatingDecoration(
+            buttonText: "Add Item",
           ),
         ));
   }

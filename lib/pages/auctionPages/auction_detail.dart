@@ -1,3 +1,4 @@
+import 'package:collectionapp/design_elements.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/countdown_timer.dart';
@@ -9,7 +10,7 @@ import 'package:photo_view/photo_view.dart';
 class AuctionDetail extends StatefulWidget {
   final AuctionModel auction;
 
-  const AuctionDetail({Key? key, required this.auction}) : super(key: key);
+  const AuctionDetail({super.key, required this.auction});
 
   @override
   _AuctionDetailState createState() => _AuctionDetailState();
@@ -44,7 +45,7 @@ class _AuctionDetailState extends State<AuctionDetail> {
         });
       }
     } catch (e) {
-      print("Hata oluştu: $e");
+      debugPrint("Hata oluştu: $e");
     }
   }
 
@@ -134,27 +135,11 @@ class _AuctionDetailState extends State<AuctionDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: Text(
-          widget.auction.name,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
-          ),
-        ),
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.deepPurple,
-            )),
+      appBar: ProjectAppbar(
+        titletext: widget.auction.name,
       ),
       body: Container(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -271,21 +256,8 @@ class _AuctionDetailState extends State<AuctionDetail> {
       floatingActionButton: (user.uid != widget.auction.creatorId)
           ? GestureDetector(
               onTap: _showBidDialog,
-              child: Container(
-                height: 50,
-                width: 380,
-                decoration: BoxDecoration(
-                    color: Colors.deepPurple,
-                    borderRadius: BorderRadius.circular(16)),
-                child: const Center(
-                  child: Text(
-                    "Place a Bid",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                ),
+              child: const FinalFloatingDecoration(
+                buttonText: "Place a Bid",
               ),
             )
           : null,

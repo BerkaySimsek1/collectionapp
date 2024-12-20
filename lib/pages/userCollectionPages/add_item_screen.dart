@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:collectionapp/design_elements.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart'; // Fotoğraf seçimi için
 import 'package:collectionapp/models/predefined_collections.dart';
@@ -337,24 +338,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: const Text(
-          'Add New Item',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
-          ),
-        ),
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.deepPurple,
-            )),
+      appBar: const ProjectAppbar(
+        titletext: "Add New Item",
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
