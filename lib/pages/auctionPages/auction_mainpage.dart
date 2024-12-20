@@ -1,3 +1,4 @@
+import 'package:collectionapp/design_elements.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
@@ -6,7 +7,7 @@ import 'package:collectionapp/pages/auctionPages/create_auction.dart';
 import 'package:collectionapp/countdown_timer.dart';
 
 class AuctionListScreen extends StatefulWidget {
-  const AuctionListScreen({Key? key}) : super(key: key);
+  const AuctionListScreen({super.key});
 
   @override
   _AuctionListScreenState createState() => _AuctionListScreenState();
@@ -30,24 +31,8 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey[200],
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text(
-            'Auctions',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
-            ),
-          ),
-          leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.deepPurple,
-              )),
+        appBar: const ProjectAppbar(
+          titletext: "Auctions",
         ),
         body: Container(
           padding: const EdgeInsets.all(16),
@@ -132,28 +117,8 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                   builder: (context) => const AuctionUploadScreen()),
             );
           },
-          child: Container(
-            height: 50,
-            width: 150,
-            decoration: BoxDecoration(
-                color: Colors.deepPurple,
-                borderRadius: BorderRadius.circular(8)),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
-                Text(
-                  "Create auction",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15),
-                ),
-              ],
-            ),
+          child: const AddFloatingDecoration(
+            buttonText: "Create Auction",
           ),
         ));
   }

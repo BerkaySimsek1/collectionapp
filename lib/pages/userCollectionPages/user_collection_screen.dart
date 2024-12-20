@@ -1,3 +1,4 @@
+import 'package:collectionapp/design_elements.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'add_collection_screen.dart';
@@ -11,24 +12,8 @@ class UserCollectionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: const Text(
-          'My Collections',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
-          ),
-        ),
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.deepPurple,
-            )),
+      appBar: const ProjectAppbar(
+        titletext: "My Collections",
       ),
       backgroundColor: Colors.grey[200],
       body: Padding(
@@ -115,8 +100,8 @@ class UserCollectionsScreen extends StatelessWidget {
         ),
       ),
       // Yeni Koleksiyon Ekleme Butonu
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
+      floatingActionButton: GestureDetector(
+        onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -124,8 +109,9 @@ class UserCollectionsScreen extends StatelessWidget {
             ),
           );
         },
-        backgroundColor: Colors.deepPurple,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: const AddFloatingDecoration(
+          buttonText: "Add Collection",
+        ),
       ),
     );
   }

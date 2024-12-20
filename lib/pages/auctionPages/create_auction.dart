@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:collectionapp/design_elements.dart';
 import 'package:collectionapp/firebase_methods/firestore_methods/auction_firestoremethods.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -97,32 +98,16 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: const Text(
-          'Create Auction',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
-          ),
-        ),
-        leading: IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.deepPurple,
-            )),
+      appBar: const ProjectAppbar(
+        titletext: "Create Auction",
       ),
-      body: Padding(
+      body: Container(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
                   "Add your auction details",
@@ -242,27 +227,13 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: _uploadAuction,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text(
-              "Create Auction",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
-            ),
-          ),
-        ],
+      floatingActionButton: GestureDetector(
+        onTap: _uploadAuction,
+        child: const FinalFloatingDecoration(
+          buttonText: "Create Auction",
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
