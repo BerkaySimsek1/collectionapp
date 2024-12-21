@@ -44,7 +44,6 @@ class _CountdownTimerState extends State<CountdownTimer> {
           .collection('auctions')
           .doc(widget.auctionId)
           .update({'isAuctionEnd': true});
-      debugPrint("Auction ended successfully!");
     } catch (e) {
       debugPrint("Failed to end auction: $e");
     }
