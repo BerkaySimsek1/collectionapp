@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -15,7 +16,7 @@ class FirestoreService {
           .collection(collectionName)
           .add(data);
     } catch (e) {
-      print('Error adding collection item: $e');
+      debugPrint('Error adding collection item: $e');
       rethrow;
     }
   }
@@ -33,7 +34,7 @@ class FirestoreService {
           .doc(docId)
           .get();
     } catch (e) {
-      print('Error fetching document: $e');
+      debugPrint('Error fetching document: $e');
       rethrow;
     }
   }
@@ -63,7 +64,7 @@ class FirestoreService {
           .doc(docId)
           .update(updatedData);
     } catch (e) {
-      print('Error updating collection item: $e');
+      debugPrint('Error updating collection item: $e');
       rethrow;
     }
   }
@@ -81,7 +82,7 @@ class FirestoreService {
           .doc(docId)
           .delete();
     } catch (e) {
-      print('Error deleting collection item: $e');
+      debugPrint('Error deleting collection item: $e');
       rethrow;
     }
   }

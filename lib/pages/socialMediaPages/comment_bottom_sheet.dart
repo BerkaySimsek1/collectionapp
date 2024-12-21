@@ -8,8 +8,7 @@ class CommentBottomSheet extends StatefulWidget {
   final GroupDetailService groupDetailService;
 
   const CommentBottomSheet(
-      {Key? key, required this.post, required this.groupDetailService})
-      : super(key: key);
+      {super.key, required this.post, required this.groupDetailService});
 
   @override
   _CommentBottomSheetState createState() => _CommentBottomSheetState();
@@ -66,7 +65,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.send),
+            icon: const Icon(Icons.send),
             onPressed: _submitComment,
           ),
         ],

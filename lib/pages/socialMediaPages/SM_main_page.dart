@@ -95,7 +95,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreateGroupPage()),
+            MaterialPageRoute(builder: (context) => const CreateGroupPage()),
           );
         },
         style: ProjectDecorations.elevatedButtonStyle,

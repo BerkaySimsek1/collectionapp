@@ -8,7 +8,7 @@ import "package:flutter/material.dart";
 import "package:image_picker/image_picker.dart";
 
 class AuctionUploadScreen extends StatefulWidget {
-  const AuctionUploadScreen({Key? key}) : super(key: key);
+  const AuctionUploadScreen({super.key});
 
   @override
   _AuctionUploadScreenState createState() => _AuctionUploadScreenState();
@@ -75,6 +75,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Auction loaded successfully.")),
         );
+        Navigator.of(context).pop();
       } catch (e) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -217,18 +218,9 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                   ),
                   label: const Text(
                     "Select Images",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16),
+                    style: ProjectTextStyles.buttonTextStyle,
                   ),
-                  style: ElevatedButton.styleFrom(
-                    elevation: 4,
-                    backgroundColor: Colors.deepPurple,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
+                  style: ProjectDecorations.elevatedButtonStyle,
                 ),
                 const SizedBox(height: 16),
                 Wrap(
@@ -255,7 +247,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
       floatingActionButton: GestureDetector(
         onTap: _uploadAuction,
         child: const FinalFloatingDecoration(
-          buttonText: "Create Auction",
+          buttonText: "Upload Auction",
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

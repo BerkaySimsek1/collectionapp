@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
 
 class Group {
   final String id;
@@ -25,29 +25,29 @@ class Group {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'creatorId': creatorId,
-      'createdAt': createdAt,
-      'category': category,
-      'members': members,
-      'adminIds': adminIds,
-      'coverImageUrl': coverImageUrl,
+      "id": id,
+      "name": name,
+      "description": description,
+      "creatorId": creatorId,
+      "createdAt": createdAt,
+      "category": category,
+      "members": members,
+      "adminIds": adminIds,
+      "coverImageUrl": coverImageUrl,
     };
   }
 
   factory Group.fromMap(Map<String, dynamic> map) {
     return Group(
-      id: map['id'],
-      name: map['name'],
-      description: map['description'],
-      creatorId: map['creatorId'],
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
-      category: map['category'],
-      members: List<String>.from(map['members'] ?? []),
-      adminIds: List<String>.from(map['adminIds'] ?? []),
-      coverImageUrl: map['coverImageUrl'],
+      id: map["id"],
+      name: map["name"],
+      description: map["description"],
+      creatorId: map["creatorId"],
+      createdAt: (map["createdAt"] as Timestamp).toDate(),
+      category: map["category"],
+      members: List<String>.from(map["members"] ?? []),
+      adminIds: List<String>.from(map["adminIds"] ?? []),
+      coverImageUrl: map["coverImageUrl"],
     );
   }
 }

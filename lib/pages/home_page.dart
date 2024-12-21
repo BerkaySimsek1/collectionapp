@@ -34,10 +34,10 @@ class _HomePageState extends State<HomePage> {
           userInfo = UserInfoModel.fromJson(doc.data() as Map<String, dynamic>);
         });
       } else {
-        print("Kullanıcı bulunamadı");
+        debugPrint("User not found");
       }
     } catch (e) {
-      print("Hata oluştu: $e");
+      debugPrint("Error occured: $e");
     }
   }
 

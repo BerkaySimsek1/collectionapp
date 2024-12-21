@@ -1,33 +1,34 @@
-import 'package:collectionapp/models/AuctionModel.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+import "package:collectionapp/models/AuctionModel.dart";
+import "package:firebase_storage/firebase_storage.dart";
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
+import "dart:io";
+import "package:image_picker/image_picker.dart";
 
 Future<void> updateAuctionField(
     String auctionId, String field, dynamic value) async {
   try {
     // Belirli bir alanı güncellemek için
     await FirebaseFirestore.instance
-        .collection('auctions')
+        .collection("auctions")
         .doc(auctionId)
         .update({field: value});
-    print("Auction field updated successfully!");
+    debugPrint("Auction field updated successfully!");
   } catch (e) {
-    print("Failed to update auction field: $e");
+    debugPrint("Failed to update auction field: $e");
   }
 }
 
 Future<void> updateAuction(AuctionModel auction) async {
   try {
-    // "auctions" koleksiyonunda id'si verilen belgeyi bulup günceller
+    // "auctions" koleksiyonunda id"si verilen belgeyi bulup günceller
     await FirebaseFirestore.instance
-        .collection('auctions')
+        .collection("auctions")
         .doc(auction.id)
         .update(auction.toMap());
-    print("Auction updated successfully!");
+    debugPrint("Auction updated successfully!");
   } catch (e) {
-    print("Failed to update auction: $e");
+    debugPrint("Failed to update auction: $e");
   }
 }
 
@@ -36,11 +37,11 @@ Future<void> uploadAuctionWithImages(
   try {
     List<String> downloadUrls = [];
 
-    // Her bir resmi Firebase Storage'a yükle
+    // Her bir resmi Firebase Storage"a yükle
     for (var imageFile in imageFiles) {
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child('auction_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+          .child("auction_images/${DateTime.now().millisecondsSinceEpoch}.jpg");
 
       // Resmi yükleyin
       final uploadTask = await storageRef.putFile(File(imageFile.path));
@@ -50,11 +51,11 @@ Future<void> uploadAuctionWithImages(
         final downloadUrl = await storageRef.getDownloadURL();
         downloadUrls.add(downloadUrl);
       } else {
-        throw Exception("Resim yüklenemedi: ${uploadTask.state}");
+        throw Exception("Image could not loaded: ${uploadTask.state}");
       }
     }
 
-    // Tüm resimler yüklendikten sonra URL'leri modele ekleyin
+    // Tüm resimler yüklendikten sonra URL"leri modele ekleyin
     final updatedAuction = AuctionModel(
       id: auction.id,
       name: auction.name,
@@ -67,14 +68,14 @@ Future<void> uploadAuctionWithImages(
       isAuctionEnd: false,
     );
 
-    // Firestore'a ekleyin
+    // Firestore"a ekleyin
     await FirebaseFirestore.instance
-        .collection('auctions')
+        .collection("auctions")
         .doc(updatedAuction.id)
         .set(updatedAuction.toMap());
 
-    print("Açık artırma başarıyla yüklendi ve Firestore'a kaydedildi.");
+    debugPrint("Auction uploaded and saved successfully!");
   } catch (e) {
-    print("Hata oluştu: $e");
+    debugPrint("Error occured: $e");
   }
 }

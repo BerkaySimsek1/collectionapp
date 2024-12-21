@@ -7,7 +7,7 @@ import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
 import "package:collectionapp/pages/userCollectionPages/user_collection_screen.dart";
 
 class MainPage extends StatelessWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
