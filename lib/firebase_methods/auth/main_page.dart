@@ -1,24 +1,45 @@
 import "package:collectionapp/design_elements.dart";
 import "package:collectionapp/firebase_methods/auth/auth_page.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_main_page.dart";
+import "package:collectionapp/pages/user_profile_page.dart";
 import "package:flutter/material.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
 import "package:collectionapp/pages/userCollectionPages/user_collection_screen.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, authSnapshot) {
+        if (authSnapshot.hasData) {
+          final user = authSnapshot.data;
 
-    return StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            // if the user has already signed in
-            return Scaffold(
+          // Kullanıcı bilgilerini Firestore'dan çekiyoruz
+          return StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(user!.uid)
+                .snapshots(),
+            builder: (context, userSnapshot) {
+              if (userSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                return const Center(child: Text("User data not found."));
+              }
+
+              final userData =
+                  userSnapshot.data!.data() as Map<String, dynamic>;
+              final firstName = userData['firstName'] ?? 'Unknown';
+              final lastName = userData['lastName'] ?? 'User';
+
+              return Scaffold(
                 backgroundColor: Colors.grey[200],
                 body: Padding(
                   padding:
@@ -28,8 +49,41 @@ class MainPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // Karşılama Mesajı
-                        Text("Welcome, ${user?.email}!",
-                            style: ProjectTextStyles.appBarTextStyle),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "Welcome, $firstName $lastName!",
+                                style: ProjectTextStyles.appBarTextStyle,
+                                overflow:
+                                    TextOverflow.clip, // Uzun yazıları kes
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.account_circle,
+                                      size: 36, color: Colors.grey),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              UserProfilePage()),
+                                    );
+                                  },
+                                ),
+                                const Text(
+                                  "Profile",
+                                  style: TextStyle(
+                                      fontSize: 10, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
                         const SizedBox(height: 8),
                         Text(
                           "Here you can manage your auctions, view collections, and connect with others.",
@@ -64,7 +118,7 @@ class MainPage extends StatelessWidget {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return UserCollectionsScreen(
-                                      userId: user!.uid);
+                                      userId: user.uid);
                                 }));
                               },
                             ),
@@ -98,11 +152,15 @@ class MainPage extends StatelessWidget {
                     "Log Out",
                     style: ProjectTextStyles.buttonTextStyle,
                   ),
-                ));
-          } else {
-            return const AuthPage(); // if the user has not signed in yet
-          }
-        });
+                ),
+              );
+            },
+          );
+        } else {
+          return const AuthPage();
+        }
+      },
+    );
   }
 
   // Card Buton Widget"ı
