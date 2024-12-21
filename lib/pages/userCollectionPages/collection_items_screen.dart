@@ -1,27 +1,25 @@
-import 'dart:io';
-
-import 'package:collectionapp/design_elements.dart';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path_provider/path_provider.dart'; // Kalıcı dosyalar için gerekli
-import 'package:collectionapp/pages/userCollectionPages/item_details_screen.dart';
-import 'package:collectionapp/pages/userCollectionPages/add_item_screen.dart';
+import "dart:io";
+import "package:collectionapp/design_elements.dart";
+import "package:flutter/material.dart";
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:path_provider/path_provider.dart";
+import "package:collectionapp/pages/userCollectionPages/item_details_screen.dart";
+import "package:collectionapp/pages/userCollectionPages/add_item_screen.dart";
 
 class CollectionItemsScreen extends StatelessWidget {
   final String userId;
   final String collectionName;
 
   const CollectionItemsScreen({
-    Key? key,
+    super.key,
     required this.userId,
     required this.collectionName,
-  }) : super(key: key);
+  });
 
   Future<String> _ensureLocalCopy(String filePath) async {
-    // Eğer dosya geçiciyse, kalıcı bir yere kopyala
     final appDir = await getApplicationDocumentsDirectory();
-    final fileName = filePath.split('/').last;
-    final newFilePath = '${appDir.path}/$fileName';
+    final fileName = filePath.split("/").last;
+    final newFilePath = "${appDir.path}/$fileName";
 
     final file = File(filePath);
     if (await file.exists()) {
@@ -30,20 +28,22 @@ class CollectionItemsScreen extends StatelessWidget {
       }
       return newFilePath;
     } else {
-      return ''; // Dosya mevcut değilse boş bir yol döndür
+      return "";
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[200],
-        appBar: ProjectAppbar(
-          titletext: "$collectionName Koleksiyonu",
-        ),
-        body: StreamBuilder(
+      backgroundColor: Colors.grey[200],
+      appBar: ProjectAppbar(
+        titletext: "$collectionName Koleksiyonu",
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: StreamBuilder(
           stream: FirebaseFirestore.instance
-              .collection('userCollections')
+              .collection("userCollections")
               .doc(userId)
               .collection(collectionName)
               .snapshots(),
@@ -54,13 +54,11 @@ class CollectionItemsScreen extends StatelessWidget {
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
               return Center(
-                  child: Text(
-                'No items added yet.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[700],
+                child: Text(
+                  "No items added yet.",
+                  style: ProjectTextStyles.subtitleTextStyle,
                 ),
-              ));
+              );
             }
 
             final items = snapshot.data!.docs;
@@ -69,84 +67,121 @@ class CollectionItemsScreen extends StatelessWidget {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                final photos = item['Photos'] as List<dynamic>?;
+                final photos = item["Photos"] as List<dynamic>?;
 
                 return FutureBuilder<String>(
                   future: photos != null && photos.isNotEmpty
                       ? _ensureLocalCopy(photos[0])
-                      : Future.value(''),
+                      : Future.value(""),
                   builder: (context, fileSnapshot) {
                     if (fileSnapshot.connectionState ==
                         ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     }
 
-                    final localPath = fileSnapshot.data ?? '';
+                    final localPath = fileSnapshot.data ?? "";
 
-                    return ListTile(
-                      leading: SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: photos != null && photos.isNotEmpty
-                              ? Image.network(
-                                  photos[0].toString(),
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                )
-                              : localPath.isNotEmpty
-                                  ? Image.file(
-                                      File(localPath.toString()),
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : const Icon(Icons.broken_image)),
-                      title: Text(item['İsim'] ?? 'İsimsiz Ürün'),
-                      trailing: PopupMenuButton<String>(
-                        onSelected: (value) {
-                          if (value == 'Düzenle') {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddItemScreen(
-                                  userId: userId,
-                                  collectionName: collectionName,
-                                ),
-                              ),
-                            );
-                          } else if (value == 'Sil') {
-                            FirebaseFirestore.instance
-                                .collection('userCollections')
-                                .doc(userId)
-                                .collection(collectionName)
-                                .doc(item.id)
-                                .delete();
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'Düzenle',
-                            child: Text('Düzenle'),
-                          ),
-                          const PopupMenuItem(
-                            value: 'Sil',
-                            child: Text('Sil'),
-                          ),
-                        ],
+                    return Card(
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ItemDetailsScreen(
-                              userId: userId,
-                              collectionName: collectionName,
-                              itemId: item.id,
-                            ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: photos != null && photos.isNotEmpty
+                                ? Image.network(
+                                    photos[0].toString(),
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.deepPurple,
+                                          value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(Icons.error,
+                                                color: Colors.red),
+                                  )
+                                : localPath.isNotEmpty
+                                    ? Image.file(
+                                        File(localPath.toString()),
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : const Icon(Icons.broken_image),
                           ),
-                        );
-                      },
+                        ),
+                        title: Text(
+                          item["İsim"] ?? "İsimsiz Ürün",
+                          style: ProjectTextStyles.cardHeaderTextStyle,
+                        ),
+                        trailing: PopupMenuButton<String>(
+                          onSelected: (value) {
+                            if (value == "Düzenle") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddItemScreen(
+                                    userId: userId,
+                                    collectionName: collectionName,
+                                  ),
+                                ),
+                              );
+                            } else if (value == "Sil") {
+                              FirebaseFirestore.instance
+                                  .collection("userCollections")
+                                  .doc(userId)
+                                  .collection(collectionName)
+                                  .doc(item.id)
+                                  .delete();
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: "Düzenle",
+                              child: Text("Düzenle"),
+                            ),
+                            const PopupMenuItem(
+                              value: "Sil",
+                              child: Text("Sil"),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ItemDetailsScreen(
+                                userId: userId,
+                                collectionName: collectionName,
+                                itemId: item.id,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     );
                   },
                 );
@@ -154,21 +189,26 @@ class CollectionItemsScreen extends StatelessWidget {
             );
           },
         ),
-        floatingActionButton: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddItemScreen(
-                  userId: userId,
-                  collectionName: collectionName,
-                ),
+      ),
+      floatingActionButton: ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddItemScreen(
+                userId: userId,
+                collectionName: collectionName,
               ),
-            );
-          },
-          child: const AddFloatingDecoration(
-            buttonText: "Add Item",
-          ),
-        ));
+            ),
+          );
+        },
+        style: ProjectDecorations.elevatedButtonStyle,
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          "Add Item",
+          style: ProjectTextStyles.buttonTextStyle,
+        ),
+      ),
+    );
   }
 }

@@ -1,7 +1,7 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import "dart:io";
+import "package:flutter/material.dart";
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:collectionapp/design_elements.dart";
 
 class ItemDetailsScreen extends StatelessWidget {
   final String userId;
@@ -19,31 +19,35 @@ class ItemDetailsScreen extends StatelessWidget {
     required String fieldName,
     required dynamic fieldValue,
   }) {
-    if (fieldValue is String) {
-      return ListTile(
-        title: Text(fieldName),
-        subtitle: Text(fieldValue),
-      );
-    } else if (fieldValue is int || fieldValue is double) {
-      return ListTile(
-        title: Text(fieldName),
-        subtitle: Text(fieldValue.toString()),
-      );
-    } else {
-      return ListTile(
-        title: Text(fieldName),
-        subtitle: const Text('Desteklenmeyen alan türü'),
-      );
-    }
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        title: Text(
+          fieldName,
+          style: ProjectTextStyles.cardHeaderTextStyle,
+        ),
+        subtitle: Text(
+          fieldValue.toString(),
+          style: ProjectTextStyles.cardDescriptionTextStyle,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ürün Detayları')),
+      backgroundColor: Colors.grey[200],
+      appBar: const ProjectAppbar(
+        titletext: "Item Details",
+      ),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
-            .collection('userCollections')
+            .collection("userCollections")
             .doc(userId)
             .collection(collectionName)
             .doc(itemId)
@@ -54,18 +58,22 @@ class ItemDetailsScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || !snapshot.data!.exists) {
-            return const Center(child: Text('Ürün bulunamadı.'));
+            return Center(
+              child: Text(
+                "Item not found",
+                style: ProjectTextStyles.subtitleTextStyle,
+              ),
+            );
           }
 
           final item = snapshot.data!.data() as Map<String, dynamic>;
-          final photos = item['Photos'] as List<dynamic>?;
+          final photos = item["Photos"] as List<dynamic>?;
 
-          // Fotoğrafları ve diğer alanları dinamik olarak göster
           final fieldWidgets = item.entries.map((entry) {
             final fieldName = entry.key;
             final fieldValue = entry.value;
 
-            if (fieldName == 'Photos') return const SizedBox.shrink();
+            if (fieldName == "Photos") return const SizedBox.shrink();
 
             return _buildFieldWidget(
               fieldName: fieldName,
@@ -77,8 +85,19 @@ class ItemDetailsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             children: [
               if (photos != null && photos.isNotEmpty)
-                SizedBox(
-                  height: 200,
+                Container(
+                  height: 250,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 2,
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: photos.length,
@@ -86,19 +105,41 @@ class ItemDetailsScreen extends StatelessWidget {
                       final photo = photos[index];
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: photo.startsWith('http')
-                            ? Image.network(
-                                photo, // URL ise network
-                                height: 200,
-                                width: 200,
-                                fit: BoxFit.cover,
-                              )
-                            : Image.file(
-                                File(photo), // Lokal dosya ise file
-                                height: 200,
-                                width: 200,
-                                fit: BoxFit.cover,
-                              ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: photo.startsWith('http')
+                              ? Image.network(
+                                  photo,
+                                  height: 250,
+                                  width: 250,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.error,
+                                          color: Colors.red),
+                                )
+                              : Image.file(
+                                  File(photo),
+                                  height: 250,
+                                  width: 250,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                       );
                     },
                   ),

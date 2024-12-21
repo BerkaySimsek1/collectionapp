@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -45,9 +44,9 @@ class _CountdownTimerState extends State<CountdownTimer> {
           .collection('auctions')
           .doc(widget.auctionId)
           .update({'isAuctionEnd': true});
-      print("Auction ended successfully!");
+      debugPrint("Auction ended successfully!");
     } catch (e) {
-      print("Failed to end auction: $e");
+      debugPrint("Failed to end auction: $e");
     }
   }
 

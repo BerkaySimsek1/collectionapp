@@ -32,7 +32,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     final isMember = await _groupDetailService.isUserMember(
         widget.group.id, _currentUser!.uid);
     final joinRequest = await _groupDetailService.getJoinRequest(
-        widget.group.id, _currentUser!.uid);
+        widget.group.id, _currentUser.uid);
     setState(() {
       _isMember = isMember;
       hasJoinRequest = joinRequest != null;

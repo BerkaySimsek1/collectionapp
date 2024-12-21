@@ -1,8 +1,8 @@
-import 'package:collectionapp/design_elements.dart';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'add_collection_screen.dart';
-import 'collection_items_screen.dart';
+import "package:collectionapp/design_elements.dart";
+import "package:flutter/material.dart";
+import "package:cloud_firestore/cloud_firestore.dart";
+import "add_collection_screen.dart";
+import "collection_items_screen.dart";
 
 class UserCollectionsScreen extends StatelessWidget {
   final String userId;
@@ -12,107 +12,99 @@ class UserCollectionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const ProjectAppbar(
-        titletext: "My Collections",
-      ),
-      backgroundColor: Colors.grey[200],
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Üstte Karşılama Mesajı
-            const SizedBox(height: 8),
-            Text(
-              'You can manage all your collections or add new ones here.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[700],
+        appBar: const ProjectAppbar(
+          titletext: "My Collections",
+        ),
+        backgroundColor: Colors.grey[200],
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Üstte Karşılama Mesajı
+              Text(
+                "You can manage all your collections or add new ones here.",
+                style: ProjectTextStyles.subtitleTextStyle,
               ),
-            ),
-            const SizedBox(height: 16),
-            // Koleksiyonlar Listesi
-            Expanded(
-              child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('userCollections')
-                    .doc(userId)
-                    .collection('collections')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+              const SizedBox(height: 16),
+              // Koleksiyonlar Listesi
+              Expanded(
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("userCollections")
+                      .doc(userId)
+                      .collection("collections")
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'Henüz bir koleksiyon eklenmemiş.',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    );
-                  }
-
-                  final collections = snapshot.data!.docs;
-                  // Kaydırılabilir sekme
-                  return ListView.builder(
-                    itemCount: collections.length,
-                    itemBuilder: (context, index) {
-                      final collection = collections[index];
-                      // Koleksiyon kartları
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          title: Text(
-                            collection['name'],
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          trailing: const Icon(Icons.arrow_forward_ios,
-                              color: Colors.deepPurple),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CollectionItemsScreen(
-                                  userId: userId,
-                                  collectionName: collection['name'],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Text("No collections added yet",
+                            style: ProjectTextStyles.subtitleTextStyle),
                       );
-                    },
-                  );
-                },
+                    }
+
+                    final collections = snapshot.data!.docs;
+                    // Kaydırılabilir sekme
+                    return ListView.builder(
+                      itemCount: collections.length,
+                      itemBuilder: (context, index) {
+                        final collection = collections[index];
+                        // Koleksiyon kartları
+                        return Card(
+                          elevation: 2,
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 4),
+                            title: Text(
+                              collection["name"],
+                              style: ProjectTextStyles.cardHeaderTextStyle,
+                            ),
+                            trailing: const Icon(Icons.arrow_forward_ios,
+                                color: Colors.deepPurple),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CollectionItemsScreen(
+                                    userId: userId,
+                                    collectionName: collection["name"],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      // Yeni Koleksiyon Ekleme Butonu
-      floatingActionButton: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddCollectionScreen(userId: userId),
-            ),
-          );
-        },
-        child: const AddFloatingDecoration(
-          buttonText: "Add Collection",
-        ),
-      ),
-    );
+        // Yeni Koleksiyon Ekleme Butonu
+        floatingActionButton: ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddCollectionScreen(userId: userId),
+              ),
+            );
+          },
+          style: ProjectDecorations.elevatedButtonStyle,
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: const Text(
+            "Add Collection",
+            style: ProjectTextStyles.buttonTextStyle,
+          ),
+        ));
   }
 }

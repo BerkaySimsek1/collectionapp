@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
-  const RegisterPage({Key? key, required this.showLoginPage}) : super(key: key);
+  const RegisterPage({super.key, required this.showLoginPage});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -138,7 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
             keyboardType: keyboardType,
             decoration: InputDecoration(
               hintText: hint,
-              border: OutlineInputBorder(
+              border: const OutlineInputBorder(
                 borderSide: BorderSide.none,
               ),
             ),
@@ -164,7 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
             obscureText: true,
             decoration: InputDecoration(
               hintText: hint,
-              border: OutlineInputBorder(
+              border: const OutlineInputBorder(
                 borderSide: BorderSide.none,
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:collectionapp/design_elements.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -48,10 +49,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
-      appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
-        elevation: 0,
-      ),
+      appBar: const ProjectAppbar(titletext: "Forgot Password"),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

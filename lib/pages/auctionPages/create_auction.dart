@@ -1,11 +1,11 @@
-import 'dart:async';
-import 'dart:io';
-import 'package:collectionapp/design_elements.dart';
-import 'package:collectionapp/firebase_methods/firestore_methods/auction_firestoremethods.dart';
-import 'package:collectionapp/models/AuctionModel.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import "dart:async";
+import "dart:io";
+import "package:collectionapp/design_elements.dart";
+import "package:collectionapp/firebase_methods/firestore_methods/auction_firestoremethods.dart";
+import "package:collectionapp/models/AuctionModel.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
+import "package:image_picker/image_picker.dart";
 
 class AuctionUploadScreen extends StatefulWidget {
   const AuctionUploadScreen({Key? key}) : super(key: key);
@@ -107,7 +107,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   "Add your auction details",
@@ -162,27 +162,51 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                       value!.isEmpty ? "This field is required" : null,
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const Text(
-                      "Duration:",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 10),
-                    DropdownButton<int>(
-                      value: _selectedDays,
-                      items: const [
-                        DropdownMenuItem(value: 1, child: Text("1 Day")),
-                        DropdownMenuItem(value: 2, child: Text("2 Days")),
-                        DropdownMenuItem(value: 3, child: Text("3 Days")),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedDays = value!;
-                        });
-                      },
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Duration:",
+                        style: ProjectTextStyles
+                            .cardHeaderTextStyle, // Use a consistent text style
+                      ),
+                      const SizedBox(
+                          width: 16), // Adjust spacing for better alignment
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Colors.black.withOpacity(0.8),
+                          ),
+                        ),
+                        child: DropdownButton<int>(
+                          value: _selectedDays,
+                          underline: Container(), // Remove default underline
+                          items: const [
+                            DropdownMenuItem(value: 1, child: Text("1 Day")),
+                            DropdownMenuItem(value: 2, child: Text("2 Days")),
+                            DropdownMenuItem(value: 3, child: Text("3 Days")),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedDays = value!;
+                            });
+                          },
+                          style: ProjectTextStyles
+                              .subtitleTextStyle, // Consistent text style
+                          dropdownColor:
+                              Colors.white, // Match dropdown color with theme
+                          icon: const Icon(Icons.arrow_drop_down,
+                              color: Colors.deepPurple),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
@@ -202,20 +226,21 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                     elevation: 4,
                     backgroundColor: Colors.deepPurple,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Wrap(
+                  runSpacing: 10,
                   spacing: 10,
                   children: _selectedImages
                       .map((image) => ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(8),
                             child: Image.file(
                               File(image.path),
-                              width: 100,
-                              height: 100,
+                              width: 110,
+                              height: 110,
                               fit: BoxFit.cover,
                             ),
                           ))
