@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
 
 class SmGroupAdmin extends StatefulWidget {
   final String groupId;
@@ -13,8 +13,8 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
   Future<List<Map<String, dynamic>>> _getJoinRequests() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('group_join_requests')
-          .where('groupId', isEqualTo: widget.groupId)
+          .collection("group_join_requests")
+          .where("groupId", isEqualTo: widget.groupId)
           .get();
 
       List<Map<String, dynamic>> joinRequests = [];
@@ -22,25 +22,25 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
       for (var doc in querySnapshot.docs) {
         var requestData = doc.data() as Map<String, dynamic>;
         var userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(requestData['userId'])
+            .collection("users")
+            .doc(requestData["userId"])
             .get();
 
         if (userDoc.exists) {
           var userData = userDoc.data() as Map<String, dynamic>;
           joinRequests.add({
-            'userId': requestData['userId'],
-            'firstName': userData['firstName'],
-            'lastName': userData['lastName'],
-            'status': requestData['status'],
-            'requestedAt': requestData['requestedAt'],
+            "userId": requestData["userId"],
+            "firstName": userData["firstName"],
+            "lastName": userData["lastName"],
+            "status": requestData["status"],
+            "requestedAt": requestData["requestedAt"],
           });
         }
       }
 
       return joinRequests;
     } catch (e) {
-      print("Error retrieving join requests: $e");
+      debugPrint("Error retrieving join requests: $e");
       return [];
     }
   }
@@ -49,21 +49,21 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
     try {
       // Update status in join_requests collection
       await FirebaseFirestore.instance
-          .collection('group_join_requests')
+          .collection("group_join_requests")
           .doc(widget.groupId)
-          .update({'status': status});
+          .update({"status": status});
 
-      if (status == 'accepted') {
-        // Add user to group's members
+      if (status == "accepted") {
+        // Add user to group"s members
         await FirebaseFirestore.instance
-            .collection('groups')
+            .collection("groups")
             .doc(widget.groupId)
             .update({
-          'members': FieldValue.arrayUnion([userId]),
+          "members": FieldValue.arrayUnion([userId]),
         });
       }
     } catch (e) {
-      print("Error updating join request status: $e");
+      debugPrint("Error updating join request status: $e");
     }
   }
 
@@ -71,7 +71,7 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Grup Yönetici'),
+        title: const Text("Grup Yönetici"),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _getJoinRequests(),
@@ -87,20 +87,20 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
                 var request = snapshot.data![index];
                 return ListTile(
                   title: Text(
-                      'Name: ${request['firstName']} ${request['lastName']}'),
-                  subtitle: Text('Status: ${request['status']}'),
+                      "Name: ${request["firstName"]} ${request["lastName"]}"),
+                  subtitle: Text("Status: ${request["status"]}"),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.check, color: Colors.green),
                         onPressed: () => _updateJoinRequestStatus(
-                            request['userId'], 'accepted'),
+                            request["userId"], "accepted"),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.red),
                         onPressed: () => _updateJoinRequestStatus(
-                            request['userId'], 'declined'),
+                            request["userId"], "declined"),
                       ),
                     ],
                   ),
@@ -108,7 +108,7 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
               },
             );
           } else {
-            return const Center(child: Text('No join requests found.'));
+            return const Center(child: Text("No join requests found."));
           }
         },
       ),

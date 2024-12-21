@@ -1,10 +1,10 @@
-import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import "dart:async";
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
 
 class CountdownTimer extends StatefulWidget {
   final DateTime endTime;
-  final String auctionId; // Auction ID'yi CountdownTimer'a ekledik
+  final String auctionId; // Auction ID"yi CountdownTimer"a ekledik
 
   const CountdownTimer(
       {super.key, required this.endTime, required this.auctionId});
@@ -41,9 +41,9 @@ class _CountdownTimerState extends State<CountdownTimer> {
   Future<void> _endAuction() async {
     try {
       await FirebaseFirestore.instance
-          .collection('auctions')
+          .collection("auctions")
           .doc(widget.auctionId)
-          .update({'isAuctionEnd': true});
+          .update({"isAuctionEnd": true});
     } catch (e) {
       debugPrint("Failed to end auction: $e");
     }
@@ -51,7 +51,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Timer'ı iptal et
+    _timer?.cancel(); // Timer"ı iptal et
     super.dispose();
   }
 

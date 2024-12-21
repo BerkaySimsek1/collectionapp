@@ -1,10 +1,12 @@
 import 'dart:io';
-import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
 
 class CreateGroupPage extends StatefulWidget {
+  const CreateGroupPage({super.key});
+
   @override
   _CreateGroupPageState createState() => _CreateGroupPageState();
 }
@@ -52,7 +54,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Grup başarıyla oluşturuldu!')),
+          const SnackBar(content: Text('Grup başarıyla oluşturuldu!')),
         );
 
         Navigator.pop(context);
@@ -68,11 +70,11 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Yeni Grup Oluştur'),
+        title: const Text('Yeni Grup Oluştur'),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -89,7 +91,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                     ),
                     child: _coverImage != null
                         ? Image.file(_coverImage!, fit: BoxFit.cover)
-                        : Column(
+                        : const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.add_photo_alternate, size: 50),
@@ -98,11 +100,11 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                           ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // Grup Adı
                 TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Grup Adı',
                     border: OutlineInputBorder(),
                   ),
@@ -114,11 +116,11 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                   },
                   onSaved: (value) => _name = value!,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // Açıklama
                 TextFormField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Açıklama',
                     border: OutlineInputBorder(),
                   ),
@@ -131,11 +133,11 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                   },
                   onSaved: (value) => _description = value!,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // Kategori Seçimi
                 DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Kategori',
                     border: OutlineInputBorder(),
                   ),
@@ -152,15 +154,15 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                     });
                   },
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                 // Oluştur Butonu
                 ElevatedButton(
                   onPressed: _createGroup,
-                  child: Text('Grubu Oluştur'),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
+                  child: const Text('Grubu Oluştur'),
                 ),
               ],
             ),

@@ -1,11 +1,11 @@
-import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
-import 'package:collectionapp/models/GroupModel.dart';
-import 'package:collectionapp/models/PostModel.dart';
-import 'package:collectionapp/pages/socialMediaPages/SM_group_admin.dart';
-import 'package:collectionapp/pages/socialMediaPages/comment_bottom_sheet.dart';
-import 'package:collectionapp/pages/socialMediaPages/create_post_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import "package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart";
+import "package:collectionapp/models/GroupModel.dart";
+import "package:collectionapp/models/PostModel.dart";
+import "package:collectionapp/pages/socialMediaPages/SM_group_admin.dart";
+import "package:collectionapp/pages/socialMediaPages/comment_bottom_sheet.dart";
+import "package:collectionapp/pages/socialMediaPages/create_post_widget.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
 
 class GroupDetailPage extends StatefulWidget {
   final Group group;
@@ -19,13 +19,16 @@ class GroupDetailPage extends StatefulWidget {
 class _GroupDetailPageState extends State<GroupDetailPage> {
   final _groupDetailService = GroupDetailService();
   final _currentUser = FirebaseAuth.instance.currentUser;
+
   bool? _isMember;
   bool? hasJoinRequest;
+  String? memberCount;
 
   @override
   void initState() {
     super.initState();
     _initializeStatus();
+    memberCount = widget.group.members.length <= 1 ? "member" : "members";
   }
 
   Future<void> _initializeStatus() async {
@@ -52,7 +55,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         hasJoinRequest = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('İstek gönderilemedi: $e')),
+        SnackBar(content: Text("Failed to send request: $e")),
       );
     }
   }
@@ -67,7 +70,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         children: [
           // Grup Bilgileri
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -92,7 +95,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     const SizedBox(height: 8),
                     Text(widget.group.description),
                     const SizedBox(height: 8),
-                    Text('${widget.group.members.length} üye'),
+                    Text("${widget.group.members.length} $memberCount"),
                   ],
                 ),
                 const Spacer(),
@@ -108,7 +111,14 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                             ),
                           );
                         },
-                        child: const Text("Admin işlemleri"))
+                        child: const Column(
+                          children: [
+                            Text(
+                              "Admin",
+                            ),
+                            Text("Panel"),
+                          ],
+                        ))
                     : const Text("")
               ],
             ),
@@ -118,10 +128,10 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             const Center(child: CircularProgressIndicator())
           else if (!_isMember!)
             hasJoinRequest!
-                ? const Text("İstek Gönderildi")
+                ? const Text("Request send")
                 : ElevatedButton(
                     onPressed: _sendJoinRequest,
-                    child: const Text('Gruba Katılma İsteği Gönder'),
+                    child: const Text("Request to join"),
                   )
           else
             Expanded(
@@ -143,7 +153,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                         }
 
                         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return const Center(child: Text('Henüz gönderi yok'));
+                          return const Center(child: Text("No posts yet."));
                         }
 
                         return ListView.builder(
@@ -176,11 +186,10 @@ class PostWidget extends StatelessWidget {
   final GroupDetailService groupDetailService;
 
   const PostWidget(
-      {Key? key,
+      {super.key,
       required this.post,
       required this.onLike,
-      required this.groupDetailService})
-      : super(key: key);
+      required this.groupDetailService});
 
   void _showComments(BuildContext context) {
     showModalBottomSheet(
@@ -198,7 +207,7 @@ class PostWidget extends StatelessWidget {
               }
 
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('Henüz yorum yok'));
+                return const Center(child: Text("Henüz yorum yok"));
               }
 
               return ListView.builder(
@@ -218,8 +227,8 @@ class PostWidget extends StatelessWidget {
                     title: Text(comment.username),
                     subtitle: Text(comment.content),
                     trailing: Text(
-                      '${comment.createdAt.day}.${comment.createdAt.month} '
-                      '${comment.createdAt.hour}:${comment.createdAt.minute.toString().padLeft(2, '0')}',
+                      "${comment.createdAt.day}.${comment.createdAt.month} "
+                      "${comment.createdAt.hour}:${comment.createdAt.minute.toString().padLeft(2, "0")}",
                     ),
                   );
                 },
@@ -237,7 +246,11 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _currentUser = FirebaseAuth.instance.currentUser;
+    final currentUser = FirebaseAuth.instance.currentUser;
+    // bir like almışsa "like", birden fazla almışsa "likes" yazdırmak için
+    String likeCount = post.likes.length <= 1 ? "like" : "likes";
+    // bir yorum varsa "comment", birden fazla yorum varsa "comments" yazdırmak için
+    String commentCount = post.comments.length <= 1 ? "comment" : "comments";
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
@@ -254,8 +267,8 @@ class PostWidget extends StatelessWidget {
             ),
             title: Text(post.username),
             subtitle: Text(
-                '${post.createdAt.day}.${post.createdAt.month}.${post.createdAt.year} '
-                '${post.createdAt.hour}:${post.createdAt.minute.toString().padLeft(2, '0')}'),
+                "${post.createdAt.day}.${post.createdAt.month}.${post.createdAt.year} "
+                "${post.createdAt.hour}:${post.createdAt.minute.toString().padLeft(2, "0")}"),
           ),
 
           // Gönderi İçeriği
@@ -282,19 +295,21 @@ class PostWidget extends StatelessWidget {
                 IconButton(
                   icon: Icon(
                     Icons.favorite,
-                    color: post.likes.contains(_currentUser!.uid)
+                    color: post.likes.contains(currentUser!.uid)
                         ? Colors.red
                         : Colors.grey,
                   ),
                   onPressed: onLike,
                 ),
-                Text('${post.likes.length} beğeni'),
+                Text(
+                    "${post.likes.length} $likeCount"), // bir like almışsa "like", birden fazla almışsa "likes" yazdırmak için
                 const SizedBox(width: 16),
                 IconButton(
                   icon: const Icon(Icons.comment),
                   onPressed: () => _showComments(context),
                 ),
-                Text('${post.comments.length} yorum'),
+                Text(
+                    "${post.comments.length} $commentCount"), // bir yorum varsa "comment", birden fazla yorum varsa "comments" yazdırmak için
               ],
             ),
           ),

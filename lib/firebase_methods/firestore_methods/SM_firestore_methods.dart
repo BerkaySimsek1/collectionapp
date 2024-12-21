@@ -1,8 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collectionapp/models/GroupModel.dart';
-import 'package:collectionapp/models/PostModel.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
+import "dart:io";
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:firebase_storage/firebase_storage.dart";
+import "package:flutter/material.dart";
+import "package:collectionapp/models/GroupModel.dart";
+import "package:collectionapp/models/PostModel.dart";
 
 class GroupService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -18,12 +19,12 @@ class GroupService {
   }) async {
     try {
       // Benzersiz ID oluştur
-      final groupRef = _firestore.collection('groups').doc();
+      final groupRef = _firestore.collection("groups").doc();
 
       // Kapak resmi yükleme (opsiyonel)
       String? coverImageUrl;
       if (coverImage != null) {
-        final storageRef = _storage.ref().child('group_covers/${groupRef.id}');
+        final storageRef = _storage.ref().child("group_covers/${groupRef.id}");
         await storageRef.putFile(coverImage);
         coverImageUrl = await storageRef.getDownloadURL();
       }
@@ -41,27 +42,27 @@ class GroupService {
         coverImageUrl: coverImageUrl,
       );
 
-      // Firestore'a kaydet
+      // Firestore"a kaydet
       await groupRef.set(group.toMap());
 
       return groupRef.id;
     } catch (e) {
-      print('Grup oluşturma hatası: $e');
+      debugPrint("Failed to create groups: $e");
       rethrow;
     }
   }
 
   // Tüm Grupları Listeleme
   Stream<List<Group>> getGroups() {
-    return _firestore.collection('groups').snapshots().map((snapshot) =>
+    return _firestore.collection("groups").snapshots().map((snapshot) =>
         snapshot.docs.map((doc) => Group.fromMap(doc.data())).toList());
   }
 
   // Belirli Kategorideki Grupları Listeleme
   Stream<List<Group>> getGroupsByCategory(String category) {
     return _firestore
-        .collection('groups')
-        .where('category', isEqualTo: category)
+        .collection("groups")
+        .where("category", isEqualTo: category)
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => Group.fromMap(doc.data())).toList());
@@ -70,8 +71,8 @@ class GroupService {
   // Kullanıcının Üye Olduğu Grupları Listeleme
   Stream<List<Group>> getUserGroups(String userId) {
     return _firestore
-        .collection('groups')
-        .where('members', arrayContains: userId)
+        .collection("groups")
+        .where("members", arrayContains: userId)
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => Group.fromMap(doc.data())).toList());
@@ -84,27 +85,27 @@ class GroupDetailService {
   Future<void> addCommentToPost(String postId, Comment comment) async {
     try {
       final postRef =
-          FirebaseFirestore.instance.collection('posts').doc(postId);
+          FirebaseFirestore.instance.collection("posts").doc(postId);
 
       await postRef.update({
-        'comments': FieldValue.arrayUnion([comment.toMap()])
+        "comments": FieldValue.arrayUnion([comment.toMap()])
       });
     } catch (e) {
-      print('Error adding comment: $e');
-      throw Exception('Failed to add comment');
+      debugPrint("Error adding comment: $e");
+      throw Exception("Failed to add comment");
     }
   }
 
   Stream<List<Comment>> getPostComments(String groupId, String postId) {
     return FirebaseFirestore.instance
-        .collection('posts')
+        .collection("posts")
         .doc(postId)
         .snapshots()
         .map((snapshot) {
       final data = snapshot.data();
-      if (data == null || data['comments'] == null) return [];
+      if (data == null || data["comments"] == null) return [];
 
-      return (data['comments'] as List)
+      return (data["comments"] as List)
           .map((commentMap) => Comment.fromMap(commentMap))
           .toList();
     });
@@ -112,11 +113,11 @@ class GroupDetailService {
 
   // Gruba Katılma İsteği Gönderme
   Future<void> sendJoinRequest(String groupId, String userId) async {
-    await _firestore.collection('group_join_requests').doc(groupId).set({
-      'groupId': groupId,
-      'userId': userId,
-      'status': 'pending',
-      'requestedAt': FieldValue.serverTimestamp(),
+    await _firestore.collection("group_join_requests").doc(groupId).set({
+      "groupId": groupId,
+      "userId": userId,
+      "status": "pending",
+      "requestedAt": FieldValue.serverTimestamp(),
     });
   }
 
@@ -124,7 +125,7 @@ class GroupDetailService {
       String groupId, String userId) async {
     try {
       DocumentSnapshot documentSnapshot =
-          await _firestore.collection('group_join_requests').doc(groupId).get();
+          await _firestore.collection("group_join_requests").doc(groupId).get();
 
       if (documentSnapshot.exists && documentSnapshot.data() != null) {
         Map<String, dynamic> requestData =
@@ -134,15 +135,15 @@ class GroupDetailService {
         return null; // Join request not found
       }
     } catch (e) {
-      print("Error retrieving join request: $e");
+      debugPrint("Error retrieving join request: $e");
       return null;
     }
   }
 
   // Kullanıcının Gruba Üyelik Durumunu Kontrol Etme
   Future<bool> isUserMember(String groupId, String userId) async {
-    final groupDoc = await _firestore.collection('groups').doc(groupId).get();
-    final members = List<String>.from(groupDoc['members'] ?? []);
+    final groupDoc = await _firestore.collection("groups").doc(groupId).get();
+    final members = List<String>.from(groupDoc["members"] ?? []);
     return members.contains(userId);
   }
 
@@ -162,12 +163,12 @@ class GroupDetailService {
       if (imageFile != null) {
         final storageRef = _storage
             .ref()
-            .child('post_images/${DateTime.now().millisecondsSinceEpoch}');
+            .child("post_images/${DateTime.now().millisecondsSinceEpoch}");
         await storageRef.putFile(imageFile);
         imageUrl = await storageRef.getDownloadURL();
       }
 
-      final postRef = _firestore.collection('posts').doc();
+      final postRef = _firestore.collection("posts").doc();
 
       final post = Post(
         id: postRef.id,
@@ -182,7 +183,7 @@ class GroupDetailService {
 
       await postRef.set(post.toMap());
     } catch (e) {
-      print('Gönderi paylaşma hatası: $e');
+      debugPrint("Falied to post: $e");
       rethrow;
     }
   }
@@ -190,9 +191,9 @@ class GroupDetailService {
   // Grubun Gönderilerini Getirme
   Stream<List<Post>> getGroupPosts(String groupId) {
     return _firestore
-        .collection('posts')
-        .where('groupId', isEqualTo: groupId)
-        .orderBy('createdAt', descending: true)
+        .collection("posts")
+        .where("groupId", isEqualTo: groupId)
+        .orderBy("createdAt", descending: true)
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => Post.fromMap(doc.data())).toList());
@@ -200,16 +201,16 @@ class GroupDetailService {
 
   // Gönderiyi Beğenme/Beğenmekten Çıkma
   Future<void> toggleLike(String postId, String userId) async {
-    final postRef = _firestore.collection('posts').doc(postId);
+    final postRef = _firestore.collection("posts").doc(postId);
 
     await _firestore.runTransaction((transaction) async {
       final postSnapshot = await transaction.get(postRef);
 
       if (!postSnapshot.exists) {
-        throw Exception('Post does not exist');
+        throw Exception("Post does not exist");
       }
 
-      final likes = List<String>.from(postSnapshot['likes'] ?? []);
+      final likes = List<String>.from(postSnapshot["likes"] ?? []);
 
       if (likes.contains(userId)) {
         likes.remove(userId);
@@ -217,7 +218,7 @@ class GroupDetailService {
         likes.add(userId);
       }
 
-      transaction.update(postRef, {'likes': likes});
+      transaction.update(postRef, {"likes": likes});
     });
   }
 }
