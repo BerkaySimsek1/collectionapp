@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collectionapp/design_elements.dart';
-import 'package:collectionapp/models/predefined_collections.dart';
-import 'package:flutter/material.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
+import "package:collectionapp/design_elements.dart";
+import "package:collectionapp/models/predefined_collections.dart";
 
 class AddCollectionScreen extends StatefulWidget {
   final String userId;
@@ -9,7 +9,6 @@ class AddCollectionScreen extends StatefulWidget {
   const AddCollectionScreen({super.key, required this.userId});
 
   @override
-  // ignore: library_private_types_in_public_api
   _AddCollectionScreenState createState() => _AddCollectionScreenState();
 }
 
@@ -18,14 +17,11 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   String? _selectedCollection;
   final TextEditingController _customCollectionController =
       TextEditingController();
-
   List<Map<String, String>> _customFields = [];
 
   void _onCollectionTypeChanged(String? value) {
     setState(() {
       _selectedCollection = value;
-
-      // Önceden tanımlı koleksiyon seçildiyse özel alanları otomatik ekle
       if (predefinedCollections.containsKey(value)) {
         _customFields = predefinedCollections[value]!;
       } else {
@@ -36,18 +32,17 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
 
   Future<void> _saveCollection(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      final collectionName = _selectedCollection == 'Diğer'
+      final collectionName = _selectedCollection == "Diğer"
           ? _customCollectionController.text.trim()
           : _selectedCollection;
 
-      // Firestore’a koleksiyon kaydet
       await FirebaseFirestore.instance
-          .collection('userCollections')
+          .collection("userCollections")
           .doc(widget.userId)
-          .collection('collections')
+          .collection("collections")
           .add({
-        'name': collectionName,
-        'customFields': _customFields,
+        "name": collectionName,
+        "customFields": _customFields,
       });
 
       Navigator.pop(context);
@@ -57,6 +52,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: const ProjectAppbar(
         titletext: "Add New Collection",
       ),
@@ -64,37 +60,59 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Koleksiyon Türü'),
+                decoration: InputDecoration(
+                  labelText: "Collection Type",
+                  labelStyle: ProjectTextStyles.subtitleTextStyle,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
                 value: _selectedCollection,
                 items: [
                   ...predefinedCollections.keys.map((type) =>
                       DropdownMenuItem(value: type, child: Text(type))),
-                  const DropdownMenuItem(value: 'Diğer', child: Text('Diğer')),
+                  const DropdownMenuItem(value: "Diğer", child: Text("Diğer")),
                 ],
                 onChanged: _onCollectionTypeChanged,
                 validator: (value) =>
-                    value == null ? 'Lütfen bir koleksiyon seçin.' : null,
+                    value == null ? "Please select collection type" : null,
               ),
-              if (_selectedCollection == 'Diğer')
+              if (_selectedCollection == "Diğer") ...[
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _customCollectionController,
-                  decoration:
-                      const InputDecoration(labelText: 'Koleksiyon İsmi'),
+                  decoration: InputDecoration(
+                    labelText: "Collection Name",
+                    labelStyle: ProjectTextStyles.subtitleTextStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
                   validator: (value) {
-                    if (_selectedCollection == 'Diğer' &&
+                    if (_selectedCollection == "Diğer" &&
                         (value == null || value.isEmpty)) {
-                      return 'Lütfen bir koleksiyon ismi girin.';
+                      return "Please enter collection name";
                     }
                     return null;
                   },
                 ),
+              ],
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => _saveCollection(context),
-                child: const Text('Kaydet'),
+                style: ProjectDecorations.elevatedButtonStyle,
+                child: const Text(
+                  "Save",
+                  style: ProjectTextStyles.buttonTextStyle,
+                ),
               ),
             ],
           ),

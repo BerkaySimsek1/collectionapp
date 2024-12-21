@@ -1,11 +1,11 @@
-import 'package:collectionapp/design_elements.dart';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collectionapp/countdown_timer.dart';
-import 'package:collectionapp/models/AuctionModel.dart';
-import 'package:collectionapp/models/UserInfoModel.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:photo_view/photo_view.dart';
+import "package:collectionapp/design_elements.dart";
+import "package:flutter/material.dart";
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:collectionapp/countdown_timer.dart";
+import "package:collectionapp/models/AuctionModel.dart";
+import "package:collectionapp/models/UserInfoModel.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:photo_view/photo_view.dart";
 
 class AuctionDetail extends StatefulWidget {
   final AuctionModel auction;
@@ -35,7 +35,7 @@ class _AuctionDetailState extends State<AuctionDetail> {
   void getUserInfo(String userId, Function(UserInfoModel) onSuccess) async {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('users')
+          .collection("users")
           .doc(userId)
           .get();
 
@@ -79,16 +79,16 @@ class _AuctionDetailState extends State<AuctionDetail> {
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(8),
           ),
           title: const Text(
-            'Place Your Bid',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            "Place Your Bid",
+            style: ProjectTextStyles.appBarTextStyle,
           ),
           content: TextField(
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              hintText: 'Minimum Bid: \$${widget.auction.startingPrice + 1}',
+              hintText: "Minimum Bid: \$${widget.auction.startingPrice + 1}",
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -100,17 +100,22 @@ class _AuctionDetailState extends State<AuctionDetail> {
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(
+                "Cancel",
+                style: ProjectTextStyles.appBarTextStyle.copyWith(
+                  fontSize: 16,
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () async {
                 if (newBid != null && newBid! > widget.auction.startingPrice) {
                   await FirebaseFirestore.instance
-                      .collection('auctions')
+                      .collection("auctions")
                       .doc(widget.auction.id)
                       .update({
-                    'starting_price': newBid,
-                    'bidder_id': user.uid,
+                    "starting_price": newBid,
+                    "bidder_id": user.uid,
                   });
                   setState(() {
                     widget.auction.startingPrice = newBid!;
@@ -119,11 +124,15 @@ class _AuctionDetailState extends State<AuctionDetail> {
                   Navigator.of(context).pop();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Invalid bid!')),
+                    const SnackBar(content: Text("Invalid bid!")),
                   );
                 }
               },
-              child: const Text('Submit Bid'),
+              style: ProjectDecorations.elevatedButtonStyle,
+              child: const Text(
+                "Submit Bid",
+                style: ProjectTextStyles.buttonTextStyle,
+              ),
             ),
           ],
         );
@@ -147,10 +156,10 @@ class _AuctionDetailState extends State<AuctionDetail> {
             Container(
               height: 250,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.4),
+                    color: Colors.grey.withOpacity(0.3),
                     spreadRadius: 2,
                     blurRadius: 6,
                   ),
@@ -163,7 +172,7 @@ class _AuctionDetailState extends State<AuctionDetail> {
                     onTap: () =>
                         _showPhotoDialog(widget.auction.imageUrls[index]),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(8),
                       child: Image.network(
                         widget.auction.imageUrls[index],
                         fit: BoxFit.cover,
@@ -202,16 +211,15 @@ class _AuctionDetailState extends State<AuctionDetail> {
                       style:
                           const TextStyle(fontSize: 16, color: Colors.black87),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     RichText(
                       text: TextSpan(
-                        text: 'Price: ',
-                        style: const TextStyle(
-                            fontSize: 18, color: Colors.black87),
+                        text: "Price: ",
+                        style: ProjectTextStyles.cardHeaderTextStyle,
                         children: [
                           TextSpan(
                             text:
-                                '\$${widget.auction.startingPrice.toStringAsFixed(2)}',
+                                "\$${widget.auction.startingPrice.toStringAsFixed(2)}",
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.deepPurple),
@@ -224,16 +232,14 @@ class _AuctionDetailState extends State<AuctionDetail> {
                       bidderInfo != null
                           ? "Last Bidder: ${bidderInfo!.firstName}"
                           : "No bids yet",
-                      style:
-                          const TextStyle(fontSize: 16, color: Colors.black54),
+                      style: ProjectTextStyles.cardDescriptionTextStyle,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       creatorInfo != null
                           ? "Created by: ${creatorInfo!.firstName}"
                           : "",
-                      style:
-                          const TextStyle(fontSize: 16, color: Colors.black54),
+                      style: ProjectTextStyles.cardHeaderTextStyle,
                     ),
                   ],
                 ),

@@ -1,10 +1,10 @@
-import 'dart:io';
-import 'package:collectionapp/design_elements.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart'; // Fotoğraf seçimi için
-import 'package:collectionapp/models/predefined_collections.dart';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import "dart:io";
+import "package:collectionapp/design_elements.dart";
+import "package:firebase_storage/firebase_storage.dart";
+import "package:image_picker/image_picker.dart"; // Fotoğraf seçimi için
+import "package:collectionapp/models/predefined_collections.dart";
+import "package:flutter/material.dart";
+import "package:cloud_firestore/cloud_firestore.dart";
 
 class AddItemScreen extends StatefulWidget {
   final String userId;
@@ -41,7 +41,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     if (predefinedCollections.containsKey(widget.collectionName)) {
       _predefinedFields = predefinedCollections[widget.collectionName]!;
       for (var field in _predefinedFields) {
-        _predefinedFieldValues[field['name']!] = null;
+        _predefinedFieldValues[field["name"]!] = null;
       }
     }
   }
@@ -50,11 +50,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        String fieldName = '';
-        String fieldType = 'TextField';
+        String fieldName = "";
+        String fieldType = "TextField";
         return AlertDialog(
           title: const Text(
-            'Yeni Alan Ekle',
+            "Add Custom Field",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -65,7 +65,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: const InputDecoration(labelText: 'Alan Adı'),
+                decoration: const InputDecoration(labelText: "Field Name"),
                 onChanged: (value) {
                   fieldName = value;
                 },
@@ -73,7 +73,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: fieldType,
-                items: ['TextField', 'DatePicker', 'NumberField']
+                items: ["TextField", "NumberField", "DatePicker"]
                     .map((type) =>
                         DropdownMenuItem(value: type, child: Text(type)))
                     .toList(),
@@ -82,7 +82,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     fieldType = value;
                   }
                 },
-                decoration: const InputDecoration(labelText: 'Alan Türü'),
+                decoration: const InputDecoration(labelText: "Field Type"),
               ),
             ],
           ),
@@ -90,7 +90,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text(
-                'Cancel',
+                "Cancel",
                 style: TextStyle(
                   color: Colors.deepPurple,
                 ),
@@ -101,7 +101,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               onTap: () {
                 if (fieldName.isNotEmpty) {
                   setState(() {
-                    _customFields.add({'name': fieldName, 'type': fieldType});
+                    _customFields.add({"name": fieldName, "type": fieldType});
                     _customFieldValues[fieldName] = null;
                   });
                   Navigator.pop(context);
@@ -140,7 +140,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You can add up to 5 photos.')),
+        const SnackBar(content: Text("You can add up to 5 photos.")),
       );
     }
   }
@@ -158,7 +158,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       // upload multiple photos at the same time
       final List<Future> uploadTasks = _selectedImages.map((image) async {
         final storageRef = FirebaseStorage.instance.ref().child(
-            'item_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}');
+            "item_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}");
 
         final uploadTask = await storageRef.putFile(File(image.path));
         if (uploadTask.state == TaskState.success) {
@@ -173,9 +173,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
       await Future.wait(uploadTasks);
 
       final Map<String, dynamic> itemData = {
-        'İsim': itemName,
-        'Nadirlik': rarity,
-        'Photos': photoPaths, // Fotoğraf yollarını kaydet
+        "İsim": itemName,
+        "Nadirlik": rarity,
+        "Photos": photoPaths, // Fotoğraf yollarını kaydet
       };
 
       // Önceden tanımlı alanları ekle
@@ -189,7 +189,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       });
 
       await FirebaseFirestore.instance
-          .collection('userCollections')
+          .collection("userCollections")
           .doc(widget.userId)
           .collection(widget.collectionName)
           .add(itemData);
@@ -209,30 +209,50 @@ class _AddItemScreenState extends State<AddItemScreen> {
       itemCount: _predefinedFields.length,
       itemBuilder: (context, index) {
         final field = _predefinedFields[index];
-        final fieldName = field['name']!;
-        final fieldType = field['type']!;
+        final fieldName = field["name"]!;
+        final fieldType = field["type"]!;
 
-        if (fieldType == 'TextField') {
-          return TextFormField(
-            decoration: InputDecoration(labelText: fieldName),
-            onChanged: (value) {
-              _predefinedFieldValues[fieldName] = value;
-            },
+        if (fieldType == "TextField") {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: fieldName,
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onChanged: (value) {
+                _predefinedFieldValues[fieldName] = value;
+              },
+            ),
           );
-        } else if (fieldType == 'NumberField') {
-          return TextFormField(
-            decoration: InputDecoration(labelText: fieldName),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              _predefinedFieldValues[fieldName] = int.tryParse(value) ?? 0;
-            },
+        } else if (fieldType == "NumberField") {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: fieldName,
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                _predefinedFieldValues[fieldName] = int.tryParse(value) ?? 0;
+              },
+            ),
           );
-        } else if (fieldType == 'DatePicker') {
+        } else if (fieldType == "DatePicker") {
           return ListTile(
             title: Text(fieldName),
             subtitle: Text(
               _predefinedFieldValues[fieldName]?.toString() ??
-                  'Tarih seçilmedi',
+                  "Tarih seçilmedi",
             ),
             onTap: () async {
               final date = await showDatePicker(
@@ -248,19 +268,29 @@ class _AddItemScreenState extends State<AddItemScreen> {
               }
             },
           );
-        } else if (fieldType == 'Dropdown') {
-          final options = field['options']!.split(',');
-          return DropdownButtonFormField<String>(
-            decoration: InputDecoration(labelText: fieldName),
-            items: options
-                .map((option) =>
-                    DropdownMenuItem(value: option, child: Text(option)))
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                _predefinedFieldValues[fieldName] = value;
-              });
-            },
+        } else if (fieldType == "Dropdown") {
+          final options = field["options"]!.split(",");
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                labelText: fieldName,
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              items: options
+                  .map((option) =>
+                      DropdownMenuItem(value: option, child: Text(option)))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  _predefinedFieldValues[fieldName] = value;
+                });
+              },
+            ),
           );
         }
         return const SizedBox.shrink();
@@ -275,58 +305,84 @@ class _AddItemScreenState extends State<AddItemScreen> {
       itemCount: _customFields.length,
       itemBuilder: (context, index) {
         final field = _customFields[index];
-        final fieldName = field['name'];
-        final fieldType = field['type'];
+        final fieldName = field["name"];
+        final fieldType = field["type"];
 
-        if (fieldType == 'TextField') {
-          return TextFormField(
-            decoration: InputDecoration(
-              labelText: fieldName,
-              // filled: true, // optional decoration
-              // fillColor: Colors.white,
-              // border: OutlineInputBorder(
-              //   borderRadius: BorderRadius.circular(10),
-              // ),
+        if (fieldType == "TextField") {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: fieldName,
+                filled: true, // optional decoration
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onChanged: (value) {
+                _customFieldValues[fieldName] = value;
+              },
             ),
-            onChanged: (value) {
-              _customFieldValues[fieldName] = value;
-            },
           );
-        } else if (fieldType == 'NumberField') {
-          return TextFormField(
-            decoration: InputDecoration(
-              labelText: fieldName,
-              //filled: true, // optional decoration
-              //fillColor: Colors.white,
-              //border: OutlineInputBorder(
-              //  borderRadius: BorderRadius.circular(10),
-              //),
+        } else if (fieldType == "NumberField") {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: fieldName,
+                filled: true, // optional decoration
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: (value) {
+                _customFieldValues[fieldName] = int.tryParse(value) ?? 0;
+              },
             ),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              _customFieldValues[fieldName] = int.tryParse(value) ?? 0;
-            },
           );
-        } else if (fieldType == 'DatePicker') {
-          return ListTile(
-            title: Text(fieldName),
-            subtitle: Text(
-              _customFieldValues[fieldName]?.toString() ??
-                  'Date must be selected.',
+        } else if (fieldType == "DatePicker") {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Card(
+              elevation: 2,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              child: ListTile(
+                tileColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                leading: const Icon(
+                  Icons.calendar_month_sharp,
+                  color: Colors.deepPurple,
+                ),
+                title: Text(fieldName,
+                    style: ProjectTextStyles.cardHeaderTextStyle),
+                subtitle: Text(
+                    _customFieldValues[fieldName]?.toString() ??
+                        "Date must be selected.",
+                    style: ProjectTextStyles.cardDescriptionTextStyle),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: Colors.deepPurple,
+                ),
+                onTap: () async {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                  );
+                  if (date != null) {
+                    setState(() {
+                      _customFieldValues[fieldName] = date.toIso8601String();
+                    });
+                  }
+                },
+              ),
             ),
-            onTap: () async {
-              final date = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2100),
-              );
-              if (date != null) {
-                setState(() {
-                  _customFieldValues[fieldName] = date.toIso8601String();
-                });
-              }
-            },
           );
         }
         return const SizedBox.shrink();
@@ -342,13 +398,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
         titletext: "Add New Item",
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
               TextFormField(
-                controller: _rarityController,
+                controller: _nameController,
                 decoration: InputDecoration(
                   labelText: "Item Name",
                   filled: true,
@@ -359,7 +415,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a name.';
+                    return "Please enter a name.";
                   }
                   return null;
                 },
@@ -379,84 +435,72 @@ class _AddItemScreenState extends State<AddItemScreen> {
               Row(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: _pickImage,
-                    icon: const Icon(
-                      Icons.image,
-                      color: Colors.white,
-                    ),
-                    label: const Text(
-                      "Select Images",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      elevation: 4,
-                      backgroundColor: Colors.deepPurple,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                      onPressed: _pickImage,
+                      icon: const Icon(
+                        Icons.image,
+                        color: Colors.white,
                       ),
-                    ),
-                  ),
+                      label: const Text("Select Images",
+                          style: ProjectTextStyles.buttonTextStyle),
+                      style: ProjectDecorations.elevatedButtonStyle),
                 ],
               ),
               const SizedBox(height: 16),
               Text(
-                'Added Photos (${_selectedImages.length}/5):',
+                "Added Photos (${_selectedImages.length}/5):",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(
-                height: 150,
+                height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _selectedImages
-                      .length, // itemCount'u _selectedImages.length olarak ayarla
+                      .length, // itemCount"u _selectedImages.length olarak ayarla
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.file(
-                        File(_selectedImages[index]
-                            .path), // Doğrudan item'dan image al
-                        width: 150,
-                        height: 150,
-                        fit: BoxFit.cover,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16, horizontal: 8),
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 3,
+                              spreadRadius: 1,
+                              color: Colors.grey,
+                            )
+                          ],
+                        ),
+                        child: Image.file(
+                          File(_selectedImages[index]
+                              .path), // Doğrudan item"dan image al
+                          width: 150,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     );
                   },
                 ),
               ),
-              const SizedBox(height: 16),
               _buildPredefinedFieldInputs(),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: _addCustomField,
-                    icon: const Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    label: const Text(
-                      "Add Custom Field",
-                      style: TextStyle(
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Row(
+                  children: [
+                    ElevatedButton.icon(
+                        onPressed: _addCustomField,
+                        icon: const Icon(
+                          Icons.add,
                           color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      elevation: 4,
-                      backgroundColor: Colors.deepPurple,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ],
+                        ),
+                        label: const Text("Add Custom Field",
+                            style: ProjectTextStyles.buttonTextStyle),
+                        style: ProjectDecorations.elevatedButtonStyle),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              _buildCustomFieldInputs(), // view adjustable custom fields
-              const SizedBox(height: 16),
+              _buildCustomFieldInputs(),
+              const SizedBox(height: 48), // view adjustable custom fields
             ],
           ),
         ),
@@ -464,24 +508,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
       floatingActionButton: GestureDetector(
         // save button
         onTap: _isUploading ? null : () => _saveItem(context),
-        child: Container(
-          height: 50,
-          width: 380,
-          decoration: BoxDecoration(
-              color: Colors.deepPurple,
-              borderRadius: BorderRadius.circular(16)),
-          child: Center(
-            child: _isUploading
-                ? const CircularProgressIndicator() // indicator appears when loading
-                : const Text(
-                    "Save",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-          ),
-        ),
+        child:
+            FinalFloatingDecoration(buttonText: "Save", progress: _isUploading),
       ),
     );
   }
