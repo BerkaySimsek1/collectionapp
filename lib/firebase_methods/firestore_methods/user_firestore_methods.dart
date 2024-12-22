@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class UserFirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -15,7 +16,7 @@ class UserFirestoreMethods {
           await _firestore.collection("users").doc(currentUser.uid).get();
       return userDoc.data() as Map<String, dynamic>?;
     } catch (e) {
-      print("Error fetching user data: $e");
+      debugPrint("Error fetching user data: $e");
       return null;
     }
   }
@@ -31,7 +32,7 @@ class UserFirestoreMethods {
           .doc(currentUser.uid)
           .update(updatedData);
     } catch (e) {
-      print("Error updating user data: $e");
+      debugPrint("Error updating user data: $e");
     }
   }
 
@@ -43,7 +44,7 @@ class UserFirestoreMethods {
     try {
       await currentUser.updatePassword(newPassword);
     } catch (e) {
-      print("Error updating password: $e");
+      debugPrint("Error updating password: $e");
       rethrow;
     }
   }
@@ -57,7 +58,7 @@ class UserFirestoreMethods {
       await _firestore.collection("users").doc(currentUser.uid).delete();
       await currentUser.delete();
     } catch (e) {
-      print("Error deleting account: $e");
+      debugPrint("Error deleting account: $e");
       rethrow;
     }
   }

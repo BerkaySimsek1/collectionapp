@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:flutter/material.dart";
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -11,12 +11,12 @@ class FirestoreService {
   }) async {
     try {
       await _db
-          .collection('userCollections')
+          .collection("userCollections")
           .doc(userId)
           .collection(collectionName)
           .add(data);
     } catch (e) {
-      debugPrint('Error adding collection item: $e');
+      debugPrint("Error adding collection item: $e");
       rethrow;
     }
   }
@@ -28,13 +28,13 @@ class FirestoreService {
   }) async {
     try {
       return await _db
-          .collection('userCollections')
+          .collection("userCollections")
           .doc(userId)
           .collection(collectionName)
           .doc(docId)
           .get();
     } catch (e) {
-      debugPrint('Error fetching document: $e');
+      debugPrint("Error fetching document: $e");
       rethrow;
     }
   }
@@ -44,7 +44,7 @@ class FirestoreService {
     required String collectionName,
   }) {
     return _db
-        .collection('userCollections')
+        .collection("userCollections")
         .doc(userId)
         .collection(collectionName)
         .snapshots();
@@ -58,13 +58,13 @@ class FirestoreService {
   }) async {
     try {
       await _db
-          .collection('userCollections')
+          .collection("userCollections")
           .doc(userId)
           .collection(collectionName)
           .doc(docId)
           .update(updatedData);
     } catch (e) {
-      debugPrint('Error updating collection item: $e');
+      debugPrint("Error updating collection item: $e");
       rethrow;
     }
   }
@@ -76,13 +76,13 @@ class FirestoreService {
   }) async {
     try {
       await _db
-          .collection('userCollections')
+          .collection("userCollections")
           .doc(userId)
           .collection(collectionName)
           .doc(docId)
           .delete();
     } catch (e) {
-      debugPrint('Error deleting collection item: $e');
+      debugPrint("Error deleting collection item: $e");
       rethrow;
     }
   }

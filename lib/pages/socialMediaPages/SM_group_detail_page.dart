@@ -6,6 +6,7 @@ import "package:collectionapp/pages/socialMediaPages/comment_bottom_sheet.dart";
 import "package:collectionapp/pages/socialMediaPages/create_post_widget.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:collectionapp/design_elements.dart";
 
 class GroupDetailPage extends StatefulWidget {
   final Group group;
@@ -63,119 +64,153 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.group.name),
+      backgroundColor: Colors.grey[200],
+      appBar: ProjectAppbar(
+        titletext: widget.group.name,
       ),
-      body: Column(
-        children: [
-          // Grup Bilgileri
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            // Group Information
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 widget.group.coverImageUrl != null
                     ? CircleAvatar(
                         backgroundImage:
                             NetworkImage(widget.group.coverImageUrl!),
-                        minRadius: 50,
-                        maxRadius: 75,
+                        radius: 50,
                       )
                     : CircleAvatar(
-                        child: Text(widget.group.name[0]),
+                        radius: 50,
+                        backgroundColor: Colors.deepPurple,
+                        child: Text(
+                          widget.group.name[0],
+                          style: ProjectTextStyles.cardHeaderTextStyle.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                 const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.group.name,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(widget.group.description),
-                    const SizedBox(height: 8),
-                    Text("${widget.group.members.length} $memberCount"),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.group.name,
+                        style: ProjectTextStyles.cardHeaderTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.group.description,
+                        style: ProjectTextStyles.subtitleTextStyle,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "${widget.group.members.length} $memberCount",
+                        style: ProjectTextStyles.subtitleTextStyle,
+                      ),
+                    ],
+                  ),
                 ),
-                const Spacer(),
-                widget.group.adminIds.contains(_currentUser!.uid)
-                    ? TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SmGroupAdmin(
-                                groupId: widget.group.id,
-                              ),
-                            ),
-                          );
-                        },
-                        child: const Column(
-                          children: [
-                            Text(
-                              "Admin",
-                            ),
-                            Text("Panel"),
-                          ],
-                        ))
-                    : const Text("")
-              ],
-            ),
-          ),
-
-          if (_isMember == null || hasJoinRequest == null)
-            const Center(child: CircularProgressIndicator())
-          else if (!_isMember!)
-            hasJoinRequest!
-                ? const Text("Request send")
-                : ElevatedButton(
-                    onPressed: _sendJoinRequest,
-                    child: const Text("Request to join"),
-                  )
-          else
-            Expanded(
-              child: Column(
-                children: [
-                  // Gönderi Oluşturma Widgetı
-                  CreatePostWidget(groupId: widget.group.id),
-
-                  // Gönderiler Listesi
-                  Expanded(
-                    child: StreamBuilder<List<Post>>(
-                      stream:
-                          _groupDetailService.getGroupPosts(widget.group.id),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return const Center(child: Text("No posts yet."));
-                        }
-
-                        return ListView.builder(
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            final post = snapshot.data![index];
-                            return PostWidget(
-                              post: post,
-                              onLike: () => _groupDetailService.toggleLike(
-                                  post.id, _currentUser.uid),
-                              groupDetailService: _groupDetailService,
-                            );
-                          },
-                        );
-                      },
+                if (widget.group.adminIds.contains(_currentUser!.uid))
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SmGroupAdmin(
+                            groupId: widget.group.id,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Column(
+                      children: [
+                        Text("Admin"),
+                        Text("Panel"),
+                      ],
                     ),
                   ),
-                ],
-              ),
+              ],
             ),
-        ],
+            const SizedBox(height: 32),
+
+            if (_isMember == null || hasJoinRequest == null)
+              const Center(child: CircularProgressIndicator())
+            else if (!_isMember!)
+              hasJoinRequest!
+                  ? const Text("Request sent")
+                  : ElevatedButton(
+                      onPressed: _sendJoinRequest,
+                      style: ProjectDecorations.elevatedButtonStyle,
+                      child: const Text(
+                        "Request to join",
+                        style: ProjectTextStyles.buttonTextStyle,
+                      ),
+                    )
+            else
+              Expanded(
+                child: Column(
+                  children: [
+                    // Posts List
+                    Expanded(
+                      child: StreamBuilder<List<Post>>(
+                        stream:
+                            _groupDetailService.getGroupPosts(widget.group.id),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return const Center(child: Text("No posts yet."));
+                          }
+
+                          return ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final post = snapshot.data![index];
+                              return PostWidget(
+                                post: post,
+                                onLike: () => _groupDetailService.toggleLike(
+                                    post.id, _currentUser.uid),
+                                groupDetailService: _groupDetailService,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
+      floatingActionButton: ElevatedButton.icon(
+          onPressed: () {
+            // creating post
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Dialog(
+                    child: CreatePostWidget(groupId: widget.group.id));
+              },
+            );
+          },
+          label: const Text(
+            "Create Post",
+            style: ProjectTextStyles.buttonTextStyle,
+          ),
+          icon: const Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          style: ProjectDecorations.elevatedButtonStyle),
     );
   }
 }
@@ -207,7 +242,7 @@ class PostWidget extends StatelessWidget {
               }
 
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text("Henüz yorum yok"));
+                return const Center(child: Text("No comments yet."));
               }
 
               return ListView.builder(
@@ -220,11 +255,12 @@ class PostWidget extends StatelessWidget {
                       backgroundImage: comment.userProfilePic.isNotEmpty
                           ? NetworkImage(comment.userProfilePic)
                           : null,
+                      backgroundColor: Colors.deepPurple,
                       child: comment.userProfilePic.isEmpty
                           ? Text(comment.username[0])
                           : null,
                     ),
-                    title: Text(comment.username),
+                    title: Text(comment.content),
                     subtitle: Text(comment.content),
                     trailing: Text(
                       "${comment.createdAt.day}.${comment.createdAt.month} "
@@ -247,47 +283,69 @@ class PostWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
-    // bir like almışsa "like", birden fazla almışsa "likes" yazdırmak için
     String likeCount = post.likes.length <= 1 ? "like" : "likes";
-    // bir yorum varsa "comment", birden fazla yorum varsa "comments" yazdırmak için
     String commentCount = post.comments.length <= 1 ? "comment" : "comments";
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Kullanıcı Bilgileri
+          // User Information
           ListTile(
             leading: CircleAvatar(
               backgroundImage: post.userProfilePic.isNotEmpty
                   ? NetworkImage(post.userProfilePic)
                   : null,
+              backgroundColor: Colors.deepPurple,
               child:
                   post.userProfilePic.isEmpty ? Text(post.username[0]) : null,
             ),
-            title: Text(post.username),
+            title: Text(
+              post.username,
+              style: ProjectTextStyles.cardHeaderTextStyle,
+            ),
             subtitle: Text(
-                "${post.createdAt.day}.${post.createdAt.month}.${post.createdAt.year} "
-                "${post.createdAt.hour}:${post.createdAt.minute.toString().padLeft(2, "0")}"),
+              "${post.createdAt.day}.${post.createdAt.month}.${post.createdAt.year} "
+              "${post.createdAt.hour}:${post.createdAt.minute.toString().padLeft(2, "0")}",
+              style: ProjectTextStyles.subtitleTextStyle,
+            ),
           ),
 
-          // Gönderi İçeriği
+          // Post Content
           if (post.content.isNotEmpty)
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-              child: Text(post.content),
+              child: Text(
+                post.content,
+                style: ProjectTextStyles.cardDescriptionTextStyle,
+              ),
             ),
 
-          // Gönderi Resmi
+          // Post Image
           if (post.imageUrl != null)
             Image.network(
               post.imageUrl!,
               width: double.infinity,
               fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.error, color: Colors.red),
             ),
 
-          // Beğeni ve Yorum Bölümü
+          // Like and Comment Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
             child: Row(
@@ -301,15 +359,13 @@ class PostWidget extends StatelessWidget {
                   ),
                   onPressed: onLike,
                 ),
-                Text(
-                    "${post.likes.length} $likeCount"), // bir like almışsa "like", birden fazla almışsa "likes" yazdırmak için
+                Text("${post.likes.length} $likeCount"),
                 const SizedBox(width: 16),
                 IconButton(
                   icon: const Icon(Icons.comment),
                   onPressed: () => _showComments(context),
                 ),
-                Text(
-                    "${post.comments.length} $commentCount"), // bir yorum varsa "comment", birden fazla yorum varsa "comments" yazdırmak için
+                Text("${post.comments.length} $commentCount"),
               ],
             ),
           ),

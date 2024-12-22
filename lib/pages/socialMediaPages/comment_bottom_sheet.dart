@@ -1,7 +1,7 @@
-import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
-import 'package:collectionapp/models/PostModel.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import "package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart";
+import "package:collectionapp/models/PostModel.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
 
 class CommentBottomSheet extends StatefulWidget {
   final Post post;
@@ -26,8 +26,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       userId: currentUser.uid,
       content: _commentController.text.trim(),
       createdAt: DateTime.now(),
-      username: currentUser.displayName ?? 'Anonymous',
-      userProfilePic: currentUser.photoURL ?? '',
+      username: currentUser.displayName ?? "Anonymous",
+      userProfilePic: currentUser.photoURL ?? "",
       groupId: widget.post.groupId, // Add this field to pass group context
     );
 
@@ -36,7 +36,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       _commentController.clear();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add comment: $e')),
+        SnackBar(content: Text("Failed to add comment: $e")),
       );
     }
   }
@@ -56,7 +56,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
             child: TextField(
               controller: _commentController,
               decoration: InputDecoration(
-                hintText: 'Write a comment...',
+                hintText: "Write a comment",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

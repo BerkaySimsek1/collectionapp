@@ -1,12 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
+import "dart:io";
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
+import "package:collectionapp/design_elements.dart";
+import "package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/material.dart";
+import "package:image_picker/image_picker.dart";
 
 class CreatePostWidget extends StatefulWidget {
   final String groupId;
@@ -36,7 +37,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
 
   void _createPost() async {
     var userDoc = await FirebaseFirestore.instance
-        .collection('users')
+        .collection("users")
         .doc(_currentUser!.uid)
         .get();
     if (_postController.text.isNotEmpty || _imageFile != null) {
@@ -46,8 +47,8 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
           userId: _currentUser.uid,
           content: _postController.text,
           imageFile: _imageFile,
-          username: userDoc["username"] ?? 'Kullanıcı',
-          userProfilePic: _currentUser.photoURL ?? '',
+          username: userDoc["username"] ?? "Kullanıcı",
+          userProfilePic: _currentUser.photoURL ?? "",
         );
 
         // Gönderi sonrası temizlik
@@ -57,10 +58,10 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
         });
 
         ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Gönderi paylaşıldı')));
+            .showSnackBar(const SnackBar(content: Text("Gönderi paylaşıldı")));
       } catch (e) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Gönderi paylaşılamadı: $e')));
+            .showSnackBar(SnackBar(content: Text("Gönderi paylaşılamadı: $e")));
       }
     }
   }
@@ -68,65 +69,69 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      height: 240,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 3,
-          )
-        ],
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey[100],
       ),
-      child: Column(
-        children: [
-          TextField(
-            controller: _postController,
-            decoration: const InputDecoration(
-              hintText: 'Bir şeyler paylaş...',
-              border: OutlineInputBorder(),
+      child: Center(
+        child: Column(
+          children: [
+            TextField(
+              controller: _postController,
+              decoration: const InputDecoration(
+                hintText: "Create a post",
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
             ),
-            maxLines: 3,
-          ),
-          const SizedBox(height: 8),
+            const SizedBox(height: 8),
 
-          // Seçilen Fotoğraf Önizlemesi
-          if (_imageFile != null)
-            Stack(
-              alignment: Alignment.topRight,
+            // Seçilen Fotoğraf Önizlemesi
+            if (_imageFile != null)
+              Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  Image.file(
+                    _imageFile!,
+                    height: 20,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () {
+                      setState(() {
+                        _imageFile = null;
+                      });
+                    },
+                  ),
+                ],
+              ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.file(
-                  _imageFile!,
-                  height: 150,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
-                  onPressed: () {
-                    setState(() {
-                      _imageFile = null;
-                    });
-                  },
+                  icon: const Icon(
+                    Icons.photo_library,
+                    color: Colors.deepPurple,
+                  ),
+                  onPressed: _pickImage,
+                ),
+                ElevatedButton.icon(
+                  onPressed: _createPost,
+                  label: const Text(
+                    "Share",
+                    style: ProjectTextStyles.buttonTextStyle,
+                  ),
+                  style: ProjectDecorations.elevatedButtonStyle,
                 ),
               ],
             ),
-
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.photo_library),
-                onPressed: _pickImage,
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: _createPost,
-                child: const Text('Paylaş'),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import "package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart";
+import "package:flutter/material.dart";
+import "package:firebase_auth/firebase_auth.dart";
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -38,7 +38,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load user data')),
+          const SnackBar(content: Text("Failed to load user data")),
         );
       }
     }
@@ -51,46 +51,46 @@ class _UserProfilePageState extends State<UserProfilePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Change Email'),
+        title: const Text("Change Email"),
         content: TextField(
           controller: newEmailController,
-          decoration: const InputDecoration(labelText: 'New Email'),
+          decoration: const InputDecoration(labelText: "New Email"),
           keyboardType: TextInputType.emailAddress,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text("Cancel"),
           ),
           ElevatedButton(
             onPressed: () async {
               try {
                 String newEmail = newEmailController.text.trim();
                 if (newEmail.isEmpty) {
-                  throw Exception('Email cannot be empty');
+                  throw Exception("Email cannot be empty");
                 }
 
                 await _auth.currentUser?.updateEmail(newEmail);
-                await _firestoreService.updateUserData({'email': newEmail});
+                await _firestoreService.updateUserData({"email": newEmail});
 
                 setState(() {
-                  userData?['email'] = newEmail;
+                  userData?["email"] = newEmail;
                 });
 
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Email updated successfully!')),
+                  const SnackBar(content: Text("Email updated successfully!")),
                 );
                 Navigator.pop(context);
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                      content: Text('Failed to update email: ${e.toString()}')),
+                      content: Text("Failed to update email: ${e.toString()}")),
                 );
               }
             },
-            child: const Text('Update'),
+            child: const Text("Update"),
           ),
         ],
       ),
@@ -104,23 +104,23 @@ class _UserProfilePageState extends State<UserProfilePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Change Password'),
+        title: const Text("Change Password"),
         content: TextField(
           controller: newPasswordController,
-          decoration: const InputDecoration(labelText: 'New Password'),
+          decoration: const InputDecoration(labelText: "New Password"),
           obscureText: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text("Cancel"),
           ),
           ElevatedButton(
             onPressed: () async {
               try {
                 String newPassword = newPasswordController.text.trim();
                 if (newPassword.isEmpty) {
-                  throw Exception('Password cannot be empty');
+                  throw Exception("Password cannot be empty");
                 }
 
                 await _auth.currentUser?.updatePassword(newPassword);
@@ -128,7 +128,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                      content: Text('Password updated successfully!')),
+                      content: Text("Password updated successfully!")),
                 );
                 Navigator.pop(context);
               } catch (e) {
@@ -136,11 +136,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                       content:
-                          Text('Failed to update password: ${e.toString()}')),
+                          Text("Failed to update password: ${e.toString()}")),
                 );
               }
             },
-            child: const Text('Update'),
+            child: const Text("Update"),
           ),
         ],
       ),
@@ -153,14 +153,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Account'),
+        title: const Text("Delete Account"),
         content: const Text(
-          'Are you sure you want to delete your account? This action cannot be undone.',
+          "Are you sure you want to delete your account? This action cannot be undone.",
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text("Cancel"),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -171,7 +171,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                      content: Text('Account deleted successfully!')),
+                      content: Text("Account deleted successfully!")),
                 );
                 Navigator.pop(context);
                 Navigator.of(context).pop();
@@ -180,11 +180,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                       content:
-                          Text('Failed to delete account: ${e.toString()}')),
+                          Text("Failed to delete account: ${e.toString()}")),
                 );
               }
             },
-            child: const Text('Delete'),
+            child: const Text("Delete"),
           ),
         ],
       ),
@@ -196,7 +196,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       return const Card(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Text('No user data available'),
+          child: Text("No user data available"),
         ),
       );
     }
@@ -211,35 +211,35 @@ class _UserProfilePageState extends State<UserProfilePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'User Information',
+              "User Information",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            Text('Name: ${userData!['firstName']} ${userData!['lastName']}'),
-            Text('Age: ${userData!['age']}'),
+            Text("Name: ${userData!["firstName"]} ${userData!["lastName"]}"),
+            Text("Age: ${userData!["age"]}"),
             const SizedBox(height: 16),
             Text(
-              'Email: ${userData!['email']}',
+              "Email: ${userData!["email"]}",
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _showEmailChangeDialog,
-              child: const Text('Change Email'),
+              child: const Text("Change Email"),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _showPasswordChangeDialog,
-              child: const Text('Change Password'),
+              child: const Text("Change Password"),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               onPressed: _showDeleteAccountDialog,
-              child: const Text('Delete Account'),
+              child: const Text("Delete Account"),
             ),
           ],
         ),
@@ -252,8 +252,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(userData != null
-            ? '${userData!['firstName']} ${userData!['lastName']}'
-            : 'User Profile'),
+            ? "${userData!["firstName"]} ${userData!["lastName"]}"
+            : "User Profile"),
         centerTitle: true,
       ),
       body: isLoading
@@ -273,7 +273,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       ),
                     ),
                     const Text(
-                      'Joined Groups',
+                      "Joined Groups",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -281,7 +281,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Coming Soon',
+                      "Coming Soon",
                       style: TextStyle(
                         fontSize: 16,
                         fontStyle: FontStyle.italic,
