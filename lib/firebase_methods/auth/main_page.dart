@@ -6,7 +6,7 @@ import "package:flutter/material.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
 import "package:collectionapp/pages/userCollectionPages/user_collection_screen.dart";
-import 'package:cloud_firestore/cloud_firestore.dart';
+import "package:cloud_firestore/cloud_firestore.dart";
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -22,7 +22,7 @@ class MainPage extends StatelessWidget {
           // Kullanıcı bilgilerini Firestore'dan çekiyoruz
           return StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
-                .collection('users')
+                .collection("users")
                 .doc(user!.uid)
                 .snapshots(),
             builder: (context, userSnapshot) {
@@ -36,8 +36,8 @@ class MainPage extends StatelessWidget {
 
               final userData =
                   userSnapshot.data!.data() as Map<String, dynamic>;
-              final firstName = userData['firstName'] ?? 'Unknown';
-              final lastName = userData['lastName'] ?? 'User';
+              final firstName = userData["firstName"] ?? "Unknown";
+              final lastName = userData["lastName"] ?? "User";
 
               return Scaffold(
                 backgroundColor: Colors.grey[200],
@@ -70,7 +70,7 @@ class MainPage extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              UserProfilePage()),
+                                              const UserProfilePage()),
                                     );
                                   },
                                 ),
