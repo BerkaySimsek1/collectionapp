@@ -66,9 +66,17 @@ class _GroupsListPageState extends State<GroupsListPage> {
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(
-                    child: Text(
-                      "No groups found.",
-                      style: ProjectTextStyles.subtitleTextStyle,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.group_off,
+                            size: 80, color: Colors.grey),
+                        const SizedBox(height: 16),
+                        Text(
+                          "No groups found.",
+                          style: ProjectTextStyles.subtitleTextStyle,
+                        ),
+                      ],
                     ),
                   );
                 }

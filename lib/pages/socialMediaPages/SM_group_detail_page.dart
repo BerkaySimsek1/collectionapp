@@ -151,10 +151,10 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             const SizedBox(height: 1),
 
             if (_isMember == null || hasJoinRequest == null)
-              const Center(child: CircularProgressIndicator())
+              const Expanded(child: Center(child: CircularProgressIndicator()))
             else if (!_isMember!)
               hasJoinRequest!
-                  ? const Text("Request sent")
+                  ? const Expanded(child: Center(child: Text("Request sent")))
                   : ElevatedButton(
                       onPressed: _sendJoinRequest,
                       style: ProjectDecorations.elevatedButtonStyle,
@@ -173,7 +173,20 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     }
 
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text("No posts yet."));
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.post_add,
+                                size: 80, color: Colors.grey),
+                            const SizedBox(height: 16),
+                            Text(
+                              "No posts yet.",
+                              style: ProjectTextStyles.subtitleTextStyle,
+                            ),
+                          ],
+                        ),
+                      );
                     }
 
                     return ListView.builder(
