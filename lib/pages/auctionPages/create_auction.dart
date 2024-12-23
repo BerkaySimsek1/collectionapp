@@ -86,9 +86,17 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
       showDialog(
         context: context,
         builder: (context) {
-          return const AlertDialog(
-            content: Text(
-                "The form is not valid, please complete the missing information."),
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            content: const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Text(
+                "The form is not valid, please complete the missing information.",
+                style: ProjectTextStyles.cardDescriptionTextStyle,
+              ),
+            ),
           );
         },
       );
@@ -98,9 +106,9 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[100],
       appBar: const ProjectAppbar(
-        titletext: "Create Auction",
+        titleText: "Create Auction",
       ),
       body: Container(
         padding: const EdgeInsets.all(16),
@@ -110,14 +118,10 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Add your auction details",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
-                  ),
-                ),
+                Text("Add your auction details",
+                    style: ProjectTextStyles.appBarTextStyle.copyWith(
+                      fontSize: 18,
+                    )),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _nameController,
@@ -126,7 +130,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   validator: (value) =>
@@ -140,7 +144,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   keyboardType: TextInputType.number,
@@ -155,7 +159,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   maxLines: 3,

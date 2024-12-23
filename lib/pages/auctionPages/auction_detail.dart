@@ -45,7 +45,7 @@ class _AuctionDetailState extends State<AuctionDetail> {
         });
       }
     } catch (e) {
-      debugPrint("Hata oluştu: $e");
+      debugPrint("Error occured: $e");
     }
   }
 
@@ -143,9 +143,9 @@ class _AuctionDetailState extends State<AuctionDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[100],
       appBar: ProjectAppbar(
-        titletext: widget.auction.name,
+        titleText: widget.auction.name,
       ),
       body: Container(
         padding: const EdgeInsets.all(16),

@@ -64,9 +64,9 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[100],
       appBar: ProjectAppbar(
-        titletext: widget.group.name,
+        titleText: widget.group.name,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8),

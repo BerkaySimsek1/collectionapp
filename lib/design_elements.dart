@@ -4,14 +4,14 @@ import "package:flutter/material.dart";
 class ProjectAppbar extends StatelessWidget implements PreferredSizeWidget {
   const ProjectAppbar({
     super.key,
-    required this.titletext,
+    required this.titleText,
   });
-  final String titletext;
+  final String titleText;
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.transparent,
-      title: Text(titletext, style: ProjectTextStyles.appBarTextStyle),
+      title: Text(titleText, style: ProjectTextStyles.appBarTextStyle),
       leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop();

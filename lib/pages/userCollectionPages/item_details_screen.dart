@@ -41,9 +41,9 @@ class ItemDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[100],
       appBar: const ProjectAppbar(
-        titletext: "Item Details",
+        titleText: "Item Details",
       ),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
@@ -90,13 +90,6 @@ class ItemDetailsScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 6,
-                      ),
-                    ],
                   ),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
@@ -104,41 +97,54 @@ class ItemDetailsScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final photo = photos[index];
                       return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: photo.startsWith('http')
-                              ? Image.network(
-                                  photo,
-                                  height: 250,
-                                  width: 250,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: loadingProgress
-                                                    .expectedTotalBytes !=
-                                                null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes!
-                                            : null,
-                                      ),
-                                    );
-                                  },
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.error,
-                                          color: Colors.red),
-                                )
-                              : Image.file(
-                                  File(photo),
-                                  height: 250,
-                                  width: 250,
-                                  fit: BoxFit.cover,
-                                ),
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: const [
+                              BoxShadow(
+                                  offset: Offset(0, 1),
+                                  blurRadius: 1,
+                                  spreadRadius: 1,
+                                  color: Colors.grey),
+                            ],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: photo.startsWith('http')
+                                ? Image.network(
+                                    photo,
+                                    height: 250,
+                                    width: 250,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          value: loadingProgress
+                                                      .expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(Icons.error,
+                                                color: Colors.red),
+                                  )
+                                : Image.file(
+                                    File(photo),
+                                    height: 250,
+                                    width: 250,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
                         ),
                       );
                     },

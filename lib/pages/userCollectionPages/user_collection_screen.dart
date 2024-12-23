@@ -13,9 +13,9 @@ class UserCollectionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: const ProjectAppbar(
-          titletext: "My Collections",
+          titleText: "My Collections",
         ),
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.grey[100],
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

@@ -30,18 +30,24 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.grey[100],
         appBar: const ProjectAppbar(
-          titletext: "Auctions",
+          titleText: "Auctions",
         ),
         body: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(8),
           child: Column(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  border: Border.all(width: 0.5),
+                  boxShadow: const [
+                    BoxShadow(
+                        offset: Offset(0, 1),
+                        blurRadius: 1,
+                        spreadRadius: 0.5,
+                        color: Colors.grey),
+                  ],
                   color: const Color(0xFFF7F2FA),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -72,6 +78,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 4),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: _getAuctionStream(),
@@ -168,15 +175,15 @@ class AuctionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: ListTile(
+          contentPadding: const EdgeInsets.all(16),
           onTap: () {
             Navigator.push(
               context,

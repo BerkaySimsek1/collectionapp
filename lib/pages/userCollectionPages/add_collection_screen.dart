@@ -52,9 +52,9 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[100],
       appBar: const ProjectAppbar(
-        titletext: "Add New Collection",
+        titleText: "Add New Collection",
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

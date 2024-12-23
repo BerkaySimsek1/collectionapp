@@ -221,7 +221,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               onChanged: (value) {
@@ -238,7 +238,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               keyboardType: TextInputType.number,
@@ -278,7 +278,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               items: options
@@ -317,7 +317,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 filled: true, // optional decoration
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               onChanged: (value) {
@@ -334,7 +334,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 filled: true, // optional decoration
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               keyboardType: TextInputType.number,
@@ -393,9 +393,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[100],
       appBar: const ProjectAppbar(
-        titletext: "Add New Item",
+        titleText: "Add New Item",
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -410,7 +410,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 validator: (value) {
@@ -428,7 +428,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   )),
               const SizedBox(height: 16),
