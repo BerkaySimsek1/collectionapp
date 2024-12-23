@@ -27,11 +27,15 @@ class MainPage extends StatelessWidget {
                 .snapshots(),
             builder: (context, userSnapshot) {
               if (userSnapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return Container(
+                    color: Colors.grey[100],
+                    child: const Center(child: CircularProgressIndicator()));
               }
 
               if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-                return const Center(child: Text("User data not found."));
+                return Container(
+                    color: Colors.grey[100],
+                    child: const Center(child: Text("User data not found.")));
               }
 
               final userData =
@@ -40,7 +44,7 @@ class MainPage extends StatelessWidget {
               final lastName = userData["lastName"] ?? "User";
 
               return Scaffold(
-                backgroundColor: Colors.grey[200],
+                backgroundColor: Colors.grey[100],
                 body: Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 64, horizontal: 16),
@@ -54,32 +58,11 @@ class MainPage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                "Welcome, $firstName $lastName!",
+                                "Welcome $firstName $lastName!",
                                 style: ProjectTextStyles.appBarTextStyle,
                                 overflow:
                                     TextOverflow.clip, // Uzun yazıları kes
                               ),
-                            ),
-                            Column(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.account_circle,
-                                      size: 36, color: Colors.grey),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const UserProfilePage()),
-                                    );
-                                  },
-                                ),
-                                const Text(
-                                  "Profile",
-                                  style: TextStyle(
-                                      fontSize: 10, color: Colors.grey),
-                                ),
-                              ],
                             ),
                           ],
                         ),
@@ -89,7 +72,32 @@ class MainPage extends StatelessWidget {
                           "Here you can manage your auctions, view collections, and connect with others.",
                           style: ProjectTextStyles.subtitleTextStyle,
                         ),
-                        const SizedBox(height: 128),
+                        const SizedBox(height: 32),
+                        Row(
+                          children: [
+                            TextButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                backgroundColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              icon: const Icon(Icons.account_circle,
+                                  size: 36, color: Colors.deepPurple),
+                              label: const Text("View Profile"),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const UserProfilePage()),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -173,10 +181,10 @@ class MainPage extends StatelessWidget {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -193,9 +201,7 @@ class MainPage extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: ProjectTextStyles.cardHeaderTextStyle,
                   ),
                   Text(
                     subtitle,

@@ -20,9 +20,9 @@ class _GroupsListPageState extends State<GroupsListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[100],
       appBar: const ProjectAppbar(
-        titletext: "Groups",
+        titleText: "Groups",
       ),
       body: Column(
         children: [

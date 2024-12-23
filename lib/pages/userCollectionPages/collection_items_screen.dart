@@ -35,9 +35,9 @@ class CollectionItemsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.grey[100],
       appBar: ProjectAppbar(
-        titletext: "$collectionName Koleksiyonu",
+        titleText: "$collectionName Koleksiyonu",
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
