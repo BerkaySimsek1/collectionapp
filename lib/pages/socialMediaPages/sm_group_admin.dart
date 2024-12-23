@@ -1,4 +1,5 @@
 import "package:cloud_firestore/cloud_firestore.dart";
+import "package:collectionapp/design_elements.dart";
 import "package:flutter/material.dart";
 
 class SmGroupAdmin extends StatefulWidget {
@@ -47,14 +48,12 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
 
   Future<void> _updateJoinRequestStatus(String userId, String status) async {
     try {
-      // Update status in join_requests collection
       await FirebaseFirestore.instance
           .collection("group_join_requests")
           .doc(widget.groupId)
           .update({"status": status});
 
       if (status == "accepted") {
-        // Add user to group"s members
         await FirebaseFirestore.instance
             .collection("groups")
             .doc(widget.groupId)
@@ -70,8 +69,9 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Grup Yönetici"),
+      backgroundColor: Colors.grey[100],
+      appBar: const ProjectAppbar(
+        titleText: "Admin Panel",
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _getJoinRequests(),
@@ -83,26 +83,83 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
           } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
             return ListView.builder(
               itemCount: snapshot.data!.length,
+              padding: const EdgeInsets.all(16.0),
               itemBuilder: (context, index) {
                 var request = snapshot.data![index];
-                return ListTile(
-                  title: Text(
-                      "Name: ${request["firstName"]} ${request["lastName"]}"),
-                  subtitle: Text("Status: ${request["status"]}"),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.check, color: Colors.green),
-                        onPressed: () => _updateJoinRequestStatus(
-                            request["userId"], "accepted"),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Colors.red),
-                        onPressed: () => _updateJoinRequestStatus(
-                            request["userId"], "declined"),
-                      ),
-                    ],
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: Colors.deepPurple,
+                              child: Text(
+                                request["firstName"][0],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${request["firstName"]} ${request["lastName"]}",
+                                  style: ProjectTextStyles.cardHeaderTextStyle,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "Status: ${request["status"]}",
+                                  style: ProjectTextStyles.subtitleTextStyle,
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            Chip(
+                              label: Text(
+                                request["status"].toUpperCase(),
+                                style:
+                                    ProjectTextStyles.cardDescriptionTextStyle,
+                              ),
+                              backgroundColor: request["status"] == "accepted"
+                                  ? Colors.green
+                                  : Colors.orange,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton.icon(
+                              icon: const Icon(Icons.close, color: Colors.red),
+                              label: Text("Decline",
+                                  style: ProjectTextStyles.appBarTextStyle
+                                      .copyWith(fontSize: 16)),
+                              onPressed: () => _updateJoinRequestStatus(
+                                  request["userId"], "declined"),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton.icon(
+                              icon:
+                                  const Icon(Icons.check, color: Colors.white),
+                              label: const Text("Accept",
+                                  style: ProjectTextStyles.buttonTextStyle),
+                              onPressed: () => _updateJoinRequestStatus(
+                                  request["userId"], "accepted"),
+                              style: ProjectDecorations.elevatedButtonStyle,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

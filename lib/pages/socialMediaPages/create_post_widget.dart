@@ -59,6 +59,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
 
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Gönderi paylaşıldı")));
+        Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Gönderi paylaşılamadı: $e")));

@@ -64,78 +64,91 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: ProjectAppbar(
-        titleText: widget.group.name,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
+        backgroundColor: Colors.grey[100],
+        appBar: ProjectAppbar(
+          titleText: widget.group.name,
+        ),
+        body: Column(
           children: [
             // Group Information
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                widget.group.coverImageUrl != null
-                    ? CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(widget.group.coverImageUrl!),
-                        radius: 50,
-                      )
-                    : CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.deepPurple,
-                        child: Text(
-                          widget.group.name[0],
-                          style: ProjectTextStyles.cardHeaderTextStyle.copyWith(
-                            color: Colors.white,
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey[100],
+                  boxShadow: const [
+                    BoxShadow(
+                        offset: Offset(0, 2), color: Colors.grey, blurRadius: 1)
+                  ]),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  widget.group.coverImageUrl != null
+                      ? CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(widget.group.coverImageUrl!),
+                          radius: 40,
+                        )
+                      : CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Colors.deepPurple,
+                          child: Text(
+                            widget.group.name[0],
+                            style:
+                                ProjectTextStyles.cardHeaderTextStyle.copyWith(
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
+                  const SizedBox(width: 16),
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         widget.group.name,
                         style: ProjectTextStyles.cardHeaderTextStyle,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       Text(
                         widget.group.description,
                         style: ProjectTextStyles.subtitleTextStyle,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       Text(
                         "${widget.group.members.length} $memberCount",
                         style: ProjectTextStyles.subtitleTextStyle,
                       ),
                     ],
                   ),
-                ),
-                if (widget.group.adminIds.contains(_currentUser!.uid))
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SmGroupAdmin(
-                            groupId: widget.group.id,
-                          ),
+                  const SizedBox(width: 16),
+                  if (widget.group.adminIds.contains(_currentUser!.uid))
+                    Center(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SmGroupAdmin(
+                                groupId: widget.group.id,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ProjectDecorations.elevatedButtonStyle,
+                        icon: const Icon(
+                          Icons.admin_panel_settings,
+                          color: Colors.white,
                         ),
-                      );
-                    },
-                    child: const Column(
-                      children: [
-                        Text("Admin"),
-                        Text("Panel"),
-                      ],
+                        label: const Text(
+                          "Admin Panel",
+                          style: ProjectTextStyles.buttonTextStyle,
+                        ),
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 1),
 
             if (_isMember == null || hasJoinRequest == null)
               const Center(child: CircularProgressIndicator())
@@ -152,66 +165,49 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     )
             else
               Expanded(
-                child: Column(
-                  children: [
-                    // Posts List
-                    Expanded(
-                      child: StreamBuilder<List<Post>>(
-                        stream:
-                            _groupDetailService.getGroupPosts(widget.group.id),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
+                child: StreamBuilder<List<Post>>(
+                  stream: _groupDetailService.getGroupPosts(widget.group.id),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return const Center(child: Text("No posts yet."));
-                          }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text("No posts yet."));
+                    }
 
-                          return ListView.builder(
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              final post = snapshot.data![index];
-                              return PostWidget(
-                                post: post,
-                                onLike: () => _groupDetailService.toggleLike(
-                                    post.id, _currentUser.uid),
-                                groupDetailService: _groupDetailService,
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final post = snapshot.data![index];
+                        return PostWidget(
+                          post: post,
+                          onLike: () => _groupDetailService.toggleLike(
+                              post.id, _currentUser.uid),
+                          groupDetailService: _groupDetailService,
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
           ],
         ),
-      ),
-      floatingActionButton: ElevatedButton.icon(
-          onPressed: () {
-            // creating post
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Dialog(
-                    child: CreatePostWidget(groupId: widget.group.id));
-              },
-            );
-          },
-          label: const Text(
-            "Create Post",
-            style: ProjectTextStyles.buttonTextStyle,
-          ),
-          icon: const Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-          style: ProjectDecorations.elevatedButtonStyle),
-    );
+        floatingActionButton: _isMember == null || _isMember!
+            ? FloatingActionButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                          child: CreatePostWidget(groupId: widget.group.id));
+                    },
+                  );
+                },
+                backgroundColor: Colors.deepPurple,
+                child: const Icon(Icons.add, color: Colors.white),
+              )
+            : null);
   }
 }
 
@@ -230,52 +226,55 @@ class PostWidget extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Comments Stream
-          StreamBuilder<List<Comment>>(
-            stream: groupDetailService.getPostComments(post.groupId, post.id),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+// Comments Stream
+            StreamBuilder<List<Comment>>(
+              stream: groupDetailService.getPostComments(post.groupId, post.id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text("No comments yet."));
-              }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text("No comments yet."));
+                }
 
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final comment = snapshot.data![index];
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: comment.userProfilePic.isNotEmpty
-                          ? NetworkImage(comment.userProfilePic)
-                          : null,
-                      backgroundColor: Colors.deepPurple,
-                      child: comment.userProfilePic.isEmpty
-                          ? Text(comment.username[0])
-                          : null,
-                    ),
-                    title: Text(comment.content),
-                    subtitle: Text(comment.content),
-                    trailing: Text(
-                      "${comment.createdAt.day}.${comment.createdAt.month} "
-                      "${comment.createdAt.hour}:${comment.createdAt.minute.toString().padLeft(2, "0")}",
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final comment = snapshot.data![index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: comment.userProfilePic.isNotEmpty
+                            ? NetworkImage(comment.userProfilePic)
+                            : null,
+                        backgroundColor: Colors.deepPurple,
+                        child: comment.userProfilePic.isEmpty
+                            ? Text(comment.username[0])
+                            : null,
+                      ),
+                      title: Text(comment.username),
+                      subtitle: Text(comment.content),
+                      trailing: Text(
+                        "${comment.createdAt.day}.${comment.createdAt.month} "
+                        "${comment.createdAt.hour}:${comment.createdAt.minute.toString().padLeft(2, "0")}",
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
 
-          // Comment Input
-          CommentBottomSheet(
-              post: post, groupDetailService: groupDetailService),
-        ],
+            // Comment Input
+            CommentBottomSheet(
+                post: post, groupDetailService: groupDetailService),
+          ],
+        ),
       ),
     );
   }
@@ -286,8 +285,10 @@ class PostWidget extends StatelessWidget {
     String likeCount = post.likes.length <= 1 ? "like" : "likes";
     String commentCount = post.comments.length <= 1 ? "comment" : "comments";
     return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -311,13 +312,16 @@ class PostWidget extends StatelessWidget {
               "${post.createdAt.hour}:${post.createdAt.minute.toString().padLeft(2, "0")}",
               style: ProjectTextStyles.subtitleTextStyle,
             ),
+            trailing: IconButton(
+              icon: const Icon(Icons.more_vert),
+              onPressed: () {},
+            ),
           ),
 
           // Post Content
           if (post.content.isNotEmpty)
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Text(
                 post.content,
                 style: ProjectTextStyles.cardDescriptionTextStyle,
