@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
+import 'package:collectionapp/design_elements.dart';
 
 class CreateGroupPage extends StatefulWidget {
   const CreateGroupPage({super.key});
@@ -18,7 +19,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
   String _name = '';
   String _description = '';
-  String _category = 'Genel'; // Varsayılan kategori
+  String _category = 'Genel';
   File? _coverImage;
 
   final List<String> _categories = [
@@ -69,12 +70,13 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Yeni Grup Oluştur'),
+      backgroundColor: Colors.grey[100],
+      appBar: const ProjectAppbar(
+        titleText: 'Yeni Grup Oluştur',
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Form(
             key: _formKey,
             child: Column(
@@ -84,18 +86,26 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 GestureDetector(
                   onTap: _pickImage,
                   child: Container(
-                    height: 200,
+                    height: 300,
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.deepPurple, width: 1),
                     ),
                     child: _coverImage != null
-                        ? Image.file(_coverImage!, fit: BoxFit.cover)
-                        : const Column(
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(_coverImage!, fit: BoxFit.cover),
+                          )
+                        : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.add_photo_alternate, size: 50),
-                              Text('Kapak Resmi Seç'),
+                              const Icon(Icons.add_photo_alternate,
+                                  size: 50, color: Colors.deepPurple),
+                              const SizedBox(height: 8),
+                              Text('Kapak Resmi Seç',
+                                  style: ProjectTextStyles.appBarTextStyle
+                                      .copyWith(fontSize: 16)),
                             ],
                           ),
                   ),
@@ -104,9 +114,13 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
                 // Grup Adı
                 TextFormField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Grup Adı',
-                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -120,9 +134,13 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
                 // Açıklama
                 TextFormField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Açıklama',
-                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   maxLines: 3,
                   validator: (value) {
@@ -137,9 +155,13 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
                 // Kategori Seçimi
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Kategori',
-                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   value: _category,
                   items: _categories
@@ -155,18 +177,16 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                   },
                 ),
                 const SizedBox(height: 24),
-
-                // Oluştur Butonu
-                ElevatedButton(
-                  onPressed: _createGroup,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text('Grubu Oluştur'),
-                ),
               ],
             ),
           ),
+        ),
+      ),
+      floatingActionButton: GestureDetector(
+        // create button
+        onTap: _createGroup,
+        child: const FinalFloatingDecoration(
+          buttonText: "Create Group",
         ),
       ),
     );
