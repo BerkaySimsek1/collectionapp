@@ -165,7 +165,19 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
               },
             );
           } else {
-            return const Center(child: Text("No join requests found."));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.group_off, size: 80, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    "No join requests found.",
+                    style: ProjectTextStyles.subtitleTextStyle,
+                  ),
+                ],
+              ),
+            );
           }
         },
       ),

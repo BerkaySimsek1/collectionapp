@@ -54,9 +54,16 @@ class CollectionItemsScreen extends StatelessWidget {
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
               return Center(
-                child: Text(
-                  "No items added yet.",
-                  style: ProjectTextStyles.subtitleTextStyle,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.grid_off, size: 80, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    Text(
+                      "No items added yet.",
+                      style: ProjectTextStyles.subtitleTextStyle,
+                    ),
+                  ],
                 ),
               );
             }
