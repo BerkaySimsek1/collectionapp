@@ -135,29 +135,32 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton.icon(
-                              icon: const Icon(Icons.close, color: Colors.red),
-                              label: Text("Decline",
-                                  style: ProjectTextStyles.appBarTextStyle
-                                      .copyWith(fontSize: 16)),
-                              onPressed: () => _updateJoinRequestStatus(
-                                  request["userId"], "declined"),
-                            ),
-                            const SizedBox(width: 8),
-                            ElevatedButton.icon(
-                              icon:
-                                  const Icon(Icons.check, color: Colors.white),
-                              label: const Text("Accept",
-                                  style: ProjectTextStyles.buttonTextStyle),
-                              onPressed: () => _updateJoinRequestStatus(
-                                  request["userId"], "accepted"),
-                              style: ProjectDecorations.elevatedButtonStyle,
-                            ),
-                          ],
-                        ),
+                        if (request["status"] ==
+                            "pending") // Add this condition
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton.icon(
+                                icon:
+                                    const Icon(Icons.close, color: Colors.red),
+                                label: Text("Decline",
+                                    style: ProjectTextStyles.appBarTextStyle
+                                        .copyWith(fontSize: 16)),
+                                onPressed: () => _updateJoinRequestStatus(
+                                    request["userId"], "declined"),
+                              ),
+                              const SizedBox(width: 8),
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.check,
+                                    color: Colors.white),
+                                label: const Text("Accept",
+                                    style: ProjectTextStyles.buttonTextStyle),
+                                onPressed: () => _updateJoinRequestStatus(
+                                    request["userId"], "accepted"),
+                                style: ProjectDecorations.elevatedButtonStyle,
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                   ),
