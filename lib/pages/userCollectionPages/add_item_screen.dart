@@ -191,7 +191,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
       await FirebaseFirestore.instance
           .collection("userCollections")
           .doc(widget.userId)
-          .collection(widget.collectionName)
+          .collection("collectionsList")
+          .doc(widget.collectionName)
+          .collection("items")
           .add(itemData);
 
       setState(() {

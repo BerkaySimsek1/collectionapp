@@ -1,7 +1,13 @@
 import 'package:collectionapp/design_elements.dart';
 import 'package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart';
+import 'package:collectionapp/models/AuctionModel.dart';
+import 'package:collectionapp/models/GroupModel.dart';
 import 'package:collectionapp/pages/edit_profile_page.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/pages/socialMediaPages/SM_group_detail_page.dart';
+import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
+import 'package:collectionapp/pages/userCollectionPages/collection_items_screen.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -104,17 +110,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildTabSection() {
-    return const DefaultTabController(
+    return DefaultTabController(
       length: 3,
       child: Column(
         children: [
-          TabBar(
+          const TabBar(
             labelColor: Colors.deepPurple,
             unselectedLabelColor: Colors.grey,
             indicatorColor: Colors.deepPurple,
             tabs: [
               Tab(text: "Groups"),
-              Tab(text: "Bids"),
+              Tab(text: "Auctions"),
               Tab(text: "Collections"),
             ],
           ),
@@ -122,14 +128,139 @@ class _UserProfilePageState extends State<UserProfilePage> {
             height: 300,
             child: TabBarView(
               children: [
-                Center(child: Text("Groups content coming soon!")),
-                Center(child: Text("Bids content coming soon!")),
-                Center(child: Text("Collections content coming soon!")),
+                _buildGroupsTab(),
+                _buildAuctionsTab(),
+                _buildCollectionsTab(),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGroupsTab() {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection("groups")
+          .where("members", arrayContains: userData?["uid"])
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text("No groups joined yet."));
+        }
+
+        final groups = snapshot.data!.docs;
+
+        return ListView.builder(
+          itemCount: groups.length,
+          itemBuilder: (context, index) {
+            final group = groups[index];
+            return ListTile(
+              title: Text(group["name"]),
+              subtitle: Text(group["description"]),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GroupDetailPage(
+                      group: Group.fromMap(group.data()),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildAuctionsTab() {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection("auctions")
+          .where("creator_id", isEqualTo: userData?["uid"])
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text("No auctions created yet."));
+        }
+
+        final auctions = snapshot.data!.docs;
+
+        return ListView.builder(
+          itemCount: auctions.length,
+          itemBuilder: (context, index) {
+            final auction = auctions[index];
+            return ListTile(
+              title: Text(auction["name"]),
+              subtitle: Text("Starting Price: ${auction["starting_price"]}"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AuctionDetail(
+                      auction: AuctionModel.fromMap(auction.data()),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildCollectionsTab() {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection("userCollections")
+          .doc(userData?["uid"])
+          .collection("collectionsList")
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          print(userData?["userId"]);
+          return const Center(child: Text("No collections created yet."));
+        }
+
+        final collections = snapshot.data!.docs;
+
+        return ListView.builder(
+          itemCount: collections.length,
+          itemBuilder: (context, index) {
+            final collection = collections[index];
+            return ListTile(
+              title: Text(collection["name"]),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CollectionItemsScreen(
+                      userId: userData?["uid"],
+                      collectionName: collection["name"],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
     );
   }
 

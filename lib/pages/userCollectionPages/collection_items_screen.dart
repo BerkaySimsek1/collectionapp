@@ -45,7 +45,9 @@ class CollectionItemsScreen extends StatelessWidget {
           stream: FirebaseFirestore.instance
               .collection("userCollections")
               .doc(userId)
-              .collection(collectionName)
+              .collection("collectionsList")
+              .doc(collectionName)
+              .collection("items")
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {

@@ -36,6 +36,8 @@ class _RegisterPageState extends State<RegisterPage> {
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
         age: int.parse(_ageController.text.trim()),
+        groups: [],
+        auctions: [],
       );
 
       await addUserDetails(newUser);
