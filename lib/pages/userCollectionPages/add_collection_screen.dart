@@ -17,16 +17,16 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   String? _selectedCollection;
   final TextEditingController _customCollectionController =
       TextEditingController();
-  List<Map<String, String>> _customFields = [];
 
   void _onCollectionTypeChanged(String? value) {
     setState(() {
       _selectedCollection = value;
-      if (predefinedCollections.containsKey(value)) {
-        _customFields = predefinedCollections[value]!;
-      } else {
-        _customFields = [];
-      }
+      // Bu kısımda _customFields devre dışı bırakıldığı için hiçbir şey yapmıyoruz
+      // if (predefinedCollections.containsKey(value)) {
+      //   _customFields = predefinedCollections[value]!;
+      // } else {
+      //   _customFields = [];
+      // }
     });
   }
 
@@ -39,10 +39,11 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
       await FirebaseFirestore.instance
           .collection("userCollections")
           .doc(widget.userId)
-          .collection("collections")
-          .add({
+          .collection("collectionsList")
+          .doc(collectionName)
+          .set({
         "name": collectionName,
-        "customFields": _customFields,
+        "createdAt": DateTime.now().toIso8601String(),
       });
 
       Navigator.pop(context);
