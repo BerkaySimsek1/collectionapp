@@ -49,7 +49,9 @@ class ItemDetailsScreen extends StatelessWidget {
         future: FirebaseFirestore.instance
             .collection("userCollections")
             .doc(userId)
-            .collection(collectionName)
+            .collection("collectionsList")
+            .doc(collectionName)
+            .collection("items")
             .doc(itemId)
             .get(),
         builder: (context, snapshot) {
