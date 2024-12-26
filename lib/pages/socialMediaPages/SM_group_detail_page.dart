@@ -206,6 +206,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               ),
           ],
         ),
+        // Floating Action Button for creating a new post in a member state
         floatingActionButton: _isMember == null || _isMember!
             ? FloatingActionButton(
                 onPressed: () {
