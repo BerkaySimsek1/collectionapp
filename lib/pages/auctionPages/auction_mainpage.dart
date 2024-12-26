@@ -51,6 +51,9 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                   color: const Color(0xFFF7F2FA),
                   borderRadius: BorderRadius.circular(8),
                 ),
+                // search section
+                // sort section
+                // filter section
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
