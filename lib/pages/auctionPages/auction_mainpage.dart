@@ -1,159 +1,67 @@
 import "package:collectionapp/design_elements.dart";
+import 'package:collectionapp/viewModels/auction_viewmodel.dart';
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/models/AuctionModel.dart";
 import "package:collectionapp/pages/auctionPages/auction_detail.dart";
 import "package:collectionapp/pages/auctionPages/create_auction.dart";
 import "package:collectionapp/countdown_timer.dart";
+import 'package:provider/provider.dart';
 
-class AuctionListScreen extends StatefulWidget {
+class AuctionListScreen extends StatelessWidget {
   const AuctionListScreen({super.key});
 
   @override
-  _AuctionListScreenState createState() => _AuctionListScreenState();
-}
-
-class _AuctionListScreenState extends State<AuctionListScreen> {
-  String _filter = "all";
-  String _sort = "newest";
-
-  Stream<QuerySnapshot> _getAuctionStream() {
-    final collection = FirebaseFirestore.instance.collection("auctions");
-    Query query = collection;
-
-    if (_filter == "active") {
-      query = query.where("isAuctionEnd", isEqualTo: false);
-    } else if (_filter == "ended") {
-      query = query.where("isAuctionEnd", isEqualTo: true);
-    }
-
-    if (_sort == "newest") {
-      query = query.orderBy("created_at", descending: true);
-    } else if (_sort == "oldest") {
-      query = query.orderBy("created_at", descending: false);
-    } else if (_sort == "name_az") {
-      query = query.orderBy("name", descending: false);
-    } else if (_sort == "name_za") {
-      query = query.orderBy("name", descending: true);
-    }
-
-    return query.snapshots();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ChangeNotifierProvider(
+      create: (_) => AuctionViewModel(),
+      child: Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: const ProjectAppbar(
           titleText: "Auctions",
         ),
-        body: Container(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  boxShadow: const [
-                    BoxShadow(
-                        offset: Offset(0, 1),
-                        blurRadius: 1,
-                        spreadRadius: 0.5,
-                        color: Colors.grey),
-                  ],
-                  color: const Color(0xFFF7F2FA),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                // search section
-                // sort section
-                // filter section
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.sort),
-                      onSelected: (value) {
-                        setState(() {
-                          _sort = value;
-                        });
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: "newest",
-                          child: Text("Newest"),
-                        ),
-                        const PopupMenuItem(
-                          value: "oldest",
-                          child: Text("Oldest"),
-                        ),
-                        const PopupMenuItem(
-                          value: "name_az",
-                          child: Text("Name (A-Z)"),
-                        ),
-                        const PopupMenuItem(
-                          value: "name_za",
-                          child: Text("Name (Z-A)"),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      height: 30,
-                      width: 1,
-                      color: Colors.black,
-                    ),
-                    FilterButton(
-                      label: "All",
-                      isSelected: _filter == "all",
-                      onTap: () => setState(() => _filter = "all"),
-                    ),
-                    FilterButton(
-                      label: "Active",
-                      isSelected: _filter == "active",
-                      onTap: () => setState(() => _filter = "active"),
-                    ),
-                    FilterButton(
-                      label: "Ended",
-                      isSelected: _filter == "ended",
-                      onTap: () => setState(() => _filter = "ended"),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 4),
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: _getAuctionStream(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return Center(
-                        child: Text(
-                          "There is no auction yet.",
-                          style: ProjectTextStyles.subtitleTextStyle,
-                        ),
+        body: Consumer<AuctionViewModel>(
+          builder: (context, auctionViewModel, child) {
+            return Column(
+              children: [
+                // Filter and Sort UI
+                FilterAndSortSection(viewModel: auctionViewModel),
+                const SizedBox(height: 4),
+                // Auction List
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: auctionViewModel.getAuctionStream(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return Center(
+                          child: Text(
+                            "There is no auction yet.",
+                            style: ProjectTextStyles.subtitleTextStyle,
+                          ),
+                        );
+                      }
+                      final auctionDocs = snapshot.data!.docs;
+                      return ListView.builder(
+                        itemCount: auctionDocs.length,
+                        itemBuilder: (context, index) {
+                          final auctionData =
+                              auctionDocs[index].data() as Map<String, dynamic>;
+                          final auction = AuctionModel.fromMap(auctionData);
+                          return AuctionCard(auction: auction);
+                        },
                       );
-                    }
-                    final auctionDocs = snapshot.data!.docs;
-                    return ListView.builder(
-                      itemCount: auctionDocs.length,
-                      itemBuilder: (context, index) {
-                        final auctionData =
-                            auctionDocs[index].data() as Map<String, dynamic>;
-                        final auction = AuctionModel.fromMap(auctionData);
-
-                        return AuctionCard(auction: auction);
-                      },
-                    );
-                  },
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            );
+          },
         ),
-
-        // create auction button
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: ElevatedButton.icon(
           onPressed: () {
@@ -169,7 +77,80 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
             "Create Auction",
             style: ProjectTextStyles.buttonTextStyle,
           ),
-        ));
+        ),
+      ),
+    );
+  }
+}
+
+class FilterAndSortSection extends StatelessWidget {
+  final AuctionViewModel viewModel;
+
+  const FilterAndSortSection({super.key, required this.viewModel});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        boxShadow: const [
+          BoxShadow(
+              offset: Offset(0, 1),
+              blurRadius: 1,
+              spreadRadius: 0.5,
+              color: Colors.grey),
+        ],
+        color: const Color(0xFFF7F2FA),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.sort),
+            onSelected: viewModel.updateSort,
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: "newest",
+                child: Text("Newest"),
+              ),
+              const PopupMenuItem(
+                value: "oldest",
+                child: Text("Oldest"),
+              ),
+              const PopupMenuItem(
+                value: "name_az",
+                child: Text("Name (A-Z)"),
+              ),
+              const PopupMenuItem(
+                value: "name_za",
+                child: Text("Name (Z-A)"),
+              ),
+            ],
+          ),
+          Container(
+            height: 30,
+            width: 1,
+            color: Colors.black,
+          ),
+          FilterButton(
+            label: "All",
+            isSelected: viewModel.filter == "all",
+            onTap: () => viewModel.updateFilter("all"),
+          ),
+          FilterButton(
+            label: "Active",
+            isSelected: viewModel.filter == "active",
+            onTap: () => viewModel.updateFilter("active"),
+          ),
+          FilterButton(
+            label: "Ended",
+            isSelected: viewModel.filter == "ended",
+            onTap: () => viewModel.updateFilter("ended"),
+          ),
+        ],
+      ),
+    );
   }
 }
 

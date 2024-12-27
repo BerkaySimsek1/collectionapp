@@ -1,55 +1,196 @@
-import "package:collectionapp/design_elements.dart";
-import "package:flutter/material.dart";
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:collectionapp/countdown_timer.dart";
-import "package:collectionapp/models/AuctionModel.dart";
-import "package:collectionapp/models/UserInfoModel.dart";
-import "package:firebase_auth/firebase_auth.dart";
-import "package:photo_view/photo_view.dart";
+import 'package:collectionapp/viewModels/auction_detail_viewmodel.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:collectionapp/models/AuctionModel.dart';
+import 'package:collectionapp/design_elements.dart';
+import 'package:collectionapp/countdown_timer.dart';
+import 'package:photo_view/photo_view.dart';
 
-class AuctionDetail extends StatefulWidget {
+class AuctionDetail extends StatelessWidget {
   final AuctionModel auction;
 
   const AuctionDetail({super.key, required this.auction});
 
   @override
-  _AuctionDetailState createState() => _AuctionDetailState();
-}
-
-class _AuctionDetailState extends State<AuctionDetail> {
-  final user = FirebaseAuth.instance.currentUser!;
-  UserInfoModel? currentUser;
-  UserInfoModel? creatorInfo;
-  UserInfoModel? bidderInfo;
-
-  @override
-  void initState() {
-    super.initState();
-    getUserInfo(user.uid, (info) => currentUser = info);
-    getUserInfo(widget.auction.creatorId, (info) => creatorInfo = info);
-    if (widget.auction.bidderId.isNotEmpty) {
-      getUserInfo(widget.auction.bidderId, (info) => bidderInfo = info);
-    }
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => AuctionDetailViewModel(auction),
+      child: Scaffold(
+        backgroundColor: Colors.grey[100],
+        appBar: ProjectAppbar(
+          titleText: "Auction Details",
+          actions: [
+            Consumer<AuctionDetailViewModel>(
+              builder: (context, viewModel, child) {
+                if (viewModel.currentUser.uid == auction.creatorId) {
+                  return PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == "Edit") {
+                        _showEditDialog(context, viewModel);
+                      } else if (value == "Delete") {
+                        _showDeleteConfirmation(context, viewModel);
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => [
+                      const PopupMenuItem<String>(
+                        value: "Edit",
+                        child: Text("Edit"),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: "Delete",
+                        child: Text("Delete"),
+                      ),
+                    ],
+                    icon: const Icon(Icons.more_vert),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+            ),
+          ],
+        ),
+        body: Consumer<AuctionDetailViewModel>(
+          builder: (context, viewModel, child) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Image Carousel
+                    _buildImageCarousel(auction.imageUrls, context),
+                    const SizedBox(height: 16),
+                    // Auction Details
+                    _buildAuctionDetails(viewModel),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        const Icon(Icons.timer, color: Colors.deepPurple),
+                        const SizedBox(width: 8),
+                        CountdownTimer(
+                          endTime: auction.endTime,
+                          auctionId: auction.id,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        floatingActionButton: Consumer<AuctionDetailViewModel>(
+          builder: (context, viewModel, child) {
+            if (viewModel.currentUser.uid != auction.creatorId) {
+              return GestureDetector(
+                onTap: () => _showBidDialog(context, viewModel),
+                child: const FinalFloatingDecoration(
+                  buttonText: "Place a Bid",
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      ),
+    );
   }
 
-  void getUserInfo(String userId, Function(UserInfoModel) onSuccess) async {
-    try {
-      DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection("users")
-          .doc(userId)
-          .get();
-
-      if (doc.exists) {
-        setState(() {
-          onSuccess(UserInfoModel.fromJson(doc.data() as Map<String, dynamic>));
-        });
-      }
-    } catch (e) {
-      debugPrint("Error occured: $e");
-    }
+  Widget _buildImageCarousel(List<String> imageUrls, BuildContext context) {
+    return Container(
+      height: 250,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: PageView.builder(
+        itemCount: imageUrls.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () => _showPhotoDialog(context, imageUrls[index]),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                imageUrls[index],
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, progress) {
+                  return progress == null
+                      ? child
+                      : Center(
+                          child: CircularProgressIndicator(
+                            value: progress.expectedTotalBytes != null
+                                ? progress.cumulativeBytesLoaded /
+                                    progress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
-  Future<void> _showPhotoDialog(String imageUrl) {
+  Widget _buildAuctionDetails(AuctionDetailViewModel viewModel) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              auction.description,
+              style: const TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+            const SizedBox(height: 8),
+            RichText(
+              text: TextSpan(
+                text: "Price: ",
+                style: ProjectTextStyles.cardHeaderTextStyle,
+                children: [
+                  TextSpan(
+                    text: "\$${auction.startingPrice.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              viewModel.bidderInfo != null
+                  ? "Last Bidder: ${viewModel.bidderInfo!.firstName}"
+                  : "No bids yet",
+              style: ProjectTextStyles.cardDescriptionTextStyle,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              viewModel.creatorInfo != null
+                  ? "Created by: ${viewModel.creatorInfo!.firstName}"
+                  : "",
+              style: ProjectTextStyles.cardHeaderTextStyle,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showPhotoDialog(BuildContext context, String imageUrl) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -72,7 +213,8 @@ class _AuctionDetailState extends State<AuctionDetail> {
     );
   }
 
-  Future<void> _showBidDialog() async {
+  Future<void> _showBidDialog(
+      BuildContext context, AuctionDetailViewModel viewModel) async {
     double? newBid;
     return showDialog<void>(
       context: context,
@@ -88,7 +230,7 @@ class _AuctionDetailState extends State<AuctionDetail> {
           content: TextField(
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              hintText: "Minimum Bid: \$${widget.auction.startingPrice + 1}",
+              hintText: "Minimum Bid: \$${auction.startingPrice + 1}",
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -108,24 +250,10 @@ class _AuctionDetailState extends State<AuctionDetail> {
               ),
             ),
             ElevatedButton(
-              onPressed: () async {
-                if (newBid != null && newBid! > widget.auction.startingPrice) {
-                  await FirebaseFirestore.instance
-                      .collection("auctions")
-                      .doc(widget.auction.id)
-                      .update({
-                    "starting_price": newBid,
-                    "bidder_id": user.uid,
-                  });
-                  setState(() {
-                    widget.auction.startingPrice = newBid!;
-                    widget.auction.bidderId = user.uid;
-                  });
+              onPressed: () {
+                if (newBid != null) {
+                  viewModel.placeBid(newBid!, context);
                   Navigator.of(context).pop();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Invalid bid!")),
-                  );
                 }
               },
               style: ProjectDecorations.elevatedButtonStyle,
@@ -139,135 +267,98 @@ class _AuctionDetailState extends State<AuctionDetail> {
       },
     );
   }
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: ProjectAppbar(
-        titleText: widget.auction.name,
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+Future<void> _showEditDialog(
+    BuildContext context, AuctionDetailViewModel viewModel) async {
+  final TextEditingController nameController =
+      TextEditingController(text: viewModel.auction.name);
+  final TextEditingController descriptionController =
+      TextEditingController(text: viewModel.auction.description);
+
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        title: const Text("Edit Auction"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Horizontal image carousel
-            Container(
-              height: 250,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 2,
-                    blurRadius: 6,
-                  ),
-                ],
-              ),
-              child: PageView.builder(
-                itemCount: widget.auction.imageUrls.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () =>
-                        _showPhotoDialog(widget.auction.imageUrls[index]),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        widget.auction.imageUrls[index],
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, progress) {
-                          return progress == null
-                              ? child
-                              : Center(
-                                  child: CircularProgressIndicator(
-                                    value: progress.expectedTotalBytes != null
-                                        ? progress.cumulativeBytesLoaded /
-                                            progress.expectedTotalBytes!
-                                        : null,
-                                  ),
-                                );
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: "Auction Name"),
             ),
-            const SizedBox(height: 16),
-            //auction details
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.auction.description,
-                      style:
-                          const TextStyle(fontSize: 16, color: Colors.black87),
-                    ),
-                    const SizedBox(height: 8),
-                    RichText(
-                      text: TextSpan(
-                        text: "Price: ",
-                        style: ProjectTextStyles.cardHeaderTextStyle,
-                        children: [
-                          TextSpan(
-                            text:
-                                "\$${widget.auction.startingPrice.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      bidderInfo != null
-                          ? "Last Bidder: ${bidderInfo!.firstName}"
-                          : "No bids yet",
-                      style: ProjectTextStyles.cardDescriptionTextStyle,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      creatorInfo != null
-                          ? "Created by: ${creatorInfo!.firstName}"
-                          : "",
-                      style: ProjectTextStyles.cardHeaderTextStyle,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                const Icon(Icons.timer, color: Colors.deepPurple),
-                const SizedBox(width: 8),
-                CountdownTimer(
-                  endTime: widget.auction.endTime,
-                  auctionId: widget.auction.id,
-                ),
-              ],
+            const SizedBox(height: 10),
+            TextField(
+              controller: descriptionController,
+              decoration: const InputDecoration(labelText: "Description"),
+              maxLines: 3,
             ),
           ],
         ),
-      ),
-      floatingActionButton: (user.uid != widget.auction.creatorId)
-          ? GestureDetector(
-              onTap: _showBidDialog,
-              child: const FinalFloatingDecoration(
-                buttonText: "Place a Bid",
-              ),
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
-  }
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              viewModel.editAuction(
+                context,
+                nameController.text,
+                descriptionController.text,
+              );
+              Navigator.of(context).pop();
+            },
+            child: const Text("Save"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> _showDeleteConfirmation(
+    BuildContext context, AuctionDetailViewModel viewModel) async {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Delete Auction"),
+        content: const Text("Are you sure you want to delete this auction?"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              // 1) ViewModel'den silme işlemini çalıştır
+              bool success = await viewModel.deleteAuction();
+
+              // 2) Dialog'u kapat
+              Navigator.of(context).pop();
+
+              // 3) İşlem başarılıysa snackBar göster ve AuctionDetail sayfasını pop et
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text("Auction deleted successfully!")),
+                );
+                Navigator.of(context).pop(true);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Error deleting auction.")),
+                );
+              }
+            },
+            child: const Text("Delete"),
+          ),
+        ],
+      );
+    },
+  );
 }

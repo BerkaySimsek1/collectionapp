@@ -4,7 +4,7 @@ import "package:flutter/material.dart";
 
 class CountdownTimer extends StatefulWidget {
   final DateTime endTime;
-  final String auctionId; // Auction ID"yi CountdownTimer"a ekledik
+  final String auctionId;
 
   const CountdownTimer(
       {super.key, required this.endTime, required this.auctionId});
@@ -16,26 +16,52 @@ class CountdownTimer extends StatefulWidget {
 class _CountdownTimerState extends State<CountdownTimer> {
   Timer? _timer;
   Duration _remainingDuration = const Duration();
+  bool _isAuctionEnded = false;
+  StreamSubscription<DocumentSnapshot>? _auctionSubscription;
 
   @override
   void initState() {
     super.initState();
+    _listenAuctionStatus();
     _calculateRemainingTime();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _calculateRemainingTime();
     });
   }
 
-  void _calculateRemainingTime() {
-    final now = DateTime.now();
-    setState(() {
-      _remainingDuration = widget.endTime.difference(now);
-      if (_remainingDuration.isNegative) {
-        _timer?.cancel(); // Süre dolduğunda timer'ı durdur
-        _remainingDuration = Duration.zero;
-        _endAuction(); // Auction bittiğinde Firestore'da güncelleme yap
+  void _listenAuctionStatus() {
+    _auctionSubscription = FirebaseFirestore.instance
+        .collection("auctions")
+        .doc(widget.auctionId)
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.exists) {
+        final data = snapshot.data()!;
+        setState(() {
+          _isAuctionEnded = data["isAuctionEnd"] ?? false;
+        });
       }
     });
+  }
+
+  void _calculateRemainingTime() {
+    final now = DateTime.now();
+    final remaining = widget.endTime.difference(now);
+
+    if (remaining.isNegative) {
+      if (!_isAuctionEnded) {
+        _endAuction();
+      }
+      _timer?.cancel();
+      setState(() {
+        _remainingDuration = Duration.zero;
+        _isAuctionEnded = true;
+      });
+    } else {
+      setState(() {
+        _remainingDuration = remaining;
+      });
+    }
   }
 
   Future<void> _endAuction() async {
@@ -51,23 +77,36 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Timer"ı iptal et
+    _timer?.cancel();
+    _auctionSubscription?.cancel(); // Firestore dinleyicisini iptal et
     super.dispose();
+  }
+
+  String _formatDuration(Duration duration) {
+    final days = duration.inDays;
+    final hours = duration.inHours.remainder(24);
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+
+    if (_isAuctionEnded || duration.inSeconds <= 0) {
+      return "This auction has ended.";
+    } else if (days > 0) {
+      return "$days days $hours hours";
+    } else if (hours > 0) {
+      return "$hours hours $minutes minutes";
+    } else if (minutes > 0) {
+      return "$minutes minutes $seconds seconds";
+    } else {
+      return "$seconds seconds";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final hours = _remainingDuration.inHours;
-    final minutes = _remainingDuration.inMinutes % 60;
-    final seconds = _remainingDuration.inSeconds % 60;
+    final timerText = _formatDuration(_remainingDuration);
 
-    var timerText = "";
-    if (hours == 0 && minutes == 0 && seconds == 0) {
-      timerText = "This auction has ended.";
-    } else {
-      timerText =
-          "$hours:${minutes < 10 ? "0$minutes" : minutes}:${seconds < 10 ? "0$seconds" : seconds}";
-    }
-    return Text(timerText);
+    return Text(
+      timerText,
+    );
   }
 }
