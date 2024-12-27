@@ -2,6 +2,7 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/design_elements.dart";
+import "package:intl/intl.dart";
 
 class ItemDetailsScreen extends StatelessWidget {
   final String userId;
@@ -19,6 +20,29 @@ class ItemDetailsScreen extends StatelessWidget {
     required String fieldName,
     required dynamic fieldValue,
   }) {
+    String displayValue;
+
+    if (fieldValue is Timestamp) {
+      // Firestore Timestamp ise, DateTime'e çevir
+      DateTime dateTime = fieldValue.toDate();
+      displayValue = DateFormat('dd.MM.yyyy').format(dateTime);
+    } else if (fieldValue is DateTime) {
+      // Eğer doğrudan DateTime geliyorsa
+      displayValue = DateFormat('dd.MM.yyyy').format(fieldValue);
+    } else if (fieldValue is String) {
+      // Eğer string bir tarih ise, DateTime'a çevir ve formatla
+      try {
+        DateTime dateTime = DateTime.parse(fieldValue);
+        displayValue = DateFormat('dd.MM.yyyy').format(dateTime);
+      } catch (e) {
+        // Eğer parse edilemezse, olduğu gibi göster
+        displayValue = fieldValue;
+      }
+    } else {
+      // Diğer durumlar için
+      displayValue = fieldValue.toString();
+    }
+
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -31,7 +55,7 @@ class ItemDetailsScreen extends StatelessWidget {
           style: ProjectTextStyles.cardHeaderTextStyle,
         ),
         subtitle: Text(
-          fieldValue.toString(),
+          displayValue,
           style: ProjectTextStyles.cardDescriptionTextStyle,
         ),
       ),

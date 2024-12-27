@@ -37,7 +37,7 @@ class CollectionItemsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: ProjectAppbar(
-        titleText: "$collectionName Koleksiyonu",
+        titleText: "$collectionName Collection",
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
 import 'package:collectionapp/design_elements.dart';
+import 'package:collectionapp/models/predefined_collections.dart';
 
 class CreateGroupPage extends StatefulWidget {
   const CreateGroupPage({super.key});
@@ -19,16 +20,12 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
   String _name = '';
   String _description = '';
-  String _category = 'Genel';
+  String _category = 'Diğer';
   File? _coverImage;
 
   final List<String> _categories = [
-    'Genel',
-    'Teknoloji',
-    'Spor',
-    'Müzik',
-    'Oyun',
-    'Eğitim'
+    'Diğer',
+    ...predefinedCollections.keys,
   ];
 
   Future<void> _pickImage() async {
