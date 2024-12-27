@@ -5,21 +5,27 @@ class ProjectAppbar extends StatelessWidget implements PreferredSizeWidget {
   const ProjectAppbar({
     super.key,
     required this.titleText,
+    this.actions, // Optional actions parameter
   });
+
   final String titleText;
+  final List<Widget>? actions; // Nullable list of actions
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.transparent,
       title: Text(titleText, style: ProjectTextStyles.appBarTextStyle),
       leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.deepPurple,
-          )),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        icon: const Icon(
+          Icons.arrow_back,
+          color: Colors.deepPurple,
+        ),
+      ),
+      actions: actions, // AppBar will leave this empty if null
     );
   }
 
