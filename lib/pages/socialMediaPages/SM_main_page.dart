@@ -4,6 +4,7 @@ import "package:collectionapp/models/GroupModel.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_creategroup_page.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_group_detail_page.dart";
 import 'package:collectionapp/design_elements.dart';
+import 'package:collectionapp/models/predefined_collections.dart';
 
 class GroupsListPage extends StatefulWidget {
   const GroupsListPage({super.key});
@@ -16,6 +17,8 @@ class _GroupsListPageState extends State<GroupsListPage> {
   final _groupService = GroupService();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
+  String _selectedFilter = "All";
+  String _selectedSort = "A-Z";
 
   @override
   Widget build(BuildContext context) {
@@ -28,32 +31,69 @@ class _GroupsListPageState extends State<GroupsListPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: "Search groups",
-                hintStyle: TextStyle(color: Colors.grey[600]),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear, color: Colors.grey),
-                  onPressed: () {
-                    _searchController.clear();
+            child: Row(
+              children: [
+                Expanded(
+                    child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) {
                     setState(() {
-                      _searchQuery = "";
+                      _searchQuery = value.toLowerCase();
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Search groups",
+                    hintStyle: TextStyle(color: Colors.grey[600]),
+                    // Arama ikonunu ekliyoruz
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.grey[600],
+                    ),
+                    // Sadece text doluysa "X" (clear) ikonunu göster
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.clear, color: Colors.grey[600]),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() {
+                                _searchQuery = "";
+                              });
+                            },
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: Colors.white,
+                    // İsteğe bağlı ek padding
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 12.0, horizontal: 16.0),
+                    // Kenarlık ayarları
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                )),
+                IconButton(
+                  icon: const Icon(Icons.filter_list, color: Colors.grey),
+                  onPressed: () {
+                    _showFilterDialog();
+                  },
+                ),
+                DropdownButton<String>(
+                  value: _selectedSort,
+                  items: ["A-Z", "Z-A"]
+                      .map((sortOption) => DropdownMenuItem(
+                            value: sortOption,
+                            child: Text(sortOption),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedSort = value!;
                     });
                   },
                 ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value.toLowerCase();
-                });
-              },
+              ],
             ),
           ),
           Expanded(
@@ -83,9 +123,19 @@ class _GroupsListPageState extends State<GroupsListPage> {
 
                 final filteredGroups = snapshot.data!
                     .where((group) =>
-                        group.name.toLowerCase().contains(_searchQuery) ||
-                        group.description.toLowerCase().contains(_searchQuery))
+                        (_selectedFilter == "All" ||
+                            group.category == _selectedFilter) &&
+                        (group.name.toLowerCase().contains(_searchQuery) ||
+                            group.description
+                                .toLowerCase()
+                                .contains(_searchQuery)))
                     .toList();
+
+                if (_selectedSort == "Z-A") {
+                  filteredGroups.sort((a, b) => b.name.compareTo(a.name));
+                } else {
+                  filteredGroups.sort((a, b) => a.name.compareTo(b.name));
+                }
 
                 return ListView.builder(
                   itemCount: filteredGroups.length,
@@ -113,6 +163,47 @@ class _GroupsListPageState extends State<GroupsListPage> {
         ),
         icon: const Icon(Icons.add, color: Colors.white),
       ),
+    );
+  }
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Filter by Category"),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                RadioListTile<String>(
+                  title: const Text("All"),
+                  value: "All",
+                  groupValue: _selectedFilter,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedFilter = value!;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                ...predefinedCollections.keys.map((category) {
+                  return RadioListTile<String>(
+                    title: Text(category),
+                    value: category,
+                    groupValue: _selectedFilter,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedFilter = value!;
+                      });
+                      Navigator.pop(context);
+                    },
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

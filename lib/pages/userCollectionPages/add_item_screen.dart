@@ -5,6 +5,7 @@ import "package:image_picker/image_picker.dart"; // Fotoğraf seçimi için
 import "package:collectionapp/models/predefined_collections.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
+import "package:intl/intl.dart";
 
 class AddItemScreen extends StatefulWidget {
   final String userId;
@@ -73,10 +74,16 @@ class _AddItemScreenState extends State<AddItemScreen> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: fieldType,
-                items: ["TextField", "NumberField", "DatePicker"]
-                    .map((type) =>
-                        DropdownMenuItem(value: type, child: Text(type)))
-                    .toList(),
+                items: [
+                  {"label": "Text", "value": "TextField"},
+                  {"label": "Number", "value": "NumberField"},
+                  {"label": "Date", "value": "DatePicker"},
+                ].map((type) {
+                  return DropdownMenuItem<String>(
+                    value: type["value"], // Arka planda kullanılacak değer
+                    child: Text(type["label"]!), // Kullanıcının göreceği etiket
+                  );
+                }).toList(),
                 onChanged: (value) {
                   if (value != null) {
                     fieldType = value;
@@ -175,7 +182,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       final Map<String, dynamic> itemData = {
         "İsim": itemName,
         "Nadirlik": rarity,
-        "Photos": photoPaths, // Fotoğraf yollarını kaydet
+        "Photos": photoPaths,
       };
 
       // Önceden tanımlı alanları ekle
@@ -316,7 +323,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             child: TextFormField(
               decoration: InputDecoration(
                 labelText: fieldName,
-                filled: true, // optional decoration
+                filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -333,7 +340,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             child: TextFormField(
               decoration: InputDecoration(
                 labelText: fieldName,
-                filled: true, // optional decoration
+                filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -363,9 +370,19 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 title: Text(fieldName,
                     style: ProjectTextStyles.cardHeaderTextStyle),
                 subtitle: Text(
-                    _customFieldValues[fieldName]?.toString() ??
-                        "Date must be selected.",
-                    style: ProjectTextStyles.cardDescriptionTextStyle),
+                  _customFieldValues[fieldName] != null
+                      ? (() {
+                          try {
+                            final date =
+                                DateTime.parse(_customFieldValues[fieldName]);
+                            return DateFormat('dd.MM.yyyy').format(date);
+                          } catch (e) {
+                            return _customFieldValues[fieldName].toString();
+                          }
+                        })()
+                      : "Date must be selected.",
+                  style: ProjectTextStyles.cardDescriptionTextStyle,
+                ),
                 trailing: const Icon(
                   Icons.chevron_right,
                   color: Colors.deepPurple,

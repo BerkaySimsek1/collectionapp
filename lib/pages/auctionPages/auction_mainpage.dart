@@ -15,16 +15,29 @@ class AuctionListScreen extends StatefulWidget {
 
 class _AuctionListScreenState extends State<AuctionListScreen> {
   String _filter = "all";
+  String _sort = "newest";
 
   Stream<QuerySnapshot> _getAuctionStream() {
     final collection = FirebaseFirestore.instance.collection("auctions");
+    Query query = collection;
+
     if (_filter == "active") {
-      return collection.where("isAuctionEnd", isEqualTo: false).snapshots();
+      query = query.where("isAuctionEnd", isEqualTo: false);
     } else if (_filter == "ended") {
-      return collection.where("isAuctionEnd", isEqualTo: true).snapshots();
-    } else {
-      return collection.snapshots();
+      query = query.where("isAuctionEnd", isEqualTo: true);
     }
+
+    if (_sort == "newest") {
+      query = query.orderBy("created_at", descending: true);
+    } else if (_sort == "oldest") {
+      query = query.orderBy("created_at", descending: false);
+    } else if (_sort == "name_az") {
+      query = query.orderBy("name", descending: false);
+    } else if (_sort == "name_za") {
+      query = query.orderBy("name", descending: true);
+    }
+
+    return query.snapshots();
   }
 
   @override
@@ -57,7 +70,32 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    const Icon(Icons.filter_alt_outlined),
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.sort),
+                      onSelected: (value) {
+                        setState(() {
+                          _sort = value;
+                        });
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: "newest",
+                          child: Text("Newest"),
+                        ),
+                        const PopupMenuItem(
+                          value: "oldest",
+                          child: Text("Oldest"),
+                        ),
+                        const PopupMenuItem(
+                          value: "name_az",
+                          child: Text("Name (A-Z)"),
+                        ),
+                        const PopupMenuItem(
+                          value: "name_za",
+                          child: Text("Name (Z-A)"),
+                        ),
+                      ],
+                    ),
                     Container(
                       height: 30,
                       width: 1,
