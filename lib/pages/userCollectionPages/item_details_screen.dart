@@ -3,8 +3,9 @@ import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/design_elements.dart";
 import "package:intl/intl.dart";
+import 'package:collectionapp/pages/userCollectionPages/edit_item_screen.dart';
 
-class ItemDetailsScreen extends StatelessWidget {
+class ItemDetailsScreen extends StatefulWidget {
   final String userId;
   final String collectionName;
   final String itemId;
@@ -15,6 +16,45 @@ class ItemDetailsScreen extends StatelessWidget {
     required this.collectionName,
     required this.itemId,
   });
+
+  @override
+  _ItemDetailsScreenState createState() => _ItemDetailsScreenState();
+}
+
+class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
+  void _deleteItem(BuildContext context) async {
+    final bool? confirmDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Are you sure?"),
+          content: const Text("Do you really want to delete this item?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Delete"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmDelete == true) {
+      await FirebaseFirestore.instance
+          .collection("userCollections")
+          .doc(widget.userId)
+          .collection("collectionsList")
+          .doc(widget.collectionName)
+          .collection("items")
+          .doc(widget.itemId)
+          .delete();
+      Navigator.pop(context);
+    }
+  }
 
   Widget _buildFieldWidget({
     required String fieldName,
@@ -66,17 +106,41 @@ class ItemDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: const ProjectAppbar(
+      appBar: ProjectAppbar(
         titleText: "Item Details",
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditItemScreen(
+                    userId: widget.userId,
+                    collectionName: widget.collectionName,
+                    itemId: widget.itemId,
+                  ),
+                ),
+              );
+              if (result == true) {
+                setState(() {});
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _deleteItem(context),
+          ),
+        ],
       ),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
             .collection("userCollections")
-            .doc(userId)
+            .doc(widget.userId)
             .collection("collectionsList")
-            .doc(collectionName)
+            .doc(widget.collectionName)
             .collection("items")
-            .doc(itemId)
+            .doc(widget.itemId)
             .get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

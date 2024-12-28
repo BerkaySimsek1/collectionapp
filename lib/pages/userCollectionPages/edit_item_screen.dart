@@ -1,28 +1,30 @@
 import "dart:io";
 import "package:collectionapp/design_elements.dart";
 import "package:firebase_storage/firebase_storage.dart";
-import "package:image_picker/image_picker.dart"; // Fotoğraf seçimi için
+import "package:image_picker/image_picker.dart";
 import "package:collectionapp/models/predefined_collections.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:intl/intl.dart";
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
-class AddItemScreen extends StatefulWidget {
+class EditItemScreen extends StatefulWidget {
   final String userId;
   final String collectionName;
+  final String itemId;
 
-  const AddItemScreen({
+  const EditItemScreen({
     super.key,
     required this.userId,
     required this.collectionName,
+    required this.itemId,
   });
 
   @override
-  _AddItemScreenState createState() => _AddItemScreenState();
+  _EditItemScreenState createState() => _EditItemScreenState();
 }
 
-class _AddItemScreenState extends State<AddItemScreen> {
+class _EditItemScreenState extends State<EditItemScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _rarityController = TextEditingController();
@@ -33,18 +35,69 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final Map<String, dynamic> _customFieldValues = {};
 
   List<XFile> _selectedImages = [];
-  bool _isUploading = false; // Yükleme durumunu izlemek için
+  bool _isUploading = false;
 
   @override
   void initState() {
     super.initState();
+    _loadItemData();
+  }
 
-    // Koleksiyon türüne göre alanları yükle
-    if (predefinedCollections.containsKey(widget.collectionName)) {
-      _predefinedFields = predefinedCollections[widget.collectionName]!;
-      for (var field in _predefinedFields) {
-        _predefinedFieldValues[field["name"]!] = null;
+  Future<void> _loadItemData() async {
+    final doc = await FirebaseFirestore.instance
+        .collection("userCollections")
+        .doc(widget.userId)
+        .collection("collectionsList")
+        .doc(widget.collectionName)
+        .collection("items")
+        .doc(widget.itemId)
+        .get();
+
+    if (doc.exists) {
+      final data = doc.data()!;
+      _nameController.text = data["İsim"] ?? "";
+      _rarityController.text = data["Nadirlik"] ?? "";
+      _selectedImages = (data["Photos"] as List<dynamic>)
+          .map((photo) => XFile(photo))
+          .toList();
+
+      // Predefined Fields
+      if (predefinedCollections.containsKey(widget.collectionName)) {
+        _predefinedFields = predefinedCollections[widget.collectionName]!;
+        for (var field in _predefinedFields) {
+          _predefinedFieldValues[field["name"]!] = data[field["name"]!];
+        }
       }
+
+      // Custom Fields
+      data.forEach((key, value) {
+        // Önemli alanları atla
+        if (!_predefinedFieldValues.containsKey(key) &&
+            key != "İsim" &&
+            key != "Nadirlik" &&
+            key != "Photos") {
+          String type;
+
+          if (value is int || value is double) {
+            type = "NumberField";
+          } else if (value is String) {
+            // Tarih formatını kontrol et
+            try {
+              DateTime.parse(value);
+              type = "DatePicker";
+            } catch (_) {
+              type = "TextField";
+            }
+          } else {
+            type = "TextField"; // Varsayılan olarak TextField
+          }
+
+          _customFields.add({"name": key, "type": type});
+          _customFieldValues[key] = value;
+        }
+      });
+
+      setState(() {});
     }
   }
 
@@ -142,15 +195,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final images = await picker.pickMultiImage();
-    if (images.length <= 5) {
+    if (_selectedImages.length + images.length <= 5) {
       setState(() {
-        _selectedImages = images;
+        _selectedImages.addAll(images);
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("You can add up to 5 photos.")),
       );
     }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      _selectedImages.removeAt(index);
+    });
   }
 
   Future<File?> _compressImage(File file) async {
@@ -167,29 +226,31 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Future<void> _saveItem(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isUploading = true; // loading started
+        _isUploading = true;
       });
 
       final itemName = _nameController.text.trim();
       final rarity = _rarityController.text.trim();
       final List<String> photoPaths = [];
 
-      // upload multiple photos at the same time
       final List<Future> uploadTasks = _selectedImages.map((image) async {
-        final compressedFile = await _compressImage(File(image.path));
-        final storageRef = FirebaseStorage.instance.ref().child(
-            "item_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}");
-
-        final uploadTask = await storageRef.putFile(compressedFile!);
-        if (uploadTask.state == TaskState.success) {
-          final downloadURL = await storageRef.getDownloadURL();
-          photoPaths.add(downloadURL);
+        if (image.path.startsWith('http')) {
+          photoPaths.add(image.path);
         } else {
-          throw Exception("Couldn't loaded.");
+          final compressedFile = await _compressImage(File(image.path));
+          final storageRef = FirebaseStorage.instance.ref().child(
+              "item_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}");
+
+          final uploadTask = await storageRef.putFile(compressedFile!);
+          if (uploadTask.state == TaskState.success) {
+            final downloadURL = await storageRef.getDownloadURL();
+            photoPaths.add(downloadURL);
+          } else {
+            throw Exception("Couldn't load.");
+          }
         }
       }).toList();
 
-      // Tüm yüklemeler tamamlanana kadar bekleyin
       await Future.wait(uploadTasks);
 
       final Map<String, dynamic> itemData = {
@@ -198,12 +259,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
         "Photos": photoPaths,
       };
 
-      // Önceden tanımlı alanları ekle
       _predefinedFieldValues.forEach((key, value) {
         itemData[key] = value;
       });
 
-      // Custom field değerlerini ekle
       _customFieldValues.forEach((key, value) {
         itemData[key] = value;
       });
@@ -214,13 +273,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
           .collection("collectionsList")
           .doc(widget.collectionName)
           .collection("items")
-          .add(itemData);
+          .doc(widget.itemId)
+          .update(itemData);
 
       setState(() {
-        _isUploading = false; // Yükleme bitti
+        _isUploading = false;
       });
 
-      Navigator.pop(context);
+      Navigator.pop(context, true); // Return true to indicate success
     }
   }
 
@@ -238,6 +298,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: TextFormField(
+              initialValue: _predefinedFieldValues[fieldName]?.toString(),
               decoration: InputDecoration(
                 labelText: fieldName,
                 filled: true,
@@ -255,6 +316,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: TextFormField(
+              initialValue: _predefinedFieldValues[fieldName]?.toString(),
               decoration: InputDecoration(
                 labelText: fieldName,
                 filled: true,
@@ -273,8 +335,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
           return ListTile(
             title: Text(fieldName),
             subtitle: Text(
-              _predefinedFieldValues[fieldName]?.toString() ??
-                  "Tarih seçilmedi",
+              _predefinedFieldValues[fieldName] != null
+                  ? DateFormat('dd.MM.yyyy')
+                      .format(DateTime.parse(_predefinedFieldValues[fieldName]))
+                  : "Tarih seçilmedi",
             ),
             onTap: () async {
               final date = await showDatePicker(
@@ -295,6 +359,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: DropdownButtonFormField<String>(
+              value: _predefinedFieldValues[fieldName]?.toString(),
               decoration: InputDecoration(
                 labelText: fieldName,
                 filled: true,
@@ -334,6 +399,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: TextFormField(
+              initialValue: _customFieldValues[fieldName]?.toString(),
               decoration: InputDecoration(
                 labelText: fieldName,
                 filled: true,
@@ -351,6 +417,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: TextFormField(
+              initialValue: _customFieldValues[fieldName]?.toString(),
               decoration: InputDecoration(
                 labelText: fieldName,
                 filled: true,
@@ -427,7 +494,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: const ProjectAppbar(
-        titleText: "Add New Item",
+        titleText: "Edit Item",
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -454,27 +521,29 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                  controller: _rarityController,
-                  decoration: InputDecoration(
-                    labelText: "Rarity",
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  )),
+                controller: _rarityController,
+                decoration: InputDecoration(
+                  labelText: "Rarity",
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               Row(
                 children: [
                   ElevatedButton.icon(
-                      onPressed: _pickImage,
-                      icon: const Icon(
-                        Icons.image,
-                        color: Colors.white,
-                      ),
-                      label: const Text("Select Images",
-                          style: ProjectTextStyles.buttonTextStyle),
-                      style: ProjectDecorations.elevatedButtonStyle),
+                    onPressed: _pickImage,
+                    icon: const Icon(
+                      Icons.image,
+                      color: Colors.white,
+                    ),
+                    label: const Text("Select Images",
+                        style: ProjectTextStyles.buttonTextStyle),
+                    style: ProjectDecorations.elevatedButtonStyle,
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -486,30 +555,40 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: _selectedImages
-                      .length, // itemCount"u _selectedImages.length olarak ayarla
+                  itemCount: _selectedImages.length,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 8),
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 3,
-                              spreadRadius: 1,
-                              color: Colors.grey,
-                            )
-                          ],
+                    return Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 8),
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 3,
+                                  spreadRadius: 1,
+                                  color: Colors.grey,
+                                )
+                              ],
+                            ),
+                            child:
+                                buildImageWidget(_selectedImages[index].path),
+                          ),
                         ),
-                        child: Image.file(
-                          File(_selectedImages[index]
-                              .path), // Doğrudan item"dan image al
-                          width: 150,
-                          height: 150,
-                          fit: BoxFit.cover,
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: GestureDetector(
+                            onTap: () => _removeImage(index),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 24,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     );
                   },
                 ),
@@ -520,29 +599,49 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 child: Row(
                   children: [
                     ElevatedButton.icon(
-                        onPressed: _addCustomField,
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        ),
-                        label: const Text("Add Custom Field",
-                            style: ProjectTextStyles.buttonTextStyle),
-                        style: ProjectDecorations.elevatedButtonStyle),
+                      onPressed: _addCustomField,
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      label: const Text("Add Custom Field",
+                          style: ProjectTextStyles.buttonTextStyle),
+                      style: ProjectDecorations.elevatedButtonStyle,
+                    ),
                   ],
                 ),
               ),
               _buildCustomFieldInputs(),
-              const SizedBox(height: 48), // view adjustable custom fields
+              const SizedBox(height: 48),
             ],
           ),
         ),
       ),
       floatingActionButton: GestureDetector(
-        // save button
         onTap: _isUploading ? null : () => _saveItem(context),
         child:
             FinalFloatingDecoration(buttonText: "Save", progress: _isUploading),
       ),
+    );
+  }
+}
+
+Widget buildImageWidget(String path) {
+  if (path.startsWith('http')) {
+    // If it's an HTTP(S) URL from Firebase Storage
+    return Image.network(
+      path,
+      width: 150,
+      height: 150,
+      fit: BoxFit.cover,
+    );
+  } else {
+    // Otherwise assume it's a local file path
+    return Image.file(
+      File(path),
+      width: 150,
+      height: 150,
+      fit: BoxFit.cover,
     );
   }
 }

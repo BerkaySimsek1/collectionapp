@@ -52,8 +52,8 @@ class AuctionDetailViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> editAuction(
-      BuildContext context, String newName, String newDescription) async {
+  Future<bool> editAuction(
+      String newName, String newDescription, double newPrice) async {
     try {
       await FirebaseFirestore.instance
           .collection("auctions")
@@ -61,28 +61,25 @@ class AuctionDetailViewModel with ChangeNotifier {
           .update({
         "name": newName,
         "description": newDescription,
+        "starting_price": newPrice,
       });
+
       auction.name = newName;
       auction.description = newDescription;
+      auction.startingPrice = newPrice;
 
       await _loadUserInfo(); // Kullanıcı bilgilerini güncelle
       notifyListeners(); // UI'yi güncelle
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Auction updated successfully!")),
-      );
+      return true; // Başarılı
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error updating auction: $e")),
-      );
+      debugPrint("Error updating auction: $e");
+      return false; // Başarısız
     }
   }
 
-  Future<void> placeBid(double bidAmount, BuildContext context) async {
+  Future<bool> placeBid(double bidAmount) async {
     if (bidAmount <= auction.startingPrice) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid bid amount.")),
-      );
-      return;
+      return false;
     }
 
     try {
@@ -96,16 +93,28 @@ class AuctionDetailViewModel with ChangeNotifier {
       auction.startingPrice = bidAmount;
       auction.bidderId = currentUser.uid;
 
-      await _loadUserInfo(); // Update bidder info
+      await _loadUserInfo(); // Bidder bilgilerini güncelle
       notifyListeners();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Bid placed successfully!")),
-      );
+      return true;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error placing bid: $e")),
-      );
+      debugPrint("Error placing bid: $e");
+      return false;
+    }
+  }
+
+  double calculateBidIncrement(double currentPrice) {
+    if (currentPrice <= 20) {
+      return 2;
+    } else if (currentPrice <= 100) {
+      return 5;
+    } else if (currentPrice <= 250) {
+      return 10;
+    } else if (currentPrice <= 500) {
+      return 25;
+    } else if (currentPrice <= 1000) {
+      return 100;
+    } else {
+      return 200;
     }
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:collectionapp/viewModels/auction_detail_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -85,9 +87,11 @@ class AuctionDetail extends StatelessWidget {
             if (viewModel.currentUser.uid != auction.creatorId) {
               return GestureDetector(
                 onTap: () => _showBidDialog(context, viewModel),
-                child: const FinalFloatingDecoration(
-                  buttonText: "Place a Bid",
-                ),
+                child: auction.isAuctionEnd
+                    ? const SizedBox()
+                    : const FinalFloatingDecoration(
+                        buttonText: "Place a Bid",
+                      ),
               );
             }
             return const SizedBox.shrink();
@@ -216,6 +220,8 @@ class AuctionDetail extends StatelessWidget {
   Future<void> _showBidDialog(
       BuildContext context, AuctionDetailViewModel viewModel) async {
     double? newBid;
+    double minIncrement =
+        viewModel.calculateBidIncrement(auction.startingPrice);
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -227,17 +233,28 @@ class AuctionDetail extends StatelessWidget {
             "Place Your Bid",
             style: ProjectTextStyles.appBarTextStyle,
           ),
-          content: TextField(
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              hintText: "Minimum Bid: \$${auction.startingPrice + 1}",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Minimum Increment: \$${minIncrement.toStringAsFixed(2)}",
+                style: const TextStyle(fontSize: 14),
               ),
-            ),
-            onChanged: (value) {
-              newBid = double.tryParse(value);
-            },
+              const SizedBox(height: 10),
+              TextField(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText:
+                      "Minimum Bid: \$${(auction.startingPrice + minIncrement).toStringAsFixed(2)}",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onChanged: (value) {
+                  newBid = double.tryParse(value);
+                },
+              ),
+            ],
           ),
           actions: <Widget>[
             TextButton(
@@ -250,10 +267,18 @@ class AuctionDetail extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (newBid != null) {
-                  viewModel.placeBid(newBid!, context);
+                  bool success = await viewModel.placeBid(newBid!);
                   Navigator.of(context).pop();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(success
+                          ? "Bid placed successfully!"
+                          : "Invalid bid amount."),
+                    ),
+                  );
                 }
               },
               style: ProjectDecorations.elevatedButtonStyle,
@@ -275,6 +300,8 @@ Future<void> _showEditDialog(
       TextEditingController(text: viewModel.auction.name);
   final TextEditingController descriptionController =
       TextEditingController(text: viewModel.auction.description);
+  final TextEditingController priceController =
+      TextEditingController(text: viewModel.auction.startingPrice.toString());
 
   return showDialog(
     context: context,
@@ -297,6 +324,12 @@ Future<void> _showEditDialog(
               decoration: const InputDecoration(labelText: "Description"),
               maxLines: 3,
             ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: priceController,
+              decoration: const InputDecoration(labelText: "Starting Price"),
+              keyboardType: TextInputType.number,
+            ),
           ],
         ),
         actions: <Widget>[
@@ -305,12 +338,24 @@ Future<void> _showEditDialog(
             child: const Text("Cancel"),
           ),
           ElevatedButton(
-            onPressed: () {
-              viewModel.editAuction(
-                context,
+            onPressed: () async {
+              final success = await viewModel.editAuction(
                 nameController.text,
                 descriptionController.text,
+                double.tryParse(priceController.text) ??
+                    viewModel.auction.startingPrice,
               );
+
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text("Auction updated successfully!")),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Error updating auction.")),
+                );
+              }
               Navigator.of(context).pop();
             },
             child: const Text("Save"),
@@ -336,13 +381,10 @@ Future<void> _showDeleteConfirmation(
           ),
           ElevatedButton(
             onPressed: () async {
-              // 1) ViewModel'den silme işlemini çalıştır
               bool success = await viewModel.deleteAuction();
 
-              // 2) Dialog'u kapat
               Navigator.of(context).pop();
 
-              // 3) İşlem başarılıysa snackBar göster ve AuctionDetail sayfasını pop et
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
