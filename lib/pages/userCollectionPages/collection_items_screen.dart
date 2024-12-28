@@ -146,38 +146,6 @@ class CollectionItemsScreen extends StatelessWidget {
                           item["İsim"] ?? "İsimsiz Ürün",
                           style: ProjectTextStyles.cardHeaderTextStyle,
                         ),
-                        trailing: PopupMenuButton<String>(
-                          onSelected: (value) {
-                            if (value == "Düzenle") {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AddItemScreen(
-                                    userId: userId,
-                                    collectionName: collectionName,
-                                  ),
-                                ),
-                              );
-                            } else if (value == "Sil") {
-                              FirebaseFirestore.instance
-                                  .collection("userCollections")
-                                  .doc(userId)
-                                  .collection(collectionName)
-                                  .doc(item.id)
-                                  .delete();
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            const PopupMenuItem(
-                              value: "Düzenle",
-                              child: Text("Düzenle"),
-                            ),
-                            const PopupMenuItem(
-                              value: "Sil",
-                              child: Text("Sil"),
-                            ),
-                          ],
-                        ),
                         onTap: () {
                           Navigator.push(
                             context,
