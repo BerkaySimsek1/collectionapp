@@ -1,5 +1,6 @@
 import "dart:async";
 import "package:cloud_firestore/cloud_firestore.dart";
+import "package:collectionapp/design_elements.dart";
 import "package:flutter/material.dart";
 
 class CountdownTimer extends StatefulWidget {
@@ -107,6 +108,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
     return Text(
       timerText,
+      style: ProjectTextStyles.cardDescriptionTextStyle,
     );
   }
 }

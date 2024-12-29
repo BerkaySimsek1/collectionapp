@@ -158,12 +158,16 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             else if (!_isMember!)
               hasJoinRequest!
                   ? const Expanded(child: Center(child: Text("Request sent")))
-                  : ElevatedButton(
-                      onPressed: _sendJoinRequest,
-                      style: ProjectDecorations.elevatedButtonStyle,
-                      child: const Text(
-                        "Request to join",
-                        style: ProjectTextStyles.buttonTextStyle,
+                  : Expanded(
+                      child: Center(
+                        child: ElevatedButton(
+                          onPressed: _sendJoinRequest,
+                          style: ProjectDecorations.elevatedButtonStyle,
+                          child: const Text(
+                            "Request to join",
+                            style: ProjectTextStyles.buttonTextStyle,
+                          ),
+                        ),
                       ),
                     )
             else

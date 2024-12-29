@@ -1,7 +1,6 @@
 import 'package:collectionapp/design_elements.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../firebase_methods/firestore_methods/user_firestore_methods.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -55,6 +54,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         title: const Text(
           "Change Email",
           style: ProjectTextStyles.appBarTextStyle,
@@ -89,7 +89,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   throw Exception("Email cannot be empty");
                 }
 
-                await _auth.currentUser?.updateEmail(newEmail);
+                await _auth.currentUser?.verifyBeforeUpdateEmail(newEmail);
                 await _firestoreService.updateUserData({"email": newEmail});
 
                 setState(() {
@@ -127,6 +127,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         title: const Text(
           "Change Password",
           style: ProjectTextStyles.appBarTextStyle,
@@ -189,12 +190,87 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+  Future<void> _showUsernameChangeDialog() async {
+    final TextEditingController usernameController = TextEditingController();
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text(
+          "Change Username",
+          style: ProjectTextStyles.appBarTextStyle,
+        ),
+        content: TextField(
+          controller: usernameController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            labelText: "New Username",
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Cancel",
+              style: ProjectTextStyles.appBarTextStyle.copyWith(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                String newUsername = usernameController.text.trim();
+                if (newUsername.isEmpty) {
+                  throw Exception("Username cannot be empty");
+                }
+
+                await _firestoreService
+                    .updateUserData({"username": newUsername});
+
+                setState(() {
+                  userData?["username"] = newUsername;
+                });
+
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text("Username updated successfully!")),
+                );
+                Navigator.pop(context);
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content:
+                          Text("Failed to update username: ${e.toString()}")),
+                );
+              }
+            },
+            style: ProjectDecorations.elevatedButtonStyle,
+            child: const Text(
+              "Update",
+              style: ProjectTextStyles.buttonTextStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _showDeleteAccountDialog() async {
     if (!mounted) return;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
         title: const Text(
           "Delete Account",
           style: ProjectTextStyles.appBarTextStyle,
@@ -250,27 +326,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Column(
       children: [
         CircleAvatar(
-            radius: 50,
+            radius: 60,
             backgroundImage: userData?['profileImageUrl'] != null
                 ? NetworkImage(userData!['profileImageUrl'])
                 : const NetworkImage(
                     'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png')),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(8),
-            boxShadow: const [BoxShadow(blurRadius: 0.1, spreadRadius: 0.5)],
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                offset: Offset(0, 3),
+              ),
+            ],
             color: Colors.deepPurple,
           ),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(16),
             child: Text(
                 "${userData?['firstName'] ?? ''} ${userData?['lastName'] ?? ''}",
                 style: ProjectTextStyles.buttonTextStyle),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(userData?['email'] ?? '',
             style: ProjectTextStyles.cardDescriptionTextStyle),
       ],
@@ -285,30 +366,60 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final TextEditingController controller = TextEditingController(text: value);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                labelText: label,
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 2,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  labelText: label,
+                  contentPadding: const EdgeInsets.all(16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Colors.black26,
+                      width: 0.2,
+                    ),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
               ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.save, color: Colors.deepPurple),
-            onPressed: () async {
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: () async {
               if (controller.text.trim().isNotEmpty) {
                 await onSave(controller.text.trim());
               }
             },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: Colors.deepPurple,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.check,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
@@ -324,16 +435,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return ElevatedButton.icon(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
+        elevation: 4,
         backgroundColor: color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
       ),
-      icon: Icon(icon, color: Colors.white),
+      icon: Icon(
+        icon,
+        color: Colors.white,
+      ),
       label: Text(
         label,
-        style:
-            const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        style: ProjectTextStyles.buttonTextStyle,
       ),
     );
   }
@@ -343,7 +457,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: const ProjectAppbar(
-        titleText: "User Profile",
+        titleText: "Edit Profile",
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -397,7 +511,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             _showEmailChangeDialog();
                           },
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         _buildActionButton(
                           label: "Change Password",
                           icon: Icons.lock,
@@ -405,7 +519,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             _showPasswordChangeDialog();
                           },
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
+                        _buildActionButton(
+                          label: "Change Username",
+                          icon: Icons.person,
+                          onTap: () {
+                            _showUsernameChangeDialog();
+                          },
+                        ),
+                        const SizedBox(height: 12),
                         _buildActionButton(
                           label: "Delete Account",
                           icon: Icons.delete,

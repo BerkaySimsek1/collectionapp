@@ -48,64 +48,134 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildProfileHeader() {
-    return Stack(
-      children: [
-        Container(
-          height: 180,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.deepPurple.shade400, Colors.deepPurple.shade700],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+    return SizedBox(
+      height: 320,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            top: 60,
+            right: 0.01,
+            left: 0.01,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.deepPurple.shade400,
+                    Colors.deepPurple.shade700
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(192),
+                  topRight: Radius.circular(192),
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Active Bidder",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.location_pin, color: Colors.white),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Sunnyvale, CA",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.people, color: Colors.white),
+                        const SizedBox(width: 8),
+                        Text(
+                          "30.5k followers",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditProfilePage(userData: userData!),
+                          ),
+                        ).then((_) => _loadUserData());
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        "Follow",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-        Positioned(
-          bottom: 10,
-          left: 16,
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: const NetworkImage(
-                    "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"),
-                backgroundColor: Colors.grey.shade200,
+          Positioned(
+            top: 1,
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      width: 4,
+                      color: Colors.deepPurple,
+                    )),
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: const NetworkImage(
+                      "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"),
+                  backgroundColor: Colors.grey.shade200,
+                ),
               ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${userData?["firstName"]} ${userData?["lastName"]}",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EditProfilePage(userData: userData!),
-                        ),
-                      ).then((_) => _loadUserData());
-                    },
-                    style: ProjectDecorations.elevatedButtonStyle,
-                    child: const Text(
-                      "Edit Profile",
-                      style: ProjectTextStyles.buttonTextStyle,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -114,18 +184,28 @@ class _UserProfilePageState extends State<UserProfilePage> {
       length: 3,
       child: Column(
         children: [
-          const TabBar(
-            labelColor: Colors.deepPurple,
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: Colors.deepPurple,
-            tabs: [
-              Tab(text: "Groups"),
-              Tab(text: "Auctions"),
-              Tab(text: "Collections"),
-            ],
+          Container(
+            decoration: const BoxDecoration(color: Colors.white, boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 5,
+                offset: Offset(0, 0.1),
+              ),
+            ]),
+            child: const TabBar(
+              labelColor: Colors.deepPurple,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.deepPurple,
+              tabs: [
+                Tab(text: "Groups"),
+                Tab(text: "Auctions"),
+                Tab(text: "Collections"),
+              ],
+            ),
           ),
+          const SizedBox(height: 4),
           SizedBox(
-            height: 300,
+            height: 400,
             child: TabBarView(
               children: [
                 _buildGroupsTab(),
@@ -140,7 +220,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildGroupsTab() {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection("groups")
           .where("members", arrayContains: userData?["uid"])
@@ -159,20 +239,36 @@ class _UserProfilePageState extends State<UserProfilePage> {
         return ListView.builder(
           itemCount: groups.length,
           itemBuilder: (context, index) {
-            final group = groups[index];
-            return ListTile(
-              title: Text(group["name"]),
-              subtitle: Text(group["description"]),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => GroupDetailPage(
-                      group: Group.fromMap(group.data()),
+            final groupData = groups[index].data() as Map<String, dynamic>;
+            final group = Group.fromMap(groupData);
+
+            return Card(
+              color: Colors.white,
+              margin: const EdgeInsets.all(8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                leading: CircleAvatar(
+                  backgroundColor: Colors.grey.shade200,
+                  radius: 30,
+                ),
+                title: Text(
+                  group.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(group.description),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GroupDetailPage(group: group),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           },
         );
@@ -181,7 +277,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildAuctionsTab() {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection("auctions")
           .where("creator_id", isEqualTo: userData?["uid"])
@@ -200,20 +296,36 @@ class _UserProfilePageState extends State<UserProfilePage> {
         return ListView.builder(
           itemCount: auctions.length,
           itemBuilder: (context, index) {
-            final auction = auctions[index];
-            return ListTile(
-              title: Text(auction["name"]),
-              subtitle: Text("Starting Price: ${auction["starting_price"]}"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AuctionDetail(
-                      auction: AuctionModel.fromMap(auction.data()),
+            final auctionData = auctions[index].data() as Map<String, dynamic>;
+            final auction = AuctionModel.fromMap(auctionData);
+
+            return Card(
+              color: Colors.white,
+              margin: const EdgeInsets.all(8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                leading: CircleAvatar(
+                  backgroundColor: Colors.grey[200],
+                  radius: 30,
+                ),
+                title: Text(
+                  auction.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text("Starting Price: ${auction.startingPrice}"),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AuctionDetail(auction: auction),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           },
         );
@@ -222,7 +334,30 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildCollectionsTab() {
-    return StreamBuilder(
+    IconData getIconForCollectionType(String type) {
+      switch (type) {
+        case 'Record':
+          return Icons.music_note;
+        case 'Stamp':
+          return Icons.stay_primary_landscape;
+        case 'Coin':
+          return Icons.money;
+        case 'Book':
+          return Icons.book;
+        case 'Painting':
+          return Icons.photo;
+        case 'Comic Book':
+          return Icons.book_online;
+        case 'Vintage Posters':
+          return Icons.mediation;
+        case 'Diğer':
+          return Icons.collections;
+        default:
+          return Icons.collections;
+      }
+    }
+
+    return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection("userCollections")
           .doc(userData?["uid"])
@@ -234,7 +369,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          print(userData?["userId"]);
           return const Center(child: Text("No collections created yet."));
         }
 
@@ -243,20 +377,40 @@ class _UserProfilePageState extends State<UserProfilePage> {
         return ListView.builder(
           itemCount: collections.length,
           itemBuilder: (context, index) {
-            final collection = collections[index];
-            return ListTile(
-              title: Text(collection["name"]),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CollectionItemsScreen(
-                      userId: userData?["uid"],
-                      collectionName: collection["name"],
+            final collectionDoc = collections[index];
+            final collectionData = collectionDoc.data() as Map<String, dynamic>;
+            final collectionType = collectionData['name'] ?? 'Diğer';
+            return Card(
+              color: Colors.white,
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                leading: CircleAvatar(
+                  backgroundColor: Colors.deepPurple,
+                  radius: 30,
+                  child: Icon(getIconForCollectionType(collectionType),
+                      color: Colors.white),
+                ),
+                title: Text(
+                  collectionData["name"],
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CollectionItemsScreen(
+                        userId: userData?["uid"],
+                        collectionName: collectionData["name"],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           },
         );
@@ -277,7 +431,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
               child: Column(
                 children: [
                   _buildProfileHeader(),
-                  const SizedBox(height: 16),
                   _buildTabSection(),
                 ],
               ),
