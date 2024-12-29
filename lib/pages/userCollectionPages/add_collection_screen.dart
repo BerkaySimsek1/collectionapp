@@ -65,6 +65,8 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               DropdownButtonFormField<String>(
+                dropdownColor: Colors.white,
+                borderRadius: BorderRadius.circular(8),
                 decoration: InputDecoration(
                   labelText: "Collection Type",
                   labelStyle: ProjectTextStyles.subtitleTextStyle,
@@ -76,9 +78,20 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                 ),
                 value: _selectedCollection,
                 items: [
-                  ...predefinedCollections.keys.map((type) =>
-                      DropdownMenuItem(value: type, child: Text(type))),
-                  const DropdownMenuItem(value: "Diğer", child: Text("Diğer")),
+                  ...predefinedCollections.keys.map((type) => DropdownMenuItem(
+                      value: type,
+                      child: Text(
+                        type,
+                        style: ProjectTextStyles.appBarTextStyle
+                            .copyWith(fontSize: 16),
+                      ))),
+                  DropdownMenuItem(
+                      value: "Diğer",
+                      child: Text(
+                        "Diğer",
+                        style: ProjectTextStyles.appBarTextStyle
+                            .copyWith(fontSize: 16),
+                      )),
                 ],
                 onChanged: _onCollectionTypeChanged,
                 validator: (value) =>

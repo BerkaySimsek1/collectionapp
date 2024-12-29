@@ -101,47 +101,50 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                           ),
                         ),
                   const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.group.name,
-                        style: ProjectTextStyles.cardHeaderTextStyle,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.group.description,
-                        style: ProjectTextStyles.subtitleTextStyle,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "${widget.group.members.length} $memberCount",
-                        style: ProjectTextStyles.subtitleTextStyle,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 16),
-                  if (widget.group.adminIds.contains(_currentUser!.uid))
-                    Center(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SmGroupAdmin(
-                                groupId: widget.group.id,
-                              ),
-                            ),
-                          );
-                        },
-                        style: ProjectDecorations.elevatedButtonStyle,
-                        icon: const Icon(
-                          Icons.admin_panel_settings,
-                          color: Colors.white,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.group.name,
+                          style: ProjectTextStyles.cardHeaderTextStyle,
                         ),
-                        label: const Text(
-                          "Admin Panel",
-                          style: ProjectTextStyles.buttonTextStyle,
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.group.description,
+                          style: ProjectTextStyles.subtitleTextStyle,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "${widget.group.members.length} $memberCount",
+                          style: ProjectTextStyles.subtitleTextStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (widget.group.adminIds.contains(_currentUser!.uid))
+                    Expanded(
+                      child: Center(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SmGroupAdmin(
+                                  groupId: widget.group.id,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ProjectDecorations.elevatedButtonStyle,
+                          icon: const Icon(
+                            Icons.admin_panel_settings,
+                            color: Colors.white,
+                          ),
+                          label: const Text(
+                            "Admin Panel",
+                            style: ProjectTextStyles.buttonTextStyle,
+                          ),
                         ),
                       ),
                     ),
@@ -207,7 +210,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
           ],
         ),
         // Floating Action Button for creating a new post in a member state
-        floatingActionButton: _isMember == null || _isMember!
+        floatingActionButton: (_isMember ?? false)
             ? FloatingActionButton(
                 onPressed: () {
                   showDialog(
