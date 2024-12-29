@@ -32,66 +32,112 @@ class _GroupsListPageState extends State<GroupsListPage> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Expanded(
-                    child: TextField(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value.toLowerCase();
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Search groups",
-                    hintStyle: TextStyle(color: Colors.grey[600]),
-                    // Arama ikonunu ekliyoruz
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Colors.grey[600],
-                    ),
-                    // Sadece text doluysa "X" (clear) ikonunu göster
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(Icons.clear, color: Colors.grey[600]),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {
-                                _searchQuery = "";
-                              });
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: Colors.white,
-                    // İsteğe bağlı ek padding
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 12.0, horizontal: 16.0),
-                    // Kenarlık ayarları
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+                SizedBox(
+                  height: 48,
+                  width: 240,
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                      });
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Colors.black,
+                          width: 2,
+                        ),
+                      ),
+                      hintText: "Search groups",
+                      hintStyle: TextStyle(color: Colors.grey[600]),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.grey[600],
+                      ),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey[600]),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  _searchQuery = "";
+                                });
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.white,
                     ),
                   ),
-                )),
-                IconButton(
-                  icon: const Icon(Icons.filter_list, color: Colors.grey),
-                  onPressed: () {
-                    _showFilterDialog();
-                  },
                 ),
-                DropdownButton<String>(
-                  value: _selectedSort,
-                  items: ["A-Z", "Z-A"]
-                      .map((sortOption) => DropdownMenuItem(
-                            value: sortOption,
-                            child: Text(sortOption),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedSort = value!;
-                    });
-                  },
+                Container(
+                  height: 48,
+                  width: 48, // Arama kutusunun yüksekliğiyle eşleştirildi
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 2,
+                          offset: Offset(0, 2),
+                        ),
+                      ]),
+                  child: Center(
+                    child: IconButton(
+                      onPressed: _showFilterDialog,
+                      icon: const Icon(Icons.filter_list,
+                          color: Colors.deepPurple),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 48,
+                  width: 60, // Arama kutusunun yüksekliğiyle eşleştirildi
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 2,
+                          offset: Offset(0, 2),
+                        ),
+                      ]),
+                  child: Center(
+                    child: DropdownButton<String>(
+                      value: _selectedSort,
+                      borderRadius: BorderRadius.circular(8),
+                      dropdownColor: Colors.white,
+                      icon: const Icon(Icons.arrow_drop_down,
+                          color: Colors.deepPurple),
+                      underline: Container(
+                        height: 0,
+                        color: Colors.white,
+                      ),
+                      items: ["A-Z", "Z-A"]
+                          .map((sortOption) => DropdownMenuItem(
+                                value: sortOption,
+                                child: Text(
+                                  sortOption,
+                                  style:
+                                      const TextStyle(color: Colors.deepPurple),
+                                ),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedSort = value!;
+                        });
+                      },
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -149,19 +195,19 @@ class _GroupsListPageState extends State<GroupsListPage> {
           ),
         ],
       ),
-      floatingActionButton: ElevatedButton.icon(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const CreateGroupPage()),
           );
         },
-        style: ProjectDecorations.elevatedButtonStyle,
+        backgroundColor: Colors.deepPurple,
+        icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
           "Create Group",
           style: ProjectTextStyles.buttonTextStyle,
         ),
-        icon: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -171,12 +217,21 @@ class _GroupsListPageState extends State<GroupsListPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Filter by Category"),
+          backgroundColor: Colors.white,
+          title: const Text(
+            "Filter by Category",
+            style: ProjectTextStyles.appBarTextStyle,
+          ),
           content: SingleChildScrollView(
             child: Column(
               children: [
                 RadioListTile<String>(
-                  title: const Text("All"),
+                  title: Text(
+                    "All",
+                    style: ProjectTextStyles.appBarTextStyle.copyWith(
+                      fontSize: 16,
+                    ),
+                  ),
                   value: "All",
                   groupValue: _selectedFilter,
                   onChanged: (value) {
@@ -188,7 +243,12 @@ class _GroupsListPageState extends State<GroupsListPage> {
                 ),
                 ...predefinedCollections.keys.map((category) {
                   return RadioListTile<String>(
-                    title: Text(category),
+                    title: Text(
+                      category,
+                      style: ProjectTextStyles.appBarTextStyle.copyWith(
+                        fontSize: 16,
+                      ),
+                    ),
                     value: category,
                     groupValue: _selectedFilter,
                     onChanged: (value) {
@@ -202,6 +262,16 @@ class _GroupsListPageState extends State<GroupsListPage> {
               ],
             ),
           ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ProjectDecorations.elevatedButtonStyle,
+              child: const Text(
+                "Close",
+                style: ProjectTextStyles.buttonTextStyle,
+              ),
+            ),
+          ],
         );
       },
     );
@@ -216,71 +286,71 @@ class GroupListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-        elevation: 2,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: ListTile(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => GroupDetailPage(group: group),
-              ),
-            );
-          },
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          leading: CircleAvatar(
-            backgroundColor: Colors.transparent,
-            child: group.coverImageUrl != null
-                ? ClipOval(
-                    child: SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: Stack(
-                        children: [
-                          Image.network(
-                            group.coverImageUrl!,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.error, color: Colors.red),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : Text(
-                    group.name[0],
-                    style: ProjectTextStyles.cardHeaderTextStyle.copyWith(
-                      color: Colors.white,
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GroupDetailPage(group: group),
+            ),
+          );
+        },
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: CircleAvatar(
+          backgroundColor: Colors.transparent,
+          child: group.coverImageUrl != null
+              ? ClipOval(
+                  child: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: Stack(
+                      children: [
+                        Image.network(
+                          group.coverImageUrl!,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.error, color: Colors.red),
+                        ),
+                      ],
                     ),
                   ),
-          ),
-          title: Text(
-            group.name,
-            style: ProjectTextStyles.cardHeaderTextStyle,
-          ),
-          subtitle: Text(
-            "${group.members.length} $memberCount",
-            style: ProjectTextStyles.subtitleTextStyle,
-          ),
-          trailing: const Icon(Icons.chevron_right, color: Colors.deepPurple),
-        ));
+                )
+              : Text(
+                  group.name[0],
+                  style: ProjectTextStyles.cardHeaderTextStyle.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+        ),
+        title: Text(
+          group.name,
+          style: ProjectTextStyles.cardHeaderTextStyle,
+        ),
+        subtitle: Text(
+          "${group.members.length} $memberCount",
+          style: ProjectTextStyles.subtitleTextStyle,
+        ),
+        trailing: const Icon(Icons.chevron_right, color: Colors.deepPurple),
+      ),
+    );
   }
 }

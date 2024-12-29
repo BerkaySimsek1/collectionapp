@@ -8,8 +8,18 @@ import "package:collectionapp/pages/auctionPages/create_auction.dart";
 import "package:collectionapp/countdown_timer.dart";
 import 'package:provider/provider.dart';
 
-class AuctionListScreen extends StatelessWidget {
+class AuctionListScreen extends StatefulWidget {
   const AuctionListScreen({super.key});
+
+  @override
+  State<AuctionListScreen> createState() => _AuctionListScreenState();
+}
+
+class _AuctionListScreenState extends State<AuctionListScreen> {
+  // arama kısmı sonradan düzenlenecek
+  final TextEditingController _searchController =
+      TextEditingController(); // sonradan düzenlenecek
+  String _searchQuery = ""; // sonradan düzenlenecek
 
   @override
   Widget build(BuildContext context) {
@@ -24,38 +34,237 @@ class AuctionListScreen extends StatelessWidget {
           builder: (context, auctionViewModel, child) {
             return Column(
               children: [
-                // Filter and Sort UI
-                FilterAndSortSection(viewModel: auctionViewModel),
-                const SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 50,
+                        child: SizedBox(
+                          height: 48,
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value.toLowerCase();
+                              });
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Colors.black,
+                                  width: 1.5,
+                                ),
+                              ),
+                              hintText: "Search auctions",
+                              hintStyle: TextStyle(color: Colors.grey[600]),
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Colors.grey[600],
+                              ),
+                              suffixIcon: _searchController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(Icons.clear,
+                                          color: Colors.grey[600]),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        setState(() {
+                                          _searchQuery = "";
+                                        });
+                                      },
+                                    )
+                                  : null,
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        height: 48,
+                        width: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 2,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: PopupMenuButton<String>(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            icon: const Icon(
+                              Icons.sort,
+                              color: Colors.deepPurple,
+                            ),
+                            onSelected: auctionViewModel.updateSort,
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: "newest",
+                                child: Text(
+                                  "Newest",
+                                  style: ProjectTextStyles.appBarTextStyle
+                                      .copyWith(fontSize: 16),
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: "oldest",
+                                child: Text(
+                                  "Oldest",
+                                  style: ProjectTextStyles.appBarTextStyle
+                                      .copyWith(fontSize: 16),
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: "name_az",
+                                child: Text(
+                                  "Name (A-Z)",
+                                  style: ProjectTextStyles.appBarTextStyle
+                                      .copyWith(fontSize: 16),
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: "name_za",
+                                child: Text(
+                                  "Name (Z-A)",
+                                  style: ProjectTextStyles.appBarTextStyle
+                                      .copyWith(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        height: 48,
+                        width: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 2,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: IconButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return AlertDialog(
+                                          backgroundColor: Colors.white,
+                                          title: const Text("Filter by",
+                                              style: ProjectTextStyles
+                                                  .appBarTextStyle),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              FilterButton(
+                                                label: "All",
+                                                isSelected:
+                                                    auctionViewModel.filter ==
+                                                        "all",
+                                                onTap: () {
+                                                  setState(() {
+                                                    auctionViewModel
+                                                        .updateFilter("all");
+                                                  });
+                                                },
+                                              ),
+                                              const SizedBox(height: 8),
+                                              FilterButton(
+                                                label: "Active",
+                                                isSelected:
+                                                    auctionViewModel.filter ==
+                                                        "active",
+                                                onTap: () {
+                                                  setState(() {
+                                                    auctionViewModel
+                                                        .updateFilter("active");
+                                                  });
+                                                },
+                                              ),
+                                              const SizedBox(height: 8),
+                                              FilterButton(
+                                                label: "Ended",
+                                                isSelected:
+                                                    auctionViewModel.filter ==
+                                                        "ended",
+                                                onTap: () {
+                                                  setState(() {
+                                                    auctionViewModel
+                                                        .updateFilter("ended");
+                                                  });
+                                                },
+                                              ),
+                                              const SizedBox(height: 8),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  });
+                            },
+                            icon: const Icon(Icons.filter_list,
+                                color: Colors.deepPurple),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 // Auction List
                 Expanded(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: auctionViewModel.getAuctionStream(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: auctionViewModel.getAuctionStream(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Center(
+                            child: Text(
+                              "There is no auction yet.",
+                              style: ProjectTextStyles.subtitleTextStyle,
+                            ),
+                          );
+                        }
+                        final auctionDocs = snapshot.data!.docs;
+                        return ListView.builder(
+                          itemCount: auctionDocs.length,
+                          itemBuilder: (context, index) {
+                            final auctionData = auctionDocs[index].data()
+                                as Map<String, dynamic>;
+                            final auction = AuctionModel.fromMap(auctionData);
+                            return AuctionCard(auction: auction);
+                          },
                         );
-                      }
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                        return Center(
-                          child: Text(
-                            "There is no auction yet.",
-                            style: ProjectTextStyles.subtitleTextStyle,
-                          ),
-                        );
-                      }
-                      final auctionDocs = snapshot.data!.docs;
-                      return ListView.builder(
-                        itemCount: auctionDocs.length,
-                        itemBuilder: (context, index) {
-                          final auctionData =
-                              auctionDocs[index].data() as Map<String, dynamic>;
-                          final auction = AuctionModel.fromMap(auctionData);
-                          return AuctionCard(auction: auction);
-                        },
-                      );
-                    },
+                      },
+                    ),
                   ),
                 ),
               ],
@@ -63,7 +272,7 @@ class AuctionListScreen extends StatelessWidget {
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        floatingActionButton: ElevatedButton.icon(
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Navigator.push(
               context,
@@ -71,84 +280,13 @@ class AuctionListScreen extends StatelessWidget {
                   builder: (context) => const AuctionUploadScreen()),
             );
           },
-          style: ProjectDecorations.elevatedButtonStyle,
+          backgroundColor: Colors.deepPurple,
           icon: const Icon(Icons.add, color: Colors.white),
           label: const Text(
             "Create Auction",
             style: ProjectTextStyles.buttonTextStyle,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class FilterAndSortSection extends StatelessWidget {
-  final AuctionViewModel viewModel;
-
-  const FilterAndSortSection({super.key, required this.viewModel});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        boxShadow: const [
-          BoxShadow(
-              offset: Offset(0, 1),
-              blurRadius: 1,
-              spreadRadius: 0.5,
-              color: Colors.grey),
-        ],
-        color: const Color(0xFFF7F2FA),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.sort),
-            onSelected: viewModel.updateSort,
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: "newest",
-                child: Text("Newest"),
-              ),
-              const PopupMenuItem(
-                value: "oldest",
-                child: Text("Oldest"),
-              ),
-              const PopupMenuItem(
-                value: "name_az",
-                child: Text("Name (A-Z)"),
-              ),
-              const PopupMenuItem(
-                value: "name_za",
-                child: Text("Name (Z-A)"),
-              ),
-            ],
-          ),
-          Container(
-            height: 30,
-            width: 1,
-            color: Colors.black,
-          ),
-          FilterButton(
-            label: "All",
-            isSelected: viewModel.filter == "all",
-            onTap: () => viewModel.updateFilter("all"),
-          ),
-          FilterButton(
-            label: "Active",
-            isSelected: viewModel.filter == "active",
-            onTap: () => viewModel.updateFilter("active"),
-          ),
-          FilterButton(
-            label: "Ended",
-            isSelected: viewModel.filter == "ended",
-            onTap: () => viewModel.updateFilter("ended"),
-          ),
-        ],
       ),
     );
   }
@@ -198,30 +336,23 @@ class AuctionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Card(
-        elevation: 3,
+        elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AuctionDetail(auction: auction)),
-            );
-          },
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: SizedBox(
-              width: 50,
-              height: 50,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(8),
+              ),
               child: Image.network(
                 auction.imageUrls.first,
-                width: 50,
-                height: 50,
+                height: 150,
+                width: double.infinity,
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
@@ -239,45 +370,63 @@ class AuctionCard extends StatelessWidget {
                     const Icon(Icons.error, color: Colors.red),
               ),
             ),
-          ),
-          title: Text(
-            auction.name,
-            style: ProjectTextStyles.cardHeaderTextStyle,
-          ),
-          subtitle: CountdownTimer(
-            endTime: auction.endTime,
-            auctionId: auction.id,
-          ),
-          trailing: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Column(
-              children: [
-                const Text(
-                  "Highest bid:",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    child: Text(
-                      "${auction.startingPrice.toInt()}\$",
-                      style: ProjectTextStyles.buttonTextStyle,
+            MaterialButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AuctionDetail(auction: auction)),
+                );
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      auction.name,
+                      style: ProjectTextStyles.cardHeaderTextStyle,
                     ),
-                  ),
-                )
-              ],
+                    const SizedBox(height: 8),
+                    CountdownTimer(
+                      endTime: auction.endTime,
+                      auctionId: auction.id,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Highest bid:",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            child: Text(
+                              "${auction.startingPrice.toInt()}\$",
+                              style: ProjectTextStyles.buttonTextStyle
+                                  .copyWith(fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

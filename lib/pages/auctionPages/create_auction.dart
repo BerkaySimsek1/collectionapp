@@ -88,8 +88,13 @@ class AuctionUploadScreen extends StatelessWidget {
                             // Select Images Button
                             ElevatedButton.icon(
                               onPressed: () => viewModel.pickImages(context),
-                              icon: const Icon(Icons.image),
-                              label: const Text("Select Images"),
+                              icon:
+                                  const Icon(Icons.image, color: Colors.white),
+                              label: const Text(
+                                "Select Images",
+                                style: ProjectTextStyles.buttonTextStyle,
+                              ),
+                              style: ProjectDecorations.elevatedButtonStyle,
                             ),
                             const SizedBox(height: 10),
                             // Selected Images Preview
@@ -110,23 +115,17 @@ class AuctionUploadScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     // Upload Auction Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: ElevatedButton(
-                          style: ProjectDecorations.elevatedButtonStyle,
-                          onPressed: viewModel.isUploading
-                              ? null
-                              : () => viewModel.uploadAuction(context),
-                          child: viewModel.isUploading
-                              ? const CircularProgressIndicator()
-                              : const Text(
-                                  "Upload Auction",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                        ),
-                      ),
+                    ElevatedButton(
+                      style: ProjectDecorations.elevatedButtonStyle,
+                      onPressed: viewModel.isUploading
+                          ? null
+                          : () => viewModel.uploadAuction(context),
+                      child: viewModel.isUploading
+                          ? const CircularProgressIndicator()
+                          : const Text(
+                              "Upload Auction",
+                              style: TextStyle(color: Colors.white),
+                            ),
                     ),
                   ],
                 ),

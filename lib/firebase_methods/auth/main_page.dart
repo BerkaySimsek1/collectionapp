@@ -1,12 +1,12 @@
 import "package:collectionapp/design_elements.dart";
+import "package:flutter/material.dart";
+import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/firebase_methods/auth/auth_page.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_main_page.dart";
 import "package:collectionapp/pages/user_profile_page.dart";
-import "package:flutter/material.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
 import "package:collectionapp/pages/userCollectionPages/user_collection_screen.dart";
-import "package:cloud_firestore/cloud_firestore.dart";
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -18,7 +18,6 @@ class MainPage extends StatelessWidget {
       builder: (context, authSnapshot) {
         if (authSnapshot.hasData) {
           final user = authSnapshot.data;
-
           // Kullanıcı bilgilerini Firestore'dan çekiyoruz
           return StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
@@ -45,59 +44,73 @@ class MainPage extends StatelessWidget {
 
               return Scaffold(
                 backgroundColor: Colors.grey[100],
+                appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  toolbarHeight: 50,
+                  iconTheme: const IconThemeData(color: Colors.deepPurple),
+                ),
+                drawer: Drawer(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      UserAccountsDrawerHeader(
+                        accountName: Text("$firstName $lastName"),
+                        accountEmail: Text(user.email ?? ""),
+                        currentAccountPicture: const CircleAvatar(
+                          child: Icon(Icons.account_circle,
+                              size: 70, color: Colors.deepPurple),
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.deepPurple.shade400,
+                              Colors.deepPurple.shade700
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.account_circle),
+                        title: const Text("Profile"),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const UserProfilePage()),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.logout),
+                        title: const Text("Log Out"),
+                        onTap: () {
+                          FirebaseAuth.instance.signOut();
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
                 body: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 64, horizontal: 16),
+                  padding: const EdgeInsets.all(16),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         // Karşılama Mesajı
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "Welcome $firstName $lastName!",
-                                style: ProjectTextStyles.appBarTextStyle,
-                                overflow:
-                                    TextOverflow.clip, // Uzun yazıları kes
-                              ),
-                            ),
-                          ],
+                        Text(
+                          "Welcome $firstName $lastName!",
+                          style: ProjectTextStyles.appBarTextStyle,
+                          overflow: TextOverflow.clip,
                         ),
-
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 16),
                         Text(
                           "Here you can manage your auctions, view collections, and connect with others.",
                           style: ProjectTextStyles.subtitleTextStyle,
                         ),
-                        const SizedBox(height: 32),
-                        Row(
-                          children: [
-                            TextButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                elevation: 0,
-                                backgroundColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              icon: const Icon(Icons.account_circle,
-                                  size: 36, color: Colors.deepPurple),
-                              label: const Text("View Profile"),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const UserProfilePage()),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 64),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -115,7 +128,7 @@ class MainPage extends StatelessWidget {
                                 }));
                               },
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 24),
                             _buildCardButton(
                               context,
                               title: "Collections",
@@ -130,7 +143,7 @@ class MainPage extends StatelessWidget {
                                 }));
                               },
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 24),
                             _buildCardButton(
                               context,
                               title: "Social Media",
@@ -148,17 +161,6 @@ class MainPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
-                ),
-                floatingActionButton: ElevatedButton.icon(
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                  },
-                  style: ProjectDecorations.elevatedButtonStyle,
-                  icon: const Icon(Icons.logout, color: Colors.white),
-                  label: const Text(
-                    "Log Out",
-                    style: ProjectTextStyles.buttonTextStyle,
                   ),
                 ),
               );
@@ -179,6 +181,7 @@ class MainPage extends StatelessWidget {
       required Color color,
       required VoidCallback onTap}) {
     return Card(
+      color: Colors.white,
       elevation: 3,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -187,7 +190,7 @@ class MainPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               CircleAvatar(

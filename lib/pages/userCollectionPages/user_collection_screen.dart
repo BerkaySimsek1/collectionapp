@@ -9,6 +9,30 @@ class UserCollectionsScreen extends StatelessWidget {
 
   const UserCollectionsScreen({super.key, required this.userId});
 
+  // Koleksiyon türüne göre ikon oluşturma
+  IconData _getIconForCollectionType(String type) {
+    switch (type) {
+      case 'Record':
+        return Icons.music_note;
+      case 'Stamp':
+        return Icons.stay_primary_landscape;
+      case 'Coin':
+        return Icons.money;
+      case 'Book':
+        return Icons.book;
+      case 'Painting':
+        return Icons.photo;
+      case 'Comic Book':
+        return Icons.book_online;
+      case 'Vintage Posters':
+        return Icons.mediation;
+      case 'Diğer':
+        return Icons.collections;
+      default:
+        return Icons.collections;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +43,7 @@ class UserCollectionsScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "You can manage all your collections or add new ones here.",
@@ -49,33 +73,29 @@ class UserCollectionsScreen extends StatelessWidget {
 
                   final collections = snapshot.data!.docs;
 
-                  // Bu dokümanların ID’si senin "collectionName" değerlerini tutuyor (ya da doc["name"]).
-                  return ListView.builder(
+                  return GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 3 / 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
                     itemCount: collections.length,
                     itemBuilder: (context, index) {
                       final collectionDoc = collections[index];
-
-                      // Eğer doc ID'siyle tutuyorsan:
                       final collectionName = collectionDoc.id;
-
-                      // Veya doc'un içinde "name" alanıyla tutuyorsan:
-                      // final collectionName = collectionDoc["name"];
+                      final collectionData =
+                          collectionDoc.data() as Map<String, dynamic>;
+                      final collectionType = collectionData['name'] ?? 'Diğer';
 
                       return Card(
-                        elevation: 2,
-                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        color: Colors.white,
+                        elevation: 3,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 4),
-                          title: Text(
-                            collectionName,
-                            style: ProjectTextStyles.cardHeaderTextStyle,
-                          ),
-                          trailing: const Icon(Icons.arrow_forward_ios,
-                              color: Colors.deepPurple),
+                        child: InkWell(
                           onTap: () {
                             Navigator.push(
                               context,
@@ -87,6 +107,26 @@ class UserCollectionsScreen extends StatelessWidget {
                               ),
                             );
                           },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: Colors.deepPurple,
+                                radius: 30,
+                                child: Icon(
+                                  _getIconForCollectionType(collectionType),
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                collectionName,
+                                style: ProjectTextStyles.cardHeaderTextStyle,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -97,7 +137,7 @@ class UserCollectionsScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: ElevatedButton.icon(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
             context,
@@ -106,7 +146,7 @@ class UserCollectionsScreen extends StatelessWidget {
             ),
           );
         },
-        style: ProjectDecorations.elevatedButtonStyle,
+        backgroundColor: Colors.deepPurple,
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
           "Add Collection",
