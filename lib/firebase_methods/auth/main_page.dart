@@ -50,6 +50,7 @@ class MainPage extends StatelessWidget {
                   iconTheme: const IconThemeData(color: Colors.deepPurple),
                 ),
                 drawer: Drawer(
+                  backgroundColor: Colors.grey[200],
                   child: ListView(
                     padding: EdgeInsets.zero,
                     children: [
@@ -72,8 +73,16 @@ class MainPage extends StatelessWidget {
                         ),
                       ),
                       ListTile(
-                        leading: const Icon(Icons.account_circle),
-                        title: const Text("Profile"),
+                        leading: const Icon(
+                          Icons.account_circle,
+                          color: Colors.deepPurple,
+                        ),
+                        title: Text(
+                          "Profile",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ),
+                        ),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -83,8 +92,16 @@ class MainPage extends StatelessWidget {
                         },
                       ),
                       ListTile(
-                        leading: const Icon(Icons.logout),
-                        title: const Text("Log Out"),
+                        leading: const Icon(
+                          Icons.logout,
+                          color: Colors.deepPurple,
+                        ),
+                        title: Text(
+                          "Log Out",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ),
+                        ),
                         onTap: () {
                           FirebaseAuth.instance.signOut();
                           Navigator.pop(context);
@@ -110,7 +127,7 @@ class MainPage extends StatelessWidget {
                           "Here you can manage your auctions, view collections, and connect with others.",
                           style: ProjectTextStyles.subtitleTextStyle,
                         ),
-                        const SizedBox(height: 64),
+                        const SizedBox(height: 80),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -128,7 +145,7 @@ class MainPage extends StatelessWidget {
                                 }));
                               },
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                             _buildCardButton(
                               context,
                               title: "Collections",
@@ -143,7 +160,7 @@ class MainPage extends StatelessWidget {
                                 }));
                               },
                             ),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 16),
                             _buildCardButton(
                               context,
                               title: "Social Media",

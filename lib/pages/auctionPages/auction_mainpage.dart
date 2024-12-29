@@ -37,51 +37,62 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Expanded(
-                        flex: 50,
-                        child: SizedBox(
-                          height: 48,
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (value) {
-                              setState(() {
-                                _searchQuery = value.toLowerCase();
-                              });
-                            },
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                  color: Colors.black,
-                                  width: 1.5,
-                                ),
-                              ),
-                              hintText: "Search auctions",
-                              hintStyle: TextStyle(color: Colors.grey[600]),
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: Colors.grey[600],
-                              ),
-                              suffixIcon: _searchController.text.isNotEmpty
-                                  ? IconButton(
-                                      icon: Icon(Icons.clear,
-                                          color: Colors.grey[600]),
-                                      onPressed: () {
-                                        _searchController.clear();
-                                        setState(() {
-                                          _searchQuery = "";
-                                        });
-                                      },
-                                    )
-                                  : null,
-                              filled: true,
-                              fillColor: Colors.white,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 2,
+                              offset: Offset(0, 2),
                             ),
+                          ],
+                        ),
+                        height: 48,
+                        width: 280,
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value.toLowerCase();
+                            });
+                          },
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 8),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Colors.black26,
+                                width: 0.2,
+                              ),
+                            ),
+                            prefixIconColor: Colors.deepPurple,
+                            hintText: "Search auctions",
+                            hintStyle: TextStyle(color: Colors.grey[600]),
+                            prefixIcon: const Icon(
+                              Icons.search,
+                            ),
+                            suffixIcon: _searchController.text.isNotEmpty
+                                ? IconButton(
+                                    icon: Icon(Icons.clear,
+                                        color: Colors.grey[600]),
+                                    onPressed: () {
+                                      _searchController.clear();
+                                      setState(() {
+                                        _searchQuery = "";
+                                      });
+                                    },
+                                  )
+                                : null,
+                            filled: true,
+                            fillColor: Colors.white,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
                       Container(
                         height: 48,
                         width: 48,
@@ -144,7 +155,6 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
                       Container(
                         height: 48,
                         width: 48,
@@ -216,7 +226,6 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                                                   });
                                                 },
                                               ),
-                                              const SizedBox(height: 8),
                                             ],
                                           ),
                                         );
@@ -232,7 +241,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                     ],
                   ),
                 ),
-                // Auction List
+                // auctions List
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -338,6 +347,7 @@ class AuctionCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Card(
+        color: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),

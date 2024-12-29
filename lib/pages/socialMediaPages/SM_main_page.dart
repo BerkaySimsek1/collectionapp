@@ -30,13 +30,24 @@ class _GroupsListPageState extends State<GroupsListPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                SizedBox(
+                Container(
                   height: 48,
-                  width: 240,
+                  width: 275,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 2,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
                   child: TextField(
                     controller: _searchController,
                     onChanged: (value) {
@@ -45,18 +56,19 @@ class _GroupsListPageState extends State<GroupsListPage> {
                       });
                     },
                     decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: const BorderSide(
-                          color: Colors.black,
-                          width: 2,
+                          color: Colors.black26,
+                          width: 0.2,
                         ),
                       ),
+                      prefixIconColor: Colors.deepPurple,
                       hintText: "Search groups",
                       hintStyle: TextStyle(color: Colors.grey[600]),
-                      prefixIcon: Icon(
+                      prefixIcon: const Icon(
                         Icons.search,
-                        color: Colors.grey[600],
                       ),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(
@@ -142,6 +154,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
               ],
             ),
           ),
+          // groups list
           Expanded(
             child: StreamBuilder<List<Group>>(
               stream: _groupService.getGroups(),
@@ -258,7 +271,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
                       Navigator.pop(context);
                     },
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),
@@ -286,6 +299,7 @@ class GroupListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
       elevation: 4,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(
