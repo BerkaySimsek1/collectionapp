@@ -283,7 +283,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(child: Text("No groups joined yet."));
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.group_off, size: 80, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text(
+                  "No groups joined yet.",
+                  style: ProjectTextStyles.subtitleTextStyle,
+                ),
+              ],
+            ),
+          );
         }
 
         final groups = snapshot.data!.docs;
@@ -298,20 +310,97 @@ class _UserProfilePageState extends State<UserProfilePage> {
               color: Colors.white,
               margin: const EdgeInsets.all(8),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: ListTile(
                 contentPadding: const EdgeInsets.all(16),
-                leading: CircleAvatar(
-                  backgroundColor: Colors.grey.shade200,
-                  radius: 30,
+                leading: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[200],
+                  ),
+                  child: group.coverImageUrl != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            group.coverImageUrl!,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                  color: Colors.deepPurple,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              decoration: BoxDecoration(
+                                color: Colors.deepPurple.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.group,
+                                color: Colors.deepPurple,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.group,
+                            color: Colors.deepPurple,
+                            size: 30,
+                          ),
+                        ),
                 ),
                 title: Text(
                   group.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
-                subtitle: Text(group.description),
-                trailing: const Icon(Icons.chevron_right),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 4),
+                    Text(
+                      group.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.supervised_user_circle,
+                          color: Colors.deepPurple,
+                        ),
+                        const SizedBox(width: 4),
+                        Text("${group.members.length} members",
+                            style: ProjectTextStyles.cardDescriptionTextStyle
+                                .copyWith(
+                              color: Colors.deepPurple,
+                            )),
+                      ],
+                    ),
+                  ],
+                ),
+                trailing:
+                    const Icon(Icons.chevron_right, color: Colors.deepPurple),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -340,7 +429,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(child: Text("No auctions created yet."));
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.gavel_outlined, size: 80, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text(
+                  "No auctions created yet.",
+                  style: ProjectTextStyles.subtitleTextStyle,
+                ),
+              ],
+            ),
+          );
         }
 
         final auctions = snapshot.data!.docs;
@@ -355,20 +456,120 @@ class _UserProfilePageState extends State<UserProfilePage> {
               color: Colors.white,
               margin: const EdgeInsets.all(8),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: ListTile(
                 contentPadding: const EdgeInsets.all(16),
-                leading: CircleAvatar(
-                  backgroundColor: Colors.grey[200],
-                  radius: 30,
+                leading: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[200],
+                  ),
+                  child: auction.imageUrls.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            auction.imageUrls.first,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                  color: Colors.deepPurple,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              decoration: BoxDecoration(
+                                color: Colors.deepPurple.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.gavel,
+                                color: Colors.deepPurple,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.gavel,
+                            color: Colors.deepPurple,
+                            size: 30,
+                          ),
+                        ),
                 ),
                 title: Text(
                   auction.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
-                subtitle: Text("Starting Price: ${auction.startingPrice}"),
-                trailing: const Icon(Icons.chevron_right),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                      auction.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.deepPurple,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            child: Text(
+                              "\$${auction.startingPrice.toStringAsFixed(2)}",
+                              style: ProjectTextStyles.buttonTextStyle
+                                  .copyWith(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.timer_outlined,
+                              size: 14,
+                              color: Colors.grey[600],
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              auction.isAuctionEnd
+                                  ? "Ended"
+                                  : "Ends ${auction.endTime.day}/${auction.endTime.month}/${auction.endTime.year}",
+                              style: ProjectTextStyles.subtitleTextStyle,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                trailing:
+                    const Icon(Icons.chevron_right, color: Colors.deepPurple),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -436,7 +637,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               color: Colors.white,
               margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: ListTile(
                 contentPadding: const EdgeInsets.all(16),

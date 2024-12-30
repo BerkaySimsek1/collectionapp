@@ -93,7 +93,7 @@ class UserCollectionsScreen extends StatelessWidget {
                         color: Colors.white,
                         elevation: 3,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: InkWell(
                           onTap: () {

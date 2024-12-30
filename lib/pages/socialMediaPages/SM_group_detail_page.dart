@@ -2,7 +2,6 @@ import "package:collectionapp/firebase_methods/firestore_methods/SM_firestore_me
 import "package:collectionapp/models/GroupModel.dart";
 import "package:collectionapp/models/PostModel.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_group_admin.dart";
-import "package:collectionapp/pages/socialMediaPages/comment_bottom_sheet.dart";
 import "package:collectionapp/pages/socialMediaPages/create_post_widget.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
@@ -321,11 +320,14 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
                       return Column(
                         children: snapshot.data!.map((post) {
-                          return PostWidget(
-                            post: post,
-                            onLike: () => _groupDetailService.toggleLike(
-                                post.id, _currentUser.uid),
-                            groupDetailService: _groupDetailService,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: PostWidget(
+                              post: post,
+                              onLike: () => _groupDetailService.toggleLike(
+                                  post.id, _currentUser.uid),
+                              groupDetailService: _groupDetailService,
+                            ),
                           );
                         }).toList(),
                       );
@@ -361,6 +363,129 @@ class PostWidget extends StatelessWidget {
     required this.groupDetailService,
   });
 
+  @override
+  Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    String likeCount = post.likes.length <= 1 ? "like" : "likes";
+    String commentCount = post.comments.length <= 1 ? "comment" : "comments";
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 0,
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Kullanıcı Bilgileri
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundImage: post.userProfilePic.isNotEmpty
+                      ? NetworkImage(post.userProfilePic)
+                      : null,
+                  backgroundColor: Colors.deepPurple,
+                  child: post.userProfilePic.isEmpty
+                      ? Text(post.username[0],
+                          style: const TextStyle(color: Colors.white))
+                      : null,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        post.username,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        "${post.createdAt.day}.${post.createdAt.month}.${post.createdAt.year}",
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.more_horiz),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+
+          // Gönderi İçeriği
+          if (post.content.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                post.content,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+
+          // Gönderi Görseli
+          if (post.imageUrl != null)
+            Container(
+              constraints: const BoxConstraints(
+                maxHeight: 400,
+              ),
+              width: double.infinity,
+              child: Image.network(
+                post.imageUrl!,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error, color: Colors.red),
+              ),
+            ),
+
+          // Etkileşim Butonları
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                _InteractionButton(
+                  icon: Icons.favorite,
+                  isActive: post.likes.contains(currentUser!.uid),
+                  activeColor: Colors.red,
+                  count: post.likes.length,
+                  label: likeCount,
+                  onTap: onLike,
+                ),
+                const SizedBox(width: 20),
+                _InteractionButton(
+                  icon: Icons.comment_outlined,
+                  count: post.comments.length,
+                  label: commentCount,
+                  onTap: () => _showComments(context),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showComments(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -392,11 +517,9 @@ class PostWidget extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "Comments",
-                    style: ProjectTextStyles.cardHeaderTextStyle.copyWith(
-                      fontSize: 20,
-                    ),
+                    style: ProjectTextStyles.appBarTextStyle,
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -507,129 +630,6 @@ class PostWidget extends StatelessWidget {
       ),
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    String likeCount = post.likes.length <= 1 ? "like" : "likes";
-    String commentCount = post.comments.length <= 1 ? "comment" : "comments";
-
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-      elevation: 0,
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Kullanıcı Bilgileri
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: post.userProfilePic.isNotEmpty
-                      ? NetworkImage(post.userProfilePic)
-                      : null,
-                  backgroundColor: Colors.deepPurple,
-                  child: post.userProfilePic.isEmpty
-                      ? Text(post.username[0],
-                          style: const TextStyle(color: Colors.white))
-                      : null,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        post.username,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        "${post.createdAt.day}.${post.createdAt.month}.${post.createdAt.year}",
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.more_horiz),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ),
-
-          // Gönderi İçeriği
-          if (post.content.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                post.content,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-
-          // Gönderi Görseli
-          if (post.imageUrl != null)
-            Container(
-              constraints: const BoxConstraints(
-                maxHeight: 400,
-              ),
-              width: double.infinity,
-              child: Image.network(
-                post.imageUrl!,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.error, color: Colors.red),
-              ),
-            ),
-
-          // Etkileşim Butonları
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                _InteractionButton(
-                  icon: Icons.favorite,
-                  isActive: post.likes.contains(currentUser!.uid),
-                  activeColor: Colors.red,
-                  count: post.likes.length,
-                  label: likeCount,
-                  onTap: onLike,
-                ),
-                const SizedBox(width: 20),
-                _InteractionButton(
-                  icon: Icons.comment_outlined,
-                  count: post.comments.length,
-                  label: commentCount,
-                  onTap: () => _showComments(context),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _InteractionButton extends StatelessWidget {
@@ -667,6 +667,72 @@ class _InteractionButton extends StatelessWidget {
               color: Colors.grey[600],
               fontSize: 14,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CommentBottomSheet extends StatefulWidget {
+  final Post post;
+  final GroupDetailService groupDetailService;
+
+  const CommentBottomSheet(
+      {super.key, required this.post, required this.groupDetailService});
+
+  @override
+  _CommentBottomSheetState createState() => _CommentBottomSheetState();
+}
+
+class _CommentBottomSheetState extends State<CommentBottomSheet> {
+  final TextEditingController _commentController = TextEditingController();
+
+  void _submitComment() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null || _commentController.text.trim().isEmpty) return;
+
+    final comment = Comment(
+      id: DateTime.now().toString(), // Consider using a unique ID generator
+      userId: currentUser.uid,
+      content: _commentController.text.trim(),
+      createdAt: DateTime.now(),
+      username: currentUser.displayName ?? "Anonymous",
+      userProfilePic: currentUser.photoURL ?? "",
+      groupId: widget.post.groupId, // Add this field to pass group context
+    );
+
+    try {
+      await widget.groupDetailService.addCommentToPost(widget.post.id, comment);
+      _commentController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to add comment: $e")),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _commentController,
+              decoration: InputDecoration(
+                hintText: "Write a comment",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              maxLines: null,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.send, color: Colors.deepPurple),
+            onPressed: _submitComment,
           ),
         ],
       ),
