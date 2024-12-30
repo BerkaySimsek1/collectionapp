@@ -45,8 +45,11 @@ class _RegisterPageState extends State<RegisterPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return const AlertDialog(
-            content: Text("Wrong information"),
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            content: const Text("Wrong information"),
           );
         },
       );

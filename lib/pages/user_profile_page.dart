@@ -48,7 +48,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildProfileHeader() {
-    return SizedBox(
+    return Container(
+      color: Colors.grey[200],
       height: 320,
       child: Stack(
         alignment: Alignment.center,
@@ -128,13 +129,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     const SizedBox(height: 8),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                EditProfilePage(userData: userData!),
-                          ),
-                        ).then((_) => _loadUserData());
+                        _showFollowDialog();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepPurple,
@@ -176,6 +171,63 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _showFollowDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          title: const Text(
+            "Follow",
+            style: ProjectTextStyles.appBarTextStyle,
+          ),
+          content: const Text(
+            "Do you want to follow this user?",
+            style: ProjectTextStyles.cardDescriptionTextStyle,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style: ProjectTextStyles.appBarTextStyle.copyWith(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      backgroundColor: Colors.white,
+                      content: Text(
+                        "User followed successfully!",
+                        style: ProjectTextStyles.appBarTextStyle.copyWith(
+                          fontSize: 16,
+                        ),
+                      )),
+                );
+              },
+              style: ProjectDecorations.elevatedButtonStyle,
+              child: const Text(
+                "Follow",
+                style: ProjectTextStyles.buttonTextStyle,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -351,9 +403,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
         case 'Vintage Posters':
           return Icons.mediation;
         case 'Diğer':
-          return Icons.collections;
+          return Icons.more_horiz;
         default:
-          return Icons.collections;
+          return Icons.more_horiz;
       }
     }
 
@@ -422,8 +474,35 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: const ProjectAppbar(
-        titleText: "My Profile",
+      appBar: AppBar(
+        backgroundColor: Colors.grey[200],
+        title:
+            const Text("My Profile", style: ProjectTextStyles.appBarTextStyle),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.deepPurple,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditProfilePage(userData: userData!),
+                ),
+              ).then((_) => _loadUserData());
+            },
+            icon: const Icon(
+              Icons.edit_rounded,
+              color: Colors.deepPurple,
+            ),
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

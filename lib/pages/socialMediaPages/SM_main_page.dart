@@ -34,64 +34,12 @@ class _GroupsListPageState extends State<GroupsListPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Container(
-                  height: 48,
-                  width: 275,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 2,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value.toLowerCase();
-                      });
-                    },
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Colors.black26,
-                          width: 0.2,
-                        ),
-                      ),
-                      prefixIconColor: Colors.deepPurple,
-                      hintText: "Search groups",
-                      hintStyle: TextStyle(color: Colors.grey[600]),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                      ),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(Icons.clear, color: Colors.grey[600]),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {
-                                  _searchQuery = "";
-                                });
-                              },
-                            )
-                          : null,
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 48,
-                  width: 48, // Arama kutusunun yüksekliğiyle eşleştirildi
-                  decoration: BoxDecoration(
+                Expanded(
+                  flex: 25,
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
                       color: Colors.white,
-                      border: Border.all(color: Colors.black),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: const [
                         BoxShadow(
@@ -99,55 +47,117 @@ class _GroupsListPageState extends State<GroupsListPage> {
                           blurRadius: 2,
                           offset: Offset(0, 2),
                         ),
-                      ]),
-                  child: Center(
-                    child: IconButton(
-                      onPressed: _showFilterDialog,
-                      icon: const Icon(Icons.filter_list,
-                          color: Colors.deepPurple),
+                      ],
                     ),
-                  ),
-                ),
-                Container(
-                  height: 48,
-                  width: 60, // Arama kutusunun yüksekliğiyle eşleştirildi
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 2,
-                          offset: Offset(0, 2),
-                        ),
-                      ]),
-                  child: Center(
-                    child: DropdownButton<String>(
-                      value: _selectedSort,
-                      borderRadius: BorderRadius.circular(8),
-                      dropdownColor: Colors.white,
-                      icon: const Icon(Icons.arrow_drop_down,
-                          color: Colors.deepPurple),
-                      underline: Container(
-                        height: 0,
-                        color: Colors.white,
-                      ),
-                      items: ["A-Z", "Z-A"]
-                          .map((sortOption) => DropdownMenuItem(
-                                value: sortOption,
-                                child: Text(
-                                  sortOption,
-                                  style:
-                                      const TextStyle(color: Colors.deepPurple),
-                                ),
-                              ))
-                          .toList(),
+                    child: TextField(
+                      controller: _searchController,
                       onChanged: (value) {
                         setState(() {
-                          _selectedSort = value!;
+                          _searchQuery = value.toLowerCase();
                         });
                       },
+                      decoration: InputDecoration(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Colors.black26,
+                            width: 0.2,
+                          ),
+                        ),
+                        prefixIconColor: Colors.deepPurple,
+                        hintText: "Search groups",
+                        hintStyle: TextStyle(color: Colors.grey[600]),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                        ),
+                        suffixIcon: _searchController.text.isNotEmpty
+                            ? IconButton(
+                                icon:
+                                    Icon(Icons.clear, color: Colors.grey[600]),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  setState(() {
+                                    _searchQuery = "";
+                                  });
+                                },
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                const Spacer(flex: 1),
+                Expanded(
+                  flex: 5,
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 2,
+                            offset: Offset(0, 2),
+                          ),
+                        ]),
+                    child: Center(
+                      child: IconButton(
+                        onPressed: _showFilterDialog,
+                        icon: const Icon(Icons.filter_list,
+                            color: Colors.deepPurple),
+                      ),
+                    ),
+                  ),
+                ),
+                const Spacer(flex: 1),
+                Expanded(
+                  flex: 5,
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 2,
+                            offset: Offset(0, 2),
+                          ),
+                        ]),
+                    child: Center(
+                      child: DropdownButton<String>(
+                        value: _selectedSort,
+                        borderRadius: BorderRadius.circular(8),
+                        dropdownColor: Colors.white,
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: Colors.deepPurple),
+                        underline: Container(
+                          height: 0,
+                          color: Colors.white,
+                        ),
+                        items: ["A-Z", "Z-A"]
+                            .map((sortOption) => DropdownMenuItem(
+                                  value: sortOption,
+                                  child: Text(
+                                    sortOption,
+                                    style: const TextStyle(
+                                        color: Colors.deepPurple),
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedSort = value!;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -231,6 +241,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           title: const Text(
             "Filter by Category",
             style: ProjectTextStyles.appBarTextStyle,
@@ -301,69 +312,81 @@ class GroupListItem extends StatelessWidget {
     return Card(
       color: Colors.white,
       elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.all(8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      child: ListTile(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GroupDetailPage(group: group),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(8),
             ),
-          );
-        },
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: CircleAvatar(
-          backgroundColor: Colors.transparent,
-          child: group.coverImageUrl != null
-              ? ClipOval(
-                  child: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: Stack(
-                      children: [
-                        Image.network(
-                          group.coverImageUrl!,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.error, color: Colors.red),
+            child: group.coverImageUrl != null
+                ? Image.network(
+                    group.coverImageUrl ?? "",
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.deepPurple,
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
                         ),
-                      ],
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.error, color: Colors.red),
+                  )
+                : SizedBox(
+                    height: 180,
+                    child: Center(
+                      child: Icon(
+                        Icons.group_outlined,
+                        color: Colors.grey[200],
+                        size: 180,
+                      ),
                     ),
                   ),
-                )
-              : Text(
-                  group.name[0],
-                  style: ProjectTextStyles.cardHeaderTextStyle.copyWith(
-                    color: Colors.white,
-                  ),
+          ),
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GroupDetailPage(group: group),
                 ),
-        ),
-        title: Text(
-          group.name,
-          style: ProjectTextStyles.cardHeaderTextStyle,
-        ),
-        subtitle: Text(
-          "${group.members.length} $memberCount",
-          style: ProjectTextStyles.subtitleTextStyle,
-        ),
-        trailing: const Icon(Icons.chevron_right, color: Colors.deepPurple),
+              );
+            },
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            leading: const CircleAvatar(
+              backgroundColor: Colors.deepPurple,
+              child: Icon(Icons.group, color: Colors.white),
+            ),
+            title: Text(
+              group.name,
+              style: ProjectTextStyles.appBarTextStyle.copyWith(fontSize: 18),
+            ),
+            subtitle: Text(
+              "${group.members.length} $memberCount",
+              style: ProjectTextStyles.cardDescriptionTextStyle.copyWith(
+                fontSize: 16,
+              ),
+            ),
+            trailing: const Icon(
+              Icons.chevron_right,
+              color: Colors.deepPurple,
+              size: 32,
+            ),
+          ),
+        ],
       ),
     );
   }

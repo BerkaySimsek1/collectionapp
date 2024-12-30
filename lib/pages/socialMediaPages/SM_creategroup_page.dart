@@ -52,13 +52,35 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Grup başarıyla oluşturuldu!')),
+          SnackBar(
+              backgroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+              ),
+              content: Text("Group created successfully",
+                  style: ProjectTextStyles.appBarTextStyle.copyWith(
+                    fontSize: 16,
+                  ))),
         );
 
         Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Grup oluşturulurken hata oluştu: $e')),
+          SnackBar(
+              backgroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+              ),
+              content: Text("Grup oluşturulurken hata oluştu: $e",
+                  style: ProjectTextStyles.appBarTextStyle.copyWith(
+                    fontSize: 16,
+                  ))),
         );
       }
     }
@@ -174,16 +196,17 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                   },
                 ),
                 const SizedBox(height: 24),
+
+                GestureDetector(
+                  // create button
+                  onTap: _createGroup,
+                  child: const FinalFloatingDecoration(
+                    buttonText: "Create Group",
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-      ),
-      floatingActionButton: GestureDetector(
-        // create button
-        onTap: _createGroup,
-        child: const FinalFloatingDecoration(
-          buttonText: "Create Group",
         ),
       ),
     );

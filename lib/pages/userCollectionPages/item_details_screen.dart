@@ -27,6 +27,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           title: const Text("Are you sure?"),
           content: const Text("Do you really want to delete this item?"),
           actions: [

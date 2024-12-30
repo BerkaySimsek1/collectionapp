@@ -108,13 +108,11 @@ class _EditItemScreenState extends State<EditItemScreen> {
         String fieldName = "";
         String fieldType = "TextField";
         return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           title: const Text(
             "Add Custom Field",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
-            ),
+            style: ProjectTextStyles.appBarTextStyle,
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
