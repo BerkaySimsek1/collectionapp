@@ -1,6 +1,7 @@
-import "package:collectionapp/pages/login_page.dart";
-import "package:flutter/material.dart";
-import "../../pages/register_page.dart";
+import 'package:collectionapp/onboarding_page.dart';
+import 'package:flutter/material.dart';
+import 'package:collectionapp/pages/login_page.dart';
+import 'package:collectionapp/pages/register_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -10,21 +11,35 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  bool showLoginPage = true; // initially, show the login page
+  // 0: onboarding, 1: login, 2: register
+  int currentPage = 0;
 
-  void toggleScreens() {
+  void showLoginPage() {
     setState(() {
-      showLoginPage = !showLoginPage;
+      currentPage = 1;
+    });
+  }
+
+  void showRegisterPage() {
+    setState(() {
+      currentPage = 2;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (showLoginPage) {
-      // switching between pages through methods called back from pages
-      return LoginPage(showRegisterPage: toggleScreens);
+    if (currentPage == 0) {
+      return OnboardingPage(
+        showLoginPage: showLoginPage,
+      );
+    } else if (currentPage == 1) {
+      return LoginPage(
+        showRegisterPage: showRegisterPage,
+      );
     } else {
-      return RegisterPage(showLoginPage: toggleScreens);
+      return RegisterPage(
+        showLoginPage: showLoginPage,
+      );
     }
   }
 }
