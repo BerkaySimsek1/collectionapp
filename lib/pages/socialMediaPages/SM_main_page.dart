@@ -117,20 +117,21 @@ class _GroupsListPageState extends State<GroupsListPage> {
                 ),
                 const Spacer(flex: 1),
                 Expanded(
-                  flex: 5,
+                  flex: 7,
                   child: Container(
                     height: 48,
                     decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 2,
-                            offset: Offset(0, 2),
-                          ),
-                        ]),
+                      color: Colors.white,
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 2,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
                     child: Center(
                       child: DropdownButton<String>(
                         value: _selectedSort,

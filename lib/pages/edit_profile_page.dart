@@ -415,226 +415,327 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget _buildProfileHeader() {
-    return Column(
-      children: [
-        CircleAvatar(
-            radius: 60,
-            backgroundImage: userData?['profileImageUrl'] != null
-                ? NetworkImage(userData!['profileImageUrl'])
-                : const NetworkImage(
-                    'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png')),
-        const SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                offset: Offset(0, 3),
-              ),
-            ],
-            color: Colors.deepPurple,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-                "${userData?['firstName'] ?? ''} ${userData?['lastName'] ?? ''}",
-                style: ProjectTextStyles.buttonTextStyle),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(userData?['email'] ?? '',
-            style: ProjectTextStyles.cardDescriptionTextStyle),
-      ],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : CustomScrollView(
+              slivers: [
+                // Custom App Bar ve Profil Header
+                SliverAppBar(
+                  expandedHeight: 300,
+                  floating: false,
+                  pinned: true,
+                  backgroundColor: Colors.deepPurple,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        // Gradient Background
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.deepPurple.shade300,
+                                Colors.deepPurple.shade700,
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Profile Content
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Stack(
+                                alignment: Alignment.bottomRight,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 4,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 10,
+                                          spreadRadius: 5,
+                                        ),
+                                      ],
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 60,
+                                      backgroundImage: userData?[
+                                                  'profileImageUrl'] !=
+                                              null
+                                          ? NetworkImage(
+                                              userData!['profileImageUrl'])
+                                          : const NetworkImage(
+                                              'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 5,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.deepPurple,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                "${userData?['firstName'] ?? ''} ${userData?['lastName'] ?? ''}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                userData?['email'] ?? '',
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Form Alanları
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Kişisel Bilgiler Card'ı
+                        Card(
+                          color: Colors.white,
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Personal Information",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                _buildEditableField(
+                                  label: "First Name",
+                                  value: userData?['firstName'] ?? '',
+                                  icon: Icons.person_outline,
+                                  onSave: (value) async {
+                                    await _firestoreService
+                                        .updateUserData({'firstName': value});
+                                    setState(
+                                        () => userData?['firstName'] = value);
+                                  },
+                                ),
+                                const Divider(height: 24),
+                                _buildEditableField(
+                                  label: "Last Name",
+                                  value: userData?['lastName'] ?? '',
+                                  icon: Icons.person_outline,
+                                  onSave: (value) async {
+                                    await _firestoreService
+                                        .updateUserData({'lastName': value});
+                                    setState(
+                                        () => userData?['lastName'] = value);
+                                  },
+                                ),
+                                const Divider(height: 24),
+                                _buildEditableField(
+                                  label: "Age",
+                                  value: userData?['age']?.toString() ?? '',
+                                  icon: Icons.cake_outlined,
+                                  onSave: (value) async {
+                                    await _firestoreService.updateUserData(
+                                        {'age': int.parse(value)});
+                                    setState(() =>
+                                        userData?['age'] = int.parse(value));
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Hesap Ayarları Card'ı
+                        Card(
+                          elevation: 2,
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Account Settings",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                _buildSettingsButton(
+                                  label: "Change Email",
+                                  icon: Icons.mail_outline,
+                                  onTap: _showEmailChangeDialog,
+                                ),
+                                const Divider(height: 4),
+                                _buildSettingsButton(
+                                  label: "Change Password",
+                                  icon: Icons.lock_outline,
+                                  onTap: _showPasswordChangeDialog,
+                                ),
+                                const Divider(height: 4),
+                                _buildSettingsButton(
+                                  label: "Change Username",
+                                  icon: Icons.person_outline,
+                                  onTap: _showUsernameChangeDialog,
+                                ),
+                                const Divider(height: 4),
+                                _buildSettingsButton(
+                                  label: "Delete Account",
+                                  icon: Icons.delete_outline,
+                                  color: Colors.red,
+                                  onTap: _showDeleteAccountDialog,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
   Widget _buildEditableField({
     required String label,
     required String value,
+    required IconData icon,
     required Function(String) onSave,
   }) {
     final TextEditingController controller = TextEditingController(text: value);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 2,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.deepPurple.withOpacity(0.1),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8),
+                bottomLeft: Radius.circular(8),
               ),
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  labelText: label,
-                  contentPadding: const EdgeInsets.all(16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: Colors.black26,
-                      width: 0.2,
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
+            ),
+            child: Icon(icon, color: Colors.deepPurple),
+          ),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: label,
+                border: InputBorder.none,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                labelStyle: TextStyle(color: Colors.grey[600]),
               ),
             ),
           ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: () async {
+          IconButton(
+            icon: const Icon(Icons.check_circle_outline),
+            color: Colors.deepPurple,
+            onPressed: () {
               if (controller.text.trim().isNotEmpty) {
-                await onSave(controller.text.trim());
+                onSave(controller.text.trim());
               }
             },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Colors.deepPurple,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.check,
-                color: Colors.white,
-              ),
-            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildActionButton({
+  Widget _buildSettingsButton({
     required String label,
     required IconData icon,
     required VoidCallback onTap,
     Color color = Colors.deepPurple,
   }) {
-    return ElevatedButton.icon(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        elevation: 4,
-        backgroundColor: color,
-        shape: RoundedRectangleBorder(
+    return ListTile(
+      onTap: onTap,
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
+        child: Icon(icon, color: color, size: 20),
       ),
-      icon: Icon(
-        icon,
-        color: Colors.white,
-      ),
-      label: Text(
+      title: Text(
         label,
-        style: ProjectTextStyles.buttonTextStyle,
+        style: TextStyle(
+          fontSize: 16,
+          color: color,
+          fontWeight: FontWeight.w500,
+        ),
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: const ProjectAppbar(
-        titleText: "Edit Profile",
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      children: [
-                        _buildProfileHeader(),
-                        const SizedBox(height: 24),
-                        _buildEditableField(
-                          label: "First Name",
-                          value: userData?['firstName'] ?? '',
-                          onSave: (value) async {
-                            await _firestoreService
-                                .updateUserData({'firstName': value});
-                            setState(() => userData?['firstName'] = value);
-                          },
-                        ),
-                        _buildEditableField(
-                          label: "Last Name",
-                          value: userData?['lastName'] ?? '',
-                          onSave: (value) async {
-                            await _firestoreService
-                                .updateUserData({'lastName': value});
-                            setState(() => userData?['lastName'] = value);
-                          },
-                        ),
-                        _buildEditableField(
-                          label: "Age",
-                          value: userData?['age']?.toString() ?? '',
-                          onSave: (value) async {
-                            await _firestoreService
-                                .updateUserData({'age': int.parse(value)});
-                            setState(() => userData?['age'] = int.parse(value));
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildActionButton(
-                          label: "Change Email",
-                          icon: Icons.mail,
-                          onTap: () {
-                            _showEmailChangeDialog();
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        _buildActionButton(
-                          label: "Change Password",
-                          icon: Icons.lock,
-                          onTap: () {
-                            _showPasswordChangeDialog();
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        _buildActionButton(
-                          label: "Change Username",
-                          icon: Icons.person,
-                          onTap: () {
-                            _showUsernameChangeDialog();
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        _buildActionButton(
-                          label: "Delete Account",
-                          icon: Icons.delete,
-                          color: Colors.red,
-                          onTap: () {
-                            _showDeleteAccountDialog();
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+      trailing: Icon(Icons.chevron_right, color: color),
     );
   }
 }
