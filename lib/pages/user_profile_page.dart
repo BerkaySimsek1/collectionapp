@@ -547,7 +547,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
                         Row(
                           children: [
                             Icon(
