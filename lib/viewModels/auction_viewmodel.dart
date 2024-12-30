@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 class AuctionViewModel with ChangeNotifier {
   String _filter = "all";
   String _sort = "newest";
+  String _searchQuery = "";
 
   String get filter => _filter;
   String get sort => _sort;
+  String get searchQuery => _searchQuery;
 
   void updateFilter(String newFilter) {
     _filter = newFilter;
@@ -18,26 +20,32 @@ class AuctionViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Stream<QuerySnapshot> getAuctionStream() {
-    final collection = FirebaseFirestore.instance.collection("auctions");
-    Query query = collection;
+  void updateSearchQuery(String newQuery) {
+    _searchQuery = newQuery.toLowerCase();
+    notifyListeners();
+  }
 
+  Stream<QuerySnapshot<Object?>> getAuctionStream() {
+    Query query = FirebaseFirestore.instance.collection('auctions');
+
+    // Filtreleme işlemleri
     if (_filter == "active") {
-      query = query.where("isAuctionEnd", isEqualTo: false);
+      query = query.where('end_time', isGreaterThan: DateTime.now());
     } else if (_filter == "ended") {
-      query = query.where("isAuctionEnd", isEqualTo: true);
-    }
-
-    if (_sort == "newest") {
-      query = query.orderBy("created_at", descending: true);
-    } else if (_sort == "oldest") {
-      query = query.orderBy("created_at", descending: false);
-    } else if (_sort == "name_az") {
-      query = query.orderBy("name", descending: false);
-    } else if (_sort == "name_za") {
-      query = query.orderBy("name", descending: true);
+      query = query.where('end_time', isLessThanOrEqualTo: DateTime.now());
     }
 
     return query.snapshots();
+  }
+
+  List<DocumentSnapshot> filterAuctions(List<DocumentSnapshot> auctionDocs) {
+    if (_searchQuery.isEmpty) {
+      return auctionDocs;
+    }
+
+    return auctionDocs.where((doc) {
+      final name = doc['name'].toString().toLowerCase();
+      return name.contains(_searchQuery);
+    }).toList();
   }
 }

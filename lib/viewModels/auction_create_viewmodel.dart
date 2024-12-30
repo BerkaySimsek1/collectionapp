@@ -30,6 +30,21 @@ class AuctionCreateViewModel with ChangeNotifier {
     }
   }
 
+  Future<void> pickImageFromCamera(BuildContext context) async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: ImageSource.camera);
+    if (image != null) {
+      if (selectedImages.length < 7) {
+        selectedImages.add(image);
+        notifyListeners();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("En fazla 7 resim seçebilirsiniz.")),
+        );
+      }
+    }
+  }
+
   Future<void> uploadAuction(BuildContext context) async {
     if (!formKey.currentState!.validate() ||
         selectedImages.isEmpty ||

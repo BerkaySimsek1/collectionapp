@@ -87,11 +87,12 @@ class AuctionUploadScreen extends StatelessWidget {
                             const SizedBox(height: 20),
                             // Select Images Button
                             ElevatedButton.icon(
-                              onPressed: () => viewModel.pickImages(context),
+                              onPressed: () => _showImageSourceActionSheet(
+                                  context, viewModel),
                               icon:
                                   const Icon(Icons.image, color: Colors.white),
                               label: const Text(
-                                "Select Images",
+                                "Add Images",
                                 style: ProjectTextStyles.buttonTextStyle,
                               ),
                               style: ProjectDecorations.elevatedButtonStyle,
@@ -134,6 +135,37 @@ class AuctionUploadScreen extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  void _showImageSourceActionSheet(
+      BuildContext context, AuctionCreateViewModel viewModel) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  viewModel.pickImages(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  viewModel.pickImageFromCamera(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
