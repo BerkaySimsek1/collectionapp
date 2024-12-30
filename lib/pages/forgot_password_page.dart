@@ -26,8 +26,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return const AlertDialog(
-            content: Text(
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            content: const Text(
                 "If an account with this e-mail exists, a password reset link has been sent. Check your inbox."),
           );
         },
@@ -38,6 +41,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             content: Text(e.message.toString()),
           );
         },

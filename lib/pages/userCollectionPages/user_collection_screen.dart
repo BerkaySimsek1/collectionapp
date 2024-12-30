@@ -27,9 +27,9 @@ class UserCollectionsScreen extends StatelessWidget {
       case 'Vintage Posters':
         return Icons.mediation;
       case 'Diğer':
-        return Icons.collections;
+        return Icons.more_horiz;
       default:
-        return Icons.collections;
+        return Icons.more_horiz;
     }
   }
 

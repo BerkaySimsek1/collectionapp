@@ -42,7 +42,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to load user data")),
+          SnackBar(
+            backgroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+              ),
+            ),
+            content: Text("Failed to load user data",
+                style: ProjectTextStyles.appBarTextStyle.copyWith(
+                  fontSize: 16,
+                )),
+          ),
         );
       }
     }
@@ -55,6 +67,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         title: const Text(
           "Change Email",
           style: ProjectTextStyles.appBarTextStyle,
@@ -97,15 +110,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 });
 
                 if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Email updated successfully!")),
-                );
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                        topRight: Radius.circular(8),
+                      ),
+                    ),
+                    content: Text("Email updated successfully!",
+                        style: ProjectTextStyles.appBarTextStyle.copyWith(
+                          fontSize: 16,
+                        ))));
                 Navigator.pop(context);
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                      content: Text("Failed to update email: ${e.toString()}")),
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      content: Text("Failed to update email: ${e.toString()}",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ))),
                 );
               }
             },
@@ -128,6 +159,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         title: const Text(
           "Change Password",
           style: ProjectTextStyles.appBarTextStyle,
@@ -166,16 +198,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text("Password updated successfully!")),
+                  SnackBar(
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      content: Text("Password updated successfully!",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ))),
                 );
                 Navigator.pop(context);
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
                       content:
-                          Text("Failed to update password: ${e.toString()}")),
+                          Text("Failed to update password: ${e.toString()}",
+                              style: ProjectTextStyles.appBarTextStyle.copyWith(
+                                fontSize: 16,
+                              ))),
                 );
               }
             },
@@ -198,6 +250,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         title: const Text(
           "Change Username",
           style: ProjectTextStyles.appBarTextStyle,
@@ -240,16 +293,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text("Username updated successfully!")),
+                  SnackBar(
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      content: Text("Username updated successfully!",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ))),
                 );
                 Navigator.pop(context);
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
                       content:
-                          Text("Failed to update username: ${e.toString()}")),
+                          Text("Failed to update username: ${e.toString()},",
+                              style: ProjectTextStyles.appBarTextStyle.copyWith(
+                                fontSize: 16,
+                              ))),
                 );
               }
             },
@@ -271,6 +344,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         title: const Text(
           "Delete Account",
           style: ProjectTextStyles.appBarTextStyle,
@@ -298,8 +372,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text("Account deleted successfully!")),
+                  SnackBar(
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      content: Text("Account deleted successfully!",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ))),
                 );
                 Navigator.pop(context);
                 Navigator.of(context).pop();
@@ -307,8 +391,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                      content:
-                          Text("Failed to delete account: ${e.toString()}")),
+                      backgroundColor: Colors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      content: Text("Failed to delete account: ${e.toString()}",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ))),
                 );
               }
             },

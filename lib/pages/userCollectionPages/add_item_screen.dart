@@ -55,6 +55,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
         String fieldName = "";
         String fieldType = "TextField";
         return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           title: const Text(
             "Add Custom Field",
             style: TextStyle(

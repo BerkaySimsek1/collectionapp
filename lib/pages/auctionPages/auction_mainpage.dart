@@ -37,198 +37,213 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 2,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        height: 48,
-                        width: 280,
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: (value) {
-                            auctionViewModel.updateSearchQuery(value);
-                          },
-                          decoration: InputDecoration(
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 8),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Colors.black26,
-                                width: 0.2,
-                              ),
-                            ),
-                            prefixIconColor: Colors.deepPurple,
-                            hintText: "Search auctions",
-                            hintStyle: TextStyle(color: Colors.grey[600]),
-                            prefixIcon: const Icon(
-                              Icons.search,
-                            ),
-                            suffixIcon: _searchController.text.isNotEmpty
-                                ? IconButton(
-                                    icon: Icon(Icons.clear,
-                                        color: Colors.grey[600]),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      auctionViewModel.updateSearchQuery("");
-                                    },
-                                  )
-                                : null,
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 48,
-                        width: 48,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 2,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: PopupMenuButton<String>(
+                      Expanded(
+                        flex: 25,
+                        child: Container(
+                          decoration: BoxDecoration(
                             color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            icon: const Icon(
-                              Icons.sort,
-                              color: Colors.deepPurple,
-                            ),
-                            onSelected: auctionViewModel.updateSort,
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: "newest",
-                                child: Text(
-                                  "Newest",
-                                  style: ProjectTextStyles.appBarTextStyle
-                                      .copyWith(fontSize: 16),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: "oldest",
-                                child: Text(
-                                  "Oldest",
-                                  style: ProjectTextStyles.appBarTextStyle
-                                      .copyWith(fontSize: 16),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: "name_az",
-                                child: Text(
-                                  "Name (A-Z)",
-                                  style: ProjectTextStyles.appBarTextStyle
-                                      .copyWith(fontSize: 16),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: "name_za",
-                                child: Text(
-                                  "Name (Z-A)",
-                                  style: ProjectTextStyles.appBarTextStyle
-                                      .copyWith(fontSize: 16),
-                                ),
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 2,
+                                offset: Offset(0, 2),
                               ),
                             ],
                           ),
+                          height: 48,
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) {
+                              auctionViewModel.updateSearchQuery(value);
+                            },
+                            decoration: InputDecoration(
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Colors.black26,
+                                  width: 0.2,
+                                ),
+                              ),
+                              prefixIconColor: Colors.deepPurple,
+                              hintText: "Search auctions",
+                              hintStyle: TextStyle(color: Colors.grey[600]),
+                              prefixIcon: const Icon(
+                                Icons.search,
+                              ),
+                              suffixIcon: _searchController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(Icons.clear,
+                                          color: Colors.grey[600]),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        auctionViewModel.updateSearchQuery("");
+                                      },
+                                    )
+                                  : null,
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
-                      Container(
-                        height: 48,
-                        width: 48,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 2,
-                              offset: Offset(0, 2),
+                      const Spacer(flex: 1),
+                      Expanded(
+                        flex: 5,
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 2,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: PopupMenuButton<String>(
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              icon: const Icon(
+                                Icons.sort,
+                                color: Colors.deepPurple,
+                              ),
+                              onSelected: auctionViewModel.updateSort,
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: "newest",
+                                  child: Text(
+                                    "Newest",
+                                    style: ProjectTextStyles.appBarTextStyle
+                                        .copyWith(fontSize: 16),
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: "oldest",
+                                  child: Text(
+                                    "Oldest",
+                                    style: ProjectTextStyles.appBarTextStyle
+                                        .copyWith(fontSize: 16),
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: "name_az",
+                                  child: Text(
+                                    "Name (A-Z)",
+                                    style: ProjectTextStyles.appBarTextStyle
+                                        .copyWith(fontSize: 16),
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: "name_za",
+                                  child: Text(
+                                    "Name (Z-A)",
+                                    style: ProjectTextStyles.appBarTextStyle
+                                        .copyWith(fontSize: 16),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                        child: Center(
-                          child: IconButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return StatefulBuilder(
-                                      builder: (context, setState) {
-                                        return AlertDialog(
-                                          backgroundColor: Colors.white,
-                                          title: const Text("Filter by",
-                                              style: ProjectTextStyles
-                                                  .appBarTextStyle),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              FilterButton(
-                                                label: "All",
-                                                isSelected:
-                                                    auctionViewModel.filter ==
-                                                        "all",
-                                                onTap: () {
-                                                  setState(() {
-                                                    auctionViewModel
-                                                        .updateFilter("all");
-                                                  });
-                                                },
-                                              ),
-                                              const SizedBox(height: 8),
-                                              FilterButton(
-                                                label: "Active",
-                                                isSelected:
-                                                    auctionViewModel.filter ==
-                                                        "active",
-                                                onTap: () {
-                                                  setState(() {
-                                                    auctionViewModel
-                                                        .updateFilter("active");
-                                                  });
-                                                },
-                                              ),
-                                              const SizedBox(height: 8),
-                                              FilterButton(
-                                                label: "Ended",
-                                                isSelected:
-                                                    auctionViewModel.filter ==
-                                                        "ended",
-                                                onTap: () {
-                                                  setState(() {
-                                                    auctionViewModel
-                                                        .updateFilter("ended");
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  });
-                            },
-                            icon: const Icon(Icons.filter_list,
-                                color: Colors.deepPurple),
+                      ),
+                      const Spacer(flex: 1),
+                      Expanded(
+                        flex: 5,
+                        child: Container(
+                          height: 48,
+                          width: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 2,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: IconButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return StatefulBuilder(
+                                        builder: (context, setState) {
+                                          return AlertDialog(
+                                            backgroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8)),
+                                            title: const Text("Filter by",
+                                                style: ProjectTextStyles
+                                                    .appBarTextStyle),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                FilterButton(
+                                                  label: "All",
+                                                  isSelected:
+                                                      auctionViewModel.filter ==
+                                                          "all",
+                                                  onTap: () {
+                                                    setState(() {
+                                                      auctionViewModel
+                                                          .updateFilter("all");
+                                                    });
+                                                  },
+                                                ),
+                                                const SizedBox(height: 8),
+                                                FilterButton(
+                                                  label: "Active",
+                                                  isSelected:
+                                                      auctionViewModel.filter ==
+                                                          "active",
+                                                  onTap: () {
+                                                    setState(() {
+                                                      auctionViewModel
+                                                          .updateFilter(
+                                                              "active");
+                                                    });
+                                                  },
+                                                ),
+                                                const SizedBox(height: 8),
+                                                FilterButton(
+                                                  label: "Ended",
+                                                  isSelected:
+                                                      auctionViewModel.filter ==
+                                                          "ended",
+                                                  onTap: () {
+                                                    setState(() {
+                                                      auctionViewModel
+                                                          .updateFilter(
+                                                              "ended");
+                                                    });
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    });
+                              },
+                              icon: const Icon(Icons.filter_list,
+                                  color: Colors.deepPurple),
+                            ),
                           ),
                         ),
                       ),

@@ -164,9 +164,8 @@ class AuctionDetail extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           title: const Text(
             "Place Your Bid",
             style: ProjectTextStyles.appBarTextStyle,
@@ -212,9 +211,20 @@ class AuctionDetail extends StatelessWidget {
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(success
-                          ? "Bid placed successfully!"
-                          : "Invalid bid amount."),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      backgroundColor: Colors.white,
+                      content: Text(
+                          success
+                              ? "Bid placed successfully!"
+                              : "Invalid bid amount.",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          )),
                     ),
                   );
                 }
@@ -331,6 +341,8 @@ class __ImageCarouselState extends State<_ImageCarousel> {
       context: context,
       builder: (context) {
         return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           insetPadding: EdgeInsets.zero,
           child: GestureDetector(
             onTap: () => Navigator.of(context).pop(),
@@ -375,9 +387,8 @@ Future<void> _showEditDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         title: const Text("Edit Auction"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -416,12 +427,32 @@ Future<void> _showEditDialog(
 
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text("Auction updated successfully!")),
+                  SnackBar(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      backgroundColor: Colors.white,
+                      content: Text("Auction updated successfully!",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ))),
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Error updating auction.")),
+                  SnackBar(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      content: Text("Error updating auction.",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ))),
                 );
               }
               Navigator.of(context).pop();
@@ -440,6 +471,8 @@ Future<void> _showDeleteConfirmation(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         title: const Text("Delete Auction"),
         content: const Text("Are you sure you want to delete this auction?"),
         actions: <Widget>[
@@ -455,13 +488,34 @@ Future<void> _showDeleteConfirmation(
 
               if (success) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text("Auction deleted successfully!")),
+                  SnackBar(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      backgroundColor: Colors.white,
+                      content: Text("Auction deleted successfully!",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ))),
                 );
                 Navigator.of(context).pop(true);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Error deleting auction.")),
+                  SnackBar(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                      ),
+                      backgroundColor: Colors.white,
+                      content: Text("Error deleting auction.",
+                          style: ProjectTextStyles.appBarTextStyle.copyWith(
+                            fontSize: 16,
+                          ))),
                 );
               }
             },
