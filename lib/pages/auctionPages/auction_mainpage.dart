@@ -17,9 +17,7 @@ class AuctionListScreen extends StatefulWidget {
 
 class _AuctionListScreenState extends State<AuctionListScreen> {
   // arama kısmı sonradan düzenlenecek
-  final TextEditingController _searchController =
-      TextEditingController(); // sonradan düzenlenecek
-  String _searchQuery = ""; // sonradan düzenlenecek
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +54,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                         child: TextField(
                           controller: _searchController,
                           onChanged: (value) {
-                            setState(() {
-                              _searchQuery = value.toLowerCase();
-                            });
+                            auctionViewModel.updateSearchQuery(value);
                           },
                           decoration: InputDecoration(
                             contentPadding:
@@ -82,9 +78,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                                         color: Colors.grey[600]),
                                     onPressed: () {
                                       _searchController.clear();
-                                      setState(() {
-                                        _searchQuery = "";
-                                      });
+                                      auctionViewModel.updateSearchQuery("");
                                     },
                                   )
                                 : null,
@@ -262,11 +256,37 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                             ),
                           );
                         }
-                        final auctionDocs = snapshot.data!.docs;
+
+                        // Firestore'dan gelen veriler
+                        final List<DocumentSnapshot> auctionDocs =
+                            snapshot.data!.docs;
+
+                        // Filtreleme ve sıralama
+                        final filteredDocs =
+                            auctionViewModel.filterAuctions(auctionDocs);
+
+                        filteredDocs.sort((a, b) {
+                          final nameA = a['name'].toString().toLowerCase();
+                          final nameB = b['name'].toString().toLowerCase();
+
+                          switch (auctionViewModel.sort) {
+                            case "newest":
+                              return b['created_at'].compareTo(a['created_at']);
+                            case "oldest":
+                              return a['created_at'].compareTo(b['created_at']);
+                            case "name_az":
+                              return nameA.compareTo(nameB);
+                            case "name_za":
+                              return nameB.compareTo(nameA);
+                            default:
+                              return 0;
+                          }
+                        });
+
                         return ListView.builder(
-                          itemCount: auctionDocs.length,
+                          itemCount: filteredDocs.length,
                           itemBuilder: (context, index) {
-                            final auctionData = auctionDocs[index].data()
+                            final auctionData = filteredDocs[index].data()
                                 as Map<String, dynamic>;
                             final auction = AuctionModel.fromMap(auctionData);
                             return AuctionCard(auction: auction);
@@ -275,7 +295,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                       },
                     ),
                   ),
-                ),
+                )
               ],
             );
           },

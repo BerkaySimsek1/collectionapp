@@ -103,46 +103,7 @@ class AuctionDetail extends StatelessWidget {
   }
 
   Widget _buildImageCarousel(List<String> imageUrls, BuildContext context) {
-    return Container(
-      height: 250,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 6,
-          ),
-        ],
-      ),
-      child: PageView.builder(
-        itemCount: imageUrls.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () => _showPhotoDialog(context, imageUrls[index]),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                imageUrls[index],
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, progress) {
-                  return progress == null
-                      ? child
-                      : Center(
-                          child: CircularProgressIndicator(
-                            value: progress.expectedTotalBytes != null
-                                ? progress.cumulativeBytesLoaded /
-                                    progress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                },
-              ),
-            ),
-          );
-        },
-      ),
-    );
+    return _ImageCarousel(imageUrls: imageUrls);
   }
 
   Widget _buildAuctionDetails(AuctionDetailViewModel viewModel) {
@@ -191,29 +152,6 @@ class AuctionDetail extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Future<void> _showPhotoDialog(BuildContext context, String imageUrl) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Colors.black,
-            child: PhotoView(
-              imageProvider: NetworkImage(imageUrl),
-              minScale: PhotoViewComputedScale.contained,
-              maxScale: PhotoViewComputedScale.covered * 2,
-              backgroundDecoration: const BoxDecoration(
-                color: Colors.black,
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -288,6 +226,136 @@ class AuctionDetail extends StatelessWidget {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+}
+
+class _ImageCarousel extends StatefulWidget {
+  final List<String> imageUrls;
+
+  const _ImageCarousel({required this.imageUrls});
+
+  @override
+  __ImageCarouselState createState() => __ImageCarouselState();
+}
+
+class __ImageCarouselState extends State<_ImageCarousel> {
+  late PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          height: 250,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 2,
+                blurRadius: 6,
+              ),
+            ],
+          ),
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: widget.imageUrls.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () => _showPhotoDialog(context, widget.imageUrls[index]),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    widget.imageUrls[index],
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) {
+                      return progress == null
+                          ? child
+                          : Center(
+                              child: CircularProgressIndicator(
+                                value: progress.expectedTotalBytes != null
+                                    ? progress.cumulativeBytesLoaded /
+                                        progress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(widget.imageUrls.length, (index) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _currentPage == index ? Colors.deepPurple : Colors.grey,
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showPhotoDialog(BuildContext context, String initialImageUrl) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          insetPadding: EdgeInsets.zero,
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black,
+              child: PageView.builder(
+                itemCount: widget.imageUrls.length,
+                controller: PageController(
+                  initialPage: widget.imageUrls.indexOf(initialImageUrl),
+                ),
+                itemBuilder: (context, index) {
+                  return PhotoView(
+                    imageProvider: NetworkImage(widget.imageUrls[index]),
+                    minScale: PhotoViewComputedScale.contained,
+                    maxScale: PhotoViewComputedScale.covered * 2,
+                    backgroundDecoration: const BoxDecoration(
+                      color: Colors.black,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
         );
       },
     );
