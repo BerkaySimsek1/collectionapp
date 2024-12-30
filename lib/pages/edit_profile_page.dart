@@ -429,6 +429,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   floating: false,
                   pinned: true,
                   backgroundColor: Colors.deepPurple,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(16),
+                      bottomRight: Radius.circular(16),
+                    ),
+                  ),
                   leading: IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
                     onPressed: () => Navigator.pop(context),
@@ -440,6 +446,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         // Gradient Background
                         Container(
                           decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(16),
+                              bottomRight: Radius.circular(16),
+                            ),
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
@@ -543,7 +553,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           color: Colors.white,
                           elevation: 2,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(16),
@@ -605,7 +615,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           elevation: 2,
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(16),

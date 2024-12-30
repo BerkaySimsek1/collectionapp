@@ -11,18 +11,19 @@ class SmGroupAdmin extends StatefulWidget {
 }
 
 class _SmGroupAdminState extends State<SmGroupAdmin> {
-  Future<List<Map<String, dynamic>>> _getJoinRequests() async {
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection("group_join_requests")
-          .where("groupId", isEqualTo: widget.groupId)
-          .get();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Stream<List<Map<String, dynamic>>> _getJoinRequestsStream() {
+    return _firestore
+        .collection("group_join_requests")
+        .where("groupId", isEqualTo: widget.groupId)
+        .snapshots()
+        .asyncMap((querySnapshot) async {
       List<Map<String, dynamic>> joinRequests = [];
 
       for (var doc in querySnapshot.docs) {
-        var requestData = doc.data() as Map<String, dynamic>;
-        var userDoc = await FirebaseFirestore.instance
+        var requestData = doc.data();
+        var userDoc = await _firestore
             .collection("users")
             .doc(requestData["userId"])
             .get();
@@ -30,6 +31,7 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
         if (userDoc.exists) {
           var userData = userDoc.data() as Map<String, dynamic>;
           joinRequests.add({
+            "requestId": doc.id, // Doküman ID'sini de ekleyelim
             "userId": requestData["userId"],
             "firstName": userData["firstName"],
             "lastName": userData["lastName"],
@@ -40,29 +42,83 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
       }
 
       return joinRequests;
-    } catch (e) {
-      debugPrint("Error retrieving join requests: $e");
-      return [];
-    }
+    });
   }
 
-  Future<void> _updateJoinRequestStatus(String userId, String status) async {
+  Future<void> _updateJoinRequestStatus(
+      String requestId, String userId, String status) async {
     try {
-      await FirebaseFirestore.instance
+      // Loading göstergesi için
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(8),
+              topRight: Radius.circular(8),
+            ),
+          ),
+          content: Text("Processing request..."),
+          duration: Duration(seconds: 1),
+        ),
+      );
+
+      // Join request'i güncelle
+      await _firestore
           .collection("group_join_requests")
-          .doc(widget.groupId)
+          .doc(requestId)
           .update({"status": status});
 
+      // Eğer kabul edildiyse, kullanıcıyı gruba ekle
       if (status == "accepted") {
-        await FirebaseFirestore.instance
-            .collection("groups")
-            .doc(widget.groupId)
-            .update({
+        await _firestore.collection("groups").doc(widget.groupId).update({
           "members": FieldValue.arrayUnion([userId]),
         });
       }
+
+      // Başarı mesajı
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+              ),
+            ),
+            content: Text(
+              status == "accepted"
+                  ? "Request accepted successfully!"
+                  : "Request declined successfully!",
+              style: ProjectTextStyles.appBarTextStyle.copyWith(
+                fontSize: 16,
+              ),
+            ),
+          ),
+        );
+      }
     } catch (e) {
-      debugPrint("Error updating join request status: $e");
+      // Hata mesajı
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+              ),
+            ),
+            content: Text(
+              "Error updating request: $e",
+              style: ProjectTextStyles.appBarTextStyle.copyWith(
+                fontSize: 16,
+              ),
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -73,101 +129,30 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
       appBar: const ProjectAppbar(
         titleText: "Admin Panel",
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _getJoinRequests(),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: _getJoinRequestsStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              padding: const EdgeInsets.all(16.0),
-              itemBuilder: (context, index) {
-                var request = snapshot.data![index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 80, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Error: ${snapshot.error}",
+                    style: ProjectTextStyles.subtitleTextStyle,
                   ),
-                  elevation: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: Colors.deepPurple,
-                              child: Text(
-                                request["firstName"][0],
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "${request["firstName"]} ${request["lastName"]}",
-                                  style: ProjectTextStyles.cardHeaderTextStyle,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  "Status: ${request["status"]}",
-                                  style: ProjectTextStyles.subtitleTextStyle,
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            Chip(
-                              label: Text(
-                                request["status"].toUpperCase(),
-                                style:
-                                    ProjectTextStyles.cardDescriptionTextStyle,
-                              ),
-                              backgroundColor: request["status"] == "accepted"
-                                  ? Colors.green
-                                  : Colors.orange,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        if (request["status"] ==
-                            "pending") // Add this condition
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton.icon(
-                                icon:
-                                    const Icon(Icons.close, color: Colors.red),
-                                label: Text("Decline",
-                                    style: ProjectTextStyles.appBarTextStyle
-                                        .copyWith(fontSize: 16)),
-                                onPressed: () => _updateJoinRequestStatus(
-                                    request["userId"], "declined"),
-                              ),
-                              const SizedBox(width: 8),
-                              ElevatedButton.icon(
-                                icon: const Icon(Icons.check,
-                                    color: Colors.white),
-                                label: const Text("Accept",
-                                    style: ProjectTextStyles.buttonTextStyle),
-                                onPressed: () => _updateJoinRequestStatus(
-                                    request["userId"], "accepted"),
-                                style: ProjectDecorations.elevatedButtonStyle,
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+                ],
+              ),
             );
-          } else {
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -182,6 +167,118 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
               ),
             );
           }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            padding: const EdgeInsets.all(16.0),
+            itemBuilder: (context, index) {
+              var request = snapshot.data![index];
+              return Card(
+                color: Colors.white,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.deepPurple,
+                            child: Text(
+                              request["firstName"][0],
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${request["firstName"]} ${request["lastName"]}",
+                                  style: ProjectTextStyles.cardHeaderTextStyle,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "Status: ${request["status"]}",
+                                  style: ProjectTextStyles.subtitleTextStyle,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: request["status"] == "accepted"
+                                  ? Colors.green.withOpacity(0.1)
+                                  : request["status"] == "declined"
+                                      ? Colors.red.withOpacity(0.1)
+                                      : Colors.orange.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              request["status"].toUpperCase(),
+                              style: TextStyle(
+                                color: request["status"] == "accepted"
+                                    ? Colors.green
+                                    : request["status"] == "declined"
+                                        ? Colors.red
+                                        : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (request["status"] == "pending") ...[
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton.icon(
+                              icon: const Icon(Icons.close, color: Colors.red),
+                              label: Text(
+                                "Decline",
+                                style: ProjectTextStyles.appBarTextStyle
+                                    .copyWith(fontSize: 16),
+                              ),
+                              onPressed: () => _updateJoinRequestStatus(
+                                request["requestId"],
+                                request["userId"],
+                                "declined",
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton.icon(
+                              icon:
+                                  const Icon(Icons.check, color: Colors.white),
+                              label: const Text(
+                                "Accept",
+                                style: ProjectTextStyles.buttonTextStyle,
+                              ),
+                              onPressed: () => _updateJoinRequestStatus(
+                                request["requestId"],
+                                request["userId"],
+                                "accepted",
+                              ),
+                              style: ProjectDecorations.elevatedButtonStyle,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
         },
       ),
     );
