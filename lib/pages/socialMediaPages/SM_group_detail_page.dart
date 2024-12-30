@@ -101,7 +101,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             pinned: true,
             backgroundColor: Colors.transparent,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
@@ -132,8 +132,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                                Colors.deepPurple.shade100,
                                 Colors.deepPurple.shade900,
+                                Colors.deepPurple.shade200,
                               ],
                             ),
                           ),
