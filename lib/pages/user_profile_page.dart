@@ -459,7 +459,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
+                contentPadding: const EdgeInsets.all(8),
                 leading: Container(
                   width: 60,
                   height: 60,
@@ -548,21 +548,22 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           ),
                         ),
                         const Spacer(),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.timer_outlined,
-                              size: 14,
-                              color: Colors.grey[600],
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              auction.isAuctionEnd
-                                  ? "Ended"
-                                  : "Ends ${auction.endTime.day}/${auction.endTime.month}/${auction.endTime.year}",
-                              style: ProjectTextStyles.subtitleTextStyle,
-                            ),
-                          ],
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          size: 14,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          auction.isAuctionEnd
+                              ? "Ended"
+                              : "Ends ${auction.endTime.day}/${auction.endTime.month}/${auction.endTime.year}",
+                          style: ProjectTextStyles.subtitleTextStyle,
                         ),
                       ],
                     ),
