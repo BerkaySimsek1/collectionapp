@@ -30,9 +30,11 @@ class AuctionViewModel with ChangeNotifier {
 
     // Filtreleme işlemleri
     if (_filter == "active") {
-      query = query.where('end_time', isGreaterThan: DateTime.now());
+      // Açık artırmalar aktifse isAuctionEnd false olmalı
+      query = query.where('isAuctionEnd', isEqualTo: false);
     } else if (_filter == "ended") {
-      query = query.where('end_time', isLessThanOrEqualTo: DateTime.now());
+      // Bitmiş açık artırmalar için isAuctionEnd true olmalı
+      query = query.where('isAuctionEnd', isEqualTo: true);
     }
 
     return query.snapshots();
