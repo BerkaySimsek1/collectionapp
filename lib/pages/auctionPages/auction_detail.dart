@@ -160,82 +160,105 @@ class AuctionDetail extends StatelessWidget {
     double? newBid;
     double minIncrement =
         viewModel.calculateBidIncrement(auction.startingPrice);
+    String? errorMessage;
+
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          title: const Text(
-            "Place Your Bid",
-            style: ProjectTextStyles.appBarTextStyle,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Minimum Increment: \$${minIncrement.toStringAsFixed(2)}",
-                style: const TextStyle(fontSize: 14),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              title: const Text(
+                "Place Your Bid",
+                style: ProjectTextStyles.appBarTextStyle,
               ),
-              const SizedBox(height: 10),
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText:
-                      "Minimum Bid: \$${(auction.startingPrice + minIncrement).toStringAsFixed(2)}",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Minimum Increment: \$${minIncrement.toStringAsFixed(2)}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintText:
+                          "Minimum Bid: \$${(auction.startingPrice + minIncrement).toStringAsFixed(2)}",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      errorText: errorMessage,
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        newBid = double.tryParse(value);
+                        if (newBid != null &&
+                            newBid! < auction.startingPrice + minIncrement) {
+                          errorMessage =
+                              "Bid must be at least \$${(auction.startingPrice + minIncrement).toStringAsFixed(2)}";
+                        } else {
+                          errorMessage = null;
+                        }
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    "Cancel",
+                    style: ProjectTextStyles.appBarTextStyle.copyWith(
+                      fontSize: 16,
+                    ),
                   ),
                 ),
-                onChanged: (value) {
-                  newBid = double.tryParse(value);
-                },
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                "Cancel",
-                style: ProjectTextStyles.appBarTextStyle.copyWith(
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (newBid != null) {
-                  bool success = await viewModel.placeBid(newBid!);
-                  Navigator.of(context).pop();
+                ElevatedButton(
+                  onPressed: () async {
+                    if (newBid != null &&
+                        newBid! >= auction.startingPrice + minIncrement) {
+                      bool success = await viewModel.placeBid(newBid!);
+                      Navigator.of(context).pop();
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                            ),
+                          ),
+                          backgroundColor: Colors.white,
+                          content: Text(
+                              success
+                                  ? "Bid placed successfully!"
+                                  : "Invalid bid amount.",
+                              style: ProjectTextStyles.appBarTextStyle.copyWith(
+                                fontSize: 16,
+                              )),
                         ),
-                      ),
-                      backgroundColor: Colors.white,
-                      content: Text(
-                          success
-                              ? "Bid placed successfully!"
-                              : "Invalid bid amount.",
-                          style: ProjectTextStyles.appBarTextStyle.copyWith(
-                            fontSize: 16,
-                          )),
-                    ),
-                  );
-                }
-              },
-              style: ProjectDecorations.elevatedButtonStyle,
-              child: const Text(
-                "Submit Bid",
-                style: ProjectTextStyles.buttonTextStyle,
-              ),
-            ),
-          ],
+                      );
+                    } else {
+                      setState(() {
+                        errorMessage =
+                            "Bid must be at least \$${(auction.startingPrice + minIncrement).toStringAsFixed(2)}";
+                      });
+                    }
+                  },
+                  style: ProjectDecorations.elevatedButtonStyle,
+                  child: const Text(
+                    "Submit Bid",
+                    style: ProjectTextStyles.buttonTextStyle,
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
