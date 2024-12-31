@@ -6,6 +6,7 @@ import "package:collectionapp/pages/socialMediaPages/create_post_widget.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:collectionapp/design_elements.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GroupDetailPage extends StatefulWidget {
   final Group group;
@@ -363,6 +364,12 @@ class PostWidget extends StatelessWidget {
     required this.groupDetailService,
   });
 
+  Future<String> _getUsername(String userId) async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return userDoc.data()?['username'] ?? 'Anonymous';
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -562,58 +569,72 @@ class PostWidget extends StatelessWidget {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final comment = snapshot.data![index];
-                      return Card(
-                        elevation: 0,
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundImage:
-                                    comment.userProfilePic.isNotEmpty
+                      return FutureBuilder<String>(
+                        future: _getUsername(comment.userId),
+                        builder: (context, usernameSnapshot) {
+                          if (usernameSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+
+                          final username = usernameSnapshot.data ?? 'Anonymous';
+
+                          return Card(
+                            elevation: 0,
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: comment
+                                            .userProfilePic.isNotEmpty
                                         ? NetworkImage(comment.userProfilePic)
                                         : null,
-                                backgroundColor: Colors.deepPurple,
-                                child: comment.userProfilePic.isEmpty
-                                    ? Text(comment.username[0],
-                                        style: const TextStyle(
-                                            color: Colors.white))
-                                    : null,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
+                                    backgroundColor: Colors.deepPurple,
+                                    child: comment.userProfilePic.isEmpty
+                                        ? Text(username[0],
+                                            style: const TextStyle(
+                                                color: Colors.white))
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          comment.username,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              username,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "${comment.createdAt.day}.${comment.createdAt.month} ${comment.createdAt.hour}:${comment.createdAt.minute.toString().padLeft(2, "0")}",
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          "${comment.createdAt.day}.${comment.createdAt.month} ${comment.createdAt.hour}:${comment.createdAt.minute.toString().padLeft(2, "0")}",
-                                          style: TextStyle(
-                                            color: Colors.grey[600],
-                                            fontSize: 12,
-                                          ),
-                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(comment.content),
                                       ],
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(comment.content),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       );
                     },
                   );
@@ -687,17 +708,25 @@ class CommentBottomSheet extends StatefulWidget {
 
 class _CommentBottomSheetState extends State<CommentBottomSheet> {
   final TextEditingController _commentController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<String> _getUsername(String userId) async {
+    final userDoc = await _firestore.collection('users').doc(userId).get();
+    return userDoc.data()?['username'] ?? 'Anonymous';
+  }
 
   void _submitComment() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null || _commentController.text.trim().isEmpty) return;
+
+    final username = await _getUsername(currentUser.uid);
 
     final comment = Comment(
       id: DateTime.now().toString(), // Consider using a unique ID generator
       userId: currentUser.uid,
       content: _commentController.text.trim(),
       createdAt: DateTime.now(),
-      username: currentUser.displayName ?? "Anonymous",
+      username: username,
       userProfilePic: currentUser.photoURL ?? "",
       groupId: widget.post.groupId, // Add this field to pass group context
     );
