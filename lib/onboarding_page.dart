@@ -35,7 +35,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             },
             children: [
               _buildOnboardingPage(
-                title: "Welcome to CollectionApp",
+                title: "Welcome to Collectio",
                 subtitle:
                     "Your ultimate platform for collectors and enthusiasts",
                 image: Icons.collections_bookmark,

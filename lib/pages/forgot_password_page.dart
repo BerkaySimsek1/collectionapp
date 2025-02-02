@@ -326,7 +326,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               const Text(
                                 "Back to Login",
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: Colors.deepPurple,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),

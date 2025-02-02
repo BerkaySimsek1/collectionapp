@@ -1,4 +1,3 @@
-import "package:collectionapp/design_elements.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/firebase_methods/auth/auth_page.dart";
@@ -7,6 +6,7 @@ import "package:collectionapp/pages/user_profile_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
 import "package:collectionapp/pages/userCollectionPages/user_collection_screen.dart";
+import "package:google_fonts/google_fonts.dart";
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -18,7 +18,6 @@ class MainPage extends StatelessWidget {
       builder: (context, authSnapshot) {
         if (authSnapshot.hasData) {
           final user = authSnapshot.data;
-          // Kullanıcı bilgilerini Firestore'dan çekiyoruz
           return StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
                 .collection("users")
@@ -27,14 +26,38 @@ class MainPage extends StatelessWidget {
             builder: (context, userSnapshot) {
               if (userSnapshot.connectionState == ConnectionState.waiting) {
                 return Container(
-                    color: Colors.grey[100],
-                    child: const Center(child: CircularProgressIndicator()));
+                  color: Colors.grey[100],
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.deepPurple,
+                    ),
+                  ),
+                );
               }
-
               if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
                 return Container(
-                    color: Colors.grey[100],
-                    child: const Center(child: Text("User data not found.")));
+                  color: Colors.grey[100],
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "User data not found.",
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               }
 
               final userData =
@@ -46,62 +69,134 @@ class MainPage extends StatelessWidget {
                 backgroundColor: Colors.grey[100],
                 appBar: AppBar(
                   backgroundColor: Colors.transparent,
-                  toolbarHeight: 50,
-                  iconTheme: const IconThemeData(color: Colors.deepPurple),
+                  elevation: 0,
+                  toolbarHeight: 70,
+                  leading: Builder(
+                    builder: (context) => IconButton(
+                      icon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.menu,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                    ),
+                  ),
+                  actions: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UserProfilePage(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 16),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.person_outline,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 drawer: Drawer(
-                  backgroundColor: Colors.grey[200],
+                  backgroundColor: Colors.white,
                   child: ListView(
                     padding: EdgeInsets.zero,
                     children: [
-                      UserAccountsDrawerHeader(
-                        accountName: Text("$firstName $lastName"),
-                        accountEmail: Text(user.email ?? ""),
-                        currentAccountPicture: const CircleAvatar(
-                          child: Icon(Icons.account_circle,
-                              size: 70, color: Colors.deepPurple),
-                        ),
+                      DrawerHeader(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                             colors: [
                               Colors.deepPurple.shade400,
-                              Colors.deepPurple.shade700
+                              Colors.deepPurple.shade700,
                             ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
                           ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const CircleAvatar(
+                                radius: 35,
+                                backgroundColor: Colors.white24,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 40,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              "$firstName $lastName",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              user.email ?? "",
+                              style: GoogleFonts.poppins(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      ListTile(
-                        leading: const Icon(
-                          Icons.account_circle,
-                          color: Colors.deepPurple,
-                        ),
-                        title: Text(
-                          "Profile",
-                          style: ProjectTextStyles.appBarTextStyle.copyWith(
-                            fontSize: 16,
-                          ),
-                        ),
+                      _buildDrawerItem(
+                        icon: Icons.person_outline,
+                        title: "Profile",
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const UserProfilePage()),
+                              builder: (context) => const UserProfilePage(),
+                            ),
                           );
                         },
                       ),
-                      ListTile(
-                        leading: const Icon(
-                          Icons.logout,
-                          color: Colors.deepPurple,
-                        ),
-                        title: Text(
-                          "Log Out",
-                          style: ProjectTextStyles.appBarTextStyle.copyWith(
-                            fontSize: 16,
-                          ),
-                        ),
+                      _buildDrawerItem(
+                        icon: Icons.logout,
+                        title: "Log Out",
                         onTap: () {
                           FirebaseAuth.instance.signOut();
                           Navigator.pop(context);
@@ -110,73 +205,138 @@ class MainPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                body: Padding(
-                  padding: const EdgeInsets.all(16),
+                body: SafeArea(
                   child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Karşılama Mesajı
-                        Text(
-                          "Welcome $firstName $lastName!",
-                          style: ProjectTextStyles.appBarTextStyle,
-                          overflow: TextOverflow.clip,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "Here you can manage your auctions, view collections, and connect with others.",
-                          style: ProjectTextStyles.subtitleTextStyle,
-                        ),
-                        const SizedBox(height: 80),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _buildCardButton(
-                              context,
-                              title: "Auctions",
-                              subtitle: "Browse or create auctions",
-                              icon: Icons.gavel,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Welcome Section
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.deepPurple.shade400,
+                                  Colors.deepPurple.shade700,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.deepPurple.withOpacity(0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Welcome back,",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                                Text(
+                                  "$firstName $lastName!",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "Explore your collections and connect with others",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+
+                          // Features Section
+                          Text(
+                            "Features",
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                               color: Colors.deepPurple,
-                              onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return const AuctionListScreen();
-                                }));
-                              },
                             ),
-                            const SizedBox(height: 16),
-                            _buildCardButton(
-                              context,
-                              title: "Collections",
-                              subtitle: "View and manage your collections",
-                              icon: Icons.collections,
-                              color: Colors.indigo,
-                              onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return UserCollectionsScreen(
-                                      userId: user.uid);
-                                }));
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            _buildCardButton(
-                              context,
-                              title: "Social Media",
-                              subtitle: "Connect with others",
-                              icon: Icons.people,
-                              color: Colors.teal,
-                              onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return const GroupsListPage();
-                                }));
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Feature Cards
+                          _buildFeatureCard(
+                            context,
+                            title: "Auctions",
+                            subtitle: "Browse or create auctions",
+                            icon: Icons.gavel,
+                            gradient: [
+                              Colors.purple.shade400,
+                              Colors.purple.shade700
+                            ],
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const AuctionListScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _buildFeatureCard(
+                            context,
+                            title: "Collections",
+                            subtitle: "View and manage your collections",
+                            icon: Icons.collections,
+                            gradient: [
+                              Colors.indigo.shade400,
+                              Colors.indigo.shade700
+                            ],
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UserCollectionsScreen(
+                                    userId: user.uid,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _buildFeatureCard(
+                            context,
+                            title: "Social Media",
+                            subtitle: "Connect with others",
+                            icon: Icons.people,
+                            gradient: [
+                              Colors.teal.shade400,
+                              Colors.teal.shade700
+                            ],
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const GroupsListPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -190,49 +350,113 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  // Card Buton Widget"ı
-  Widget _buildCardButton(BuildContext context,
-      {required String title,
-      required String subtitle,
-      required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
-    return Card(
-      color: Colors.white,
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.deepPurple.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          icon,
+          color: Colors.deepPurple,
+        ),
       ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: color,
-                child: Icon(icon, color: Colors.white, size: 30),
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.grey[800],
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildFeatureCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required List<Color> gradient,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: gradient[0].withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: gradient,
               ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: ProjectTextStyles.cardHeaderTextStyle,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  Text(
-                    subtitle,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: Colors.grey[600]),
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 30,
                   ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white.withOpacity(0.7),
+                  size: 20,
+                ),
+              ],
+            ),
           ),
         ),
       ),
