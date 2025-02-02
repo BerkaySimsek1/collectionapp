@@ -1,4 +1,3 @@
-import 'package:collectionapp/design_elements.dart';
 import 'package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:collectionapp/models/GroupModel.dart';
@@ -8,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/pages/socialMediaPages/SM_group_detail_page.dart';
 import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
 import 'package:collectionapp/pages/userCollectionPages/collection_items_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -49,124 +49,179 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   Widget _buildProfileHeader() {
     return Container(
-      color: Colors.grey[200],
-      height: 320,
+      height: 400,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.deepPurple.shade400,
+            Colors.deepPurple.shade800,
+          ],
+        ),
+      ),
       child: Stack(
-        alignment: Alignment.center,
         children: [
+          // Dekoratif Daireler
           Positioned(
-            top: 60,
-            right: 0.01,
-            left: 0.01,
-            bottom: 0,
+            top: -50,
+            right: -50,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              width: 200,
+              height: 200,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.deepPurple.shade400,
-                    Colors.deepPurple.shade700
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(192),
-                  topRight: Radius.circular(192),
-                ),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Active Bidder",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white.withOpacity(0.8),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.location_pin, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Sunnyvale, CA",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white.withOpacity(0.8),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.people, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Text(
-                          "30.5k followers",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white.withOpacity(0.8),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: () {
-                        _showFollowDialog();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        "Follow",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.1),
               ),
             ),
           ),
           Positioned(
-            top: 1,
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      width: 4,
-                      color: Colors.deepPurple,
-                    )),
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: const NetworkImage(
-                      "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"),
-                  backgroundColor: Colors.grey.shade200,
-                ),
+            bottom: -80,
+            left: -80,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.1),
               ),
+            ),
+          ),
+
+          // Profil İçeriği
+          SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                // Profil Fotoğrafı
+                Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: const CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.white,
+                        backgroundImage: NetworkImage(
+                          "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          border:
+                              Border.all(color: Colors.deepPurple, width: 2),
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          size: 20,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // İsim ve Durum
+                Text(
+                  "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
+                  style: GoogleFonts.poppins(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    "Active Bidder",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // İstatistikler
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildStatItem(
+                        icon: Icons.location_on_outlined,
+                        label: "Sunnyvale, CA",
+                      ),
+                      Container(
+                        height: 24,
+                        width: 1,
+                        color: Colors.white.withOpacity(0.3),
+                      ),
+                      _buildStatItem(
+                        icon: Icons.people_outline,
+                        label: "30.5k followers",
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Takip Et Butonu
+                Container(
+                  height: 45,
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  child: ElevatedButton(
+                    onPressed: () => _showFollowDialog(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.deepPurple,
+                      elevation: 5,
+                      shadowColor: Colors.black.withOpacity(0.3),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.person_add_outlined),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Follow",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -174,99 +229,262 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
+  Widget _buildStatItem({required IconData icon, required String label}) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> _showFollowDialog() async {
     await showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          title: const Text(
-            "Follow",
-            style: ProjectTextStyles.appBarTextStyle,
-          ),
-          content: const Text(
-            "Do you want to follow this user?",
-            style: ProjectTextStyles.cardDescriptionTextStyle,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                "Cancel",
-                style: ProjectTextStyles.appBarTextStyle.copyWith(
-                  fontSize: 16,
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
-              ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.person_add_outlined,
+                    color: Colors.deepPurple,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Follow User",
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Do you want to follow this user?",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text(
+                          "Cancel",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
                         ),
                       ),
-                      backgroundColor: Colors.white,
-                      content: Text(
-                        "User followed successfully!",
-                        style: ProjectTextStyles.appBarTextStyle.copyWith(
-                          fontSize: 16,
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              margin: const EdgeInsets.all(16),
+                              backgroundColor: Colors.deepPurple,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              content: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    "Following successfully!",
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                      )),
-                );
-              },
-              style: ProjectDecorations.elevatedButtonStyle,
-              child: const Text(
-                "Follow",
-                style: ProjectTextStyles.buttonTextStyle,
-              ),
+                        child: Text(
+                          "Follow",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
   }
 
   Widget _buildTabSection() {
-    return DefaultTabController(
-      length: 3,
-      child: Column(
-        children: [
-          Container(
-            decoration: const BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5,
-                offset: Offset(0, 0.1),
-              ),
-            ]),
-            child: const TabBar(
-              labelColor: Colors.deepPurple,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.deepPurple,
-              tabs: [
-                Tab(text: "Groups"),
-                Tab(text: "Auctions"),
-                Tab(text: "Collections"),
-              ],
-            ),
-          ),
-          const SizedBox(height: 4),
-          SizedBox(
-            height: 400,
-            child: TabBarView(
-              children: [
-                _buildGroupsTab(),
-                _buildAuctionsTab(),
-                _buildCollectionsTab(),
-              ],
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            offset: const Offset(0, -4),
+            blurRadius: 16,
           ),
         ],
+      ),
+      child: DefaultTabController(
+        length: 3,
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: TabBar(
+                dividerHeight: 0,
+                indicator: BoxDecoration(
+                  color: Colors.deepPurple,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.grey[600],
+                labelStyle: GoogleFonts.poppins(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                tabs: const [
+                  SizedBox(
+                    height: 45,
+                    child: Tab(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.group_outlined),
+                            SizedBox(width: 8),
+                            Text(
+                              "Groups",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 45,
+                    child: Tab(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.gavel_outlined),
+                            SizedBox(width: 8),
+                            Text(
+                              "Auctions",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 45,
+                    child: Tab(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.collections_outlined),
+                            SizedBox(width: 8),
+                            Text(
+                              "Collections",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 500,
+              child: TabBarView(
+                children: [
+                  _buildGroupsTab(),
+                  _buildAuctionsTab(),
+                  _buildCollectionsTab(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -279,7 +497,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              color: Colors.deepPurple.shade300,
+            ),
+          );
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -287,11 +509,34 @@ class _UserProfilePageState extends State<UserProfilePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.group_off, size: 80, color: Colors.grey),
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.group_off_outlined,
+                    size: 64,
+                    color: Colors.deepPurple.withOpacity(0.5),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Text(
-                  "No groups joined yet.",
-                  style: ProjectTextStyles.subtitleTextStyle,
+                  "No groups joined yet",
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Join groups to connect with others",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[500],
+                  ),
                 ),
               ],
             ),
@@ -301,114 +546,180 @@ class _UserProfilePageState extends State<UserProfilePage> {
         final groups = snapshot.data!.docs;
 
         return ListView.builder(
+          padding: const EdgeInsets.all(16),
           itemCount: groups.length,
           itemBuilder: (context, index) {
             final groupData = groups[index].data() as Map<String, dynamic>;
             final group = Group.fromMap(groupData);
 
-            return Card(
-              color: Colors.white,
-              margin: const EdgeInsets.all(8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey[200],
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
-                  child: group.coverImageUrl != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            group.coverImageUrl!,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                  color: Colors.deepPurple,
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GroupDetailPage(group: group),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        // Grup Görseli
+                        Hero(
+                          tag: 'group_${group.id}',
+                          child: Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
                                 ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.group,
-                                color: Colors.deepPurple,
-                                size: 30,
-                              ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: group.coverImageUrl != null
+                                  ? Image.network(
+                                      group.coverImageUrl!,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return Container(
+                                          color: Colors.grey[200],
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      loadingProgress
+                                                          .expectedTotalBytes!
+                                                  : null,
+                                              color: Colors.deepPurple,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
+                                        color:
+                                            Colors.deepPurple.withOpacity(0.1),
+                                        child: const Icon(
+                                          Icons.group_outlined,
+                                          color: Colors.deepPurple,
+                                          size: 40,
+                                        ),
+                                      ),
+                                    )
+                                  : Container(
+                                      color: Colors.deepPurple.withOpacity(0.1),
+                                      child: const Icon(
+                                        Icons.group_outlined,
+                                        color: Colors.deepPurple,
+                                        size: 40,
+                                      ),
+                                    ),
                             ),
                           ),
-                        )
-                      : Container(
+                        ),
+                        const SizedBox(width: 16),
+                        // Grup Bilgileri
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                group.name,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                group.description,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.deepPurple.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.people_outline,
+                                      size: 16,
+                                      color: Colors.deepPurple,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "${group.members.length} members",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.deepPurple,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Sağ Ok İkonu
+                        Container(
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: Colors.deepPurple.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            shape: BoxShape.circle,
                           ),
                           child: const Icon(
-                            Icons.group,
+                            Icons.arrow_forward_ios,
                             color: Colors.deepPurple,
-                            size: 30,
+                            size: 16,
                           ),
                         ),
-                ),
-                title: Text(
-                  group.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 4),
-                    Text(
-                      group.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.supervised_user_circle,
-                          color: Colors.deepPurple,
-                        ),
-                        const SizedBox(width: 4),
-                        Text("${group.members.length} members",
-                            style: ProjectTextStyles.cardDescriptionTextStyle
-                                .copyWith(
-                              color: Colors.deepPurple,
-                            )),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-                trailing:
-                    const Icon(Icons.chevron_right, color: Colors.deepPurple),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => GroupDetailPage(group: group),
-                    ),
-                  );
-                },
               ),
             );
           },
@@ -425,7 +736,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              color: Colors.deepPurple.shade300,
+            ),
+          );
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -433,11 +748,34 @@ class _UserProfilePageState extends State<UserProfilePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.gavel_outlined, size: 80, color: Colors.grey),
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.gavel_outlined,
+                    size: 64,
+                    color: Colors.deepPurple.withOpacity(0.5),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Text(
-                  "No auctions created yet.",
-                  style: ProjectTextStyles.subtitleTextStyle,
+                  "No auctions yet",
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Create your first auction",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[500],
+                  ),
                 ),
               ],
             ),
@@ -447,138 +785,197 @@ class _UserProfilePageState extends State<UserProfilePage> {
         final auctions = snapshot.data!.docs;
 
         return ListView.builder(
+          padding: const EdgeInsets.all(16),
           itemCount: auctions.length,
           itemBuilder: (context, index) {
             final auctionData = auctions[index].data() as Map<String, dynamic>;
             final auction = AuctionModel.fromMap(auctionData);
 
-            return Card(
-              color: Colors.white,
-              margin: const EdgeInsets.all(8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(8),
-                leading: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey[200],
-                  ),
-                  child: auction.imageUrls.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            auction.imageUrls.first,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                  color: Colors.deepPurple,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AuctionDetail(auction: auction),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Auction Image
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
+                        child: auction.imageUrls.isNotEmpty
+                            ? Image.network(
+                                auction.imageUrls.first,
+                                height: 200,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Container(
+                                    height: 200,
+                                    color: Colors.grey[200],
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                        color: Colors.deepPurple,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                            : Container(
+                                height: 200,
+                                color: Colors.grey[200],
+                                child: Icon(
+                                  Icons.image_outlined,
+                                  size: 64,
+                                  color: Colors.grey[400],
                                 ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(
-                                Icons.gavel,
-                                color: Colors.deepPurple,
-                                size: 30,
+                      ),
+                      // Auction Info
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    auction.name,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: auction.isAuctionEnd
+                                        ? Colors.red.withOpacity(0.1)
+                                        : Colors.green.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    auction.isAuctionEnd ? "Ended" : "Active",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: auction.isAuctionEnd
+                                          ? Colors.red
+                                          : Colors.green,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              auction.description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.grey[600],
                               ),
                             ),
-                          ),
-                        )
-                      : Container(
-                          decoration: BoxDecoration(
-                            color: Colors.deepPurple.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.gavel,
-                            color: Colors.deepPurple,
-                            size: 30,
-                          ),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.deepPurple.shade400,
+                                        Colors.deepPurple.shade700,
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(25),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Colors.deepPurple.withOpacity(0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    "\$${auction.startingPrice.toStringAsFixed(2)}",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.timer_outlined,
+                                      size: 16,
+                                      color: Colors.grey[600],
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      auction.isAuctionEnd
+                                          ? "Ended"
+                                          : "Ends ${auction.endTime.day}/${auction.endTime.month}/${auction.endTime.year}",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                ),
-                title: Text(
-                  auction.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                      ),
+                    ],
                   ),
                 ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 8),
-                    Text(
-                      auction.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.deepPurple,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            child: Text(
-                              "\$${auction.startingPrice.toStringAsFixed(2)}",
-                              style: ProjectTextStyles.buttonTextStyle
-                                  .copyWith(fontSize: 16),
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.timer_outlined,
-                          size: 14,
-                          color: Colors.grey[600],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          auction.isAuctionEnd
-                              ? "Ended"
-                              : "Ends ${auction.endTime.day}/${auction.endTime.month}/${auction.endTime.year}",
-                          style: ProjectTextStyles.subtitleTextStyle,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                trailing:
-                    const Icon(Icons.chevron_right, color: Colors.deepPurple),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AuctionDetail(auction: auction),
-                    ),
-                  );
-                },
               ),
             );
           },
@@ -591,23 +988,44 @@ class _UserProfilePageState extends State<UserProfilePage> {
     IconData getIconForCollectionType(String type) {
       switch (type) {
         case 'Record':
-          return Icons.music_note;
+          return Icons.album_outlined;
         case 'Stamp':
-          return Icons.stay_primary_landscape;
+          return Icons.local_post_office_outlined;
         case 'Coin':
-          return Icons.money;
+          return Icons.monetization_on_outlined;
         case 'Book':
-          return Icons.book;
+          return Icons.menu_book_outlined;
         case 'Painting':
-          return Icons.photo;
+          return Icons.palette_outlined;
         case 'Comic Book':
-          return Icons.book_online;
+          return Icons.auto_stories_outlined;
         case 'Vintage Posters':
-          return Icons.mediation;
+          return Icons.image_outlined;
         case 'Diğer':
-          return Icons.more_horiz;
+          return Icons.category_outlined;
         default:
-          return Icons.more_horiz;
+          return Icons.category_outlined;
+      }
+    }
+
+    Color getColorForCollectionType(String type) {
+      switch (type) {
+        case 'Record':
+          return Colors.purple;
+        case 'Stamp':
+          return Colors.blue;
+        case 'Coin':
+          return Colors.amber;
+        case 'Book':
+          return Colors.green;
+        case 'Painting':
+          return Colors.orange;
+        case 'Comic Book':
+          return Colors.red;
+        case 'Vintage Posters':
+          return Colors.teal;
+        default:
+          return Colors.deepPurple;
       }
     }
 
@@ -619,51 +1037,150 @@ class _UserProfilePageState extends State<UserProfilePage> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              color: Colors.deepPurple.shade300,
+            ),
+          );
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(child: Text("No collections created yet."));
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.collections_outlined,
+                    size: 64,
+                    color: Colors.deepPurple.withOpacity(0.5),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "No collections yet",
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Start building your collection",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ],
+            ),
+          );
         }
 
         final collections = snapshot.data!.docs;
 
-        return ListView.builder(
+        return GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 0.85,
+          ),
           itemCount: collections.length,
           itemBuilder: (context, index) {
             final collectionDoc = collections[index];
             final collectionData = collectionDoc.data() as Map<String, dynamic>;
             final collectionType = collectionData['name'] ?? 'Diğer';
-            return Card(
-              color: Colors.white,
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                leading: CircleAvatar(
-                  backgroundColor: Colors.deepPurple,
-                  radius: 30,
-                  child: Icon(getIconForCollectionType(collectionType),
-                      color: Colors.white),
+            final color = getColorForCollectionType(collectionType);
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CollectionItemsScreen(
+                      userId: userData?["uid"],
+                      collectionName: collectionData["name"],
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withOpacity(0.15),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                title: Text(
-                  collectionData["name"],
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CollectionItemsScreen(
-                        userId: userData?["uid"],
-                        collectionName: collectionData["name"],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        getIconForCollectionType(collectionType),
+                        color: color,
+                        size: 40,
                       ),
                     ),
-                  );
-                },
+                    const SizedBox(height: 16),
+                    Text(
+                      collectionData["name"],
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[800],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.style_outlined,
+                            size: 14,
+                            color: color,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "View Items",
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: color,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -676,42 +1193,67 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      extendBodyBehindAppBar: true, // AppBar'ı saydam yapmak için
       appBar: AppBar(
-        backgroundColor: Colors.grey[200],
-        title:
-            const Text("My Profile", style: ProjectTextStyles.appBarTextStyle),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.deepPurple,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditProfilePage(userData: userData!),
+          Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
-              ).then((_) => _loadUserData());
-            },
-            icon: const Icon(
-              Icons.edit_rounded,
-              color: Colors.deepPurple,
+              ],
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.edit_rounded, color: Colors.deepPurple),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditProfilePage(userData: userData!),
+                  ),
+                ).then((_) => _loadUserData());
+              },
             ),
           ),
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(color: Colors.deepPurple),
+            )
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  _buildProfileHeader(),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.55,
+                    child: _buildProfileHeader(),
+                  ),
                   _buildTabSection(),
                 ],
               ),
