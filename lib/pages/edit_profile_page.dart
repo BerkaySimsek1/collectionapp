@@ -1,6 +1,6 @@
-import 'package:collectionapp/design_elements.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../firebase_methods/firestore_methods/user_firestore_methods.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -41,376 +41,59 @@ class _EditProfilePageState extends State<EditProfilePage> {
         isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.white,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-              ),
-            ),
-            content: Text("Failed to load user data",
-                style: ProjectTextStyles.appBarTextStyle.copyWith(
-                  fontSize: 16,
-                )),
-          ),
-        );
+        _showErrorSnackBar("Failed to load user data");
       }
     }
   }
 
-  Future<void> _showEmailChangeDialog() async {
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        title: const Text(
-          "Change Email",
-          style: ProjectTextStyles.appBarTextStyle,
-        ),
-        content: TextField(
-          controller: emailController,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            labelText: "New Email",
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          keyboardType: TextInputType.emailAddress,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: ProjectTextStyles.appBarTextStyle.copyWith(
-                fontSize: 16,
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.red.shade400,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
               ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                String newEmail = emailController.text.trim();
-                if (newEmail.isEmpty) {
-                  throw Exception("Email cannot be empty");
-                }
-
-                await _auth.currentUser?.verifyBeforeUpdateEmail(newEmail);
-                await _firestoreService.updateUserData({"email": newEmail});
-
-                setState(() {
-                  userData?["email"] = newEmail;
-                });
-
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
-                      ),
-                    ),
-                    content: Text("Email updated successfully!",
-                        style: ProjectTextStyles.appBarTextStyle.copyWith(
-                          fontSize: 16,
-                        ))));
-                Navigator.pop(context);
-              } catch (e) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
-                        ),
-                      ),
-                      content: Text("Failed to update email: ${e.toString()}",
-                          style: ProjectTextStyles.appBarTextStyle.copyWith(
-                            fontSize: 16,
-                          ))),
-                );
-              }
-            },
-            style: ProjectDecorations.elevatedButtonStyle,
-            child: const Text(
-              "Update",
-              style: ProjectTextStyles.buttonTextStyle,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Future<void> _showPasswordChangeDialog() async {
-    final TextEditingController newPasswordController = TextEditingController();
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        title: const Text(
-          "Change Password",
-          style: ProjectTextStyles.appBarTextStyle,
-        ),
-        content: TextField(
-          controller: newPasswordController,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            labelText: "New Password",
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          obscureText: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: ProjectTextStyles.appBarTextStyle.copyWith(
-                fontSize: 16,
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green.shade400,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_outline, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
               ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                String newPassword = newPasswordController.text.trim();
-                if (newPassword.isEmpty) {
-                  throw Exception("Password cannot be empty");
-                }
-
-                await _auth.currentUser?.updatePassword(newPassword);
-
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
-                        ),
-                      ),
-                      content: Text("Password updated successfully!",
-                          style: ProjectTextStyles.appBarTextStyle.copyWith(
-                            fontSize: 16,
-                          ))),
-                );
-                Navigator.pop(context);
-              } catch (e) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
-                        ),
-                      ),
-                      content:
-                          Text("Failed to update password: ${e.toString()}",
-                              style: ProjectTextStyles.appBarTextStyle.copyWith(
-                                fontSize: 16,
-                              ))),
-                );
-              }
-            },
-            style: ProjectDecorations.elevatedButtonStyle,
-            child: const Text(
-              "Update",
-              style: ProjectTextStyles.buttonTextStyle,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showUsernameChangeDialog() async {
-    final TextEditingController usernameController = TextEditingController();
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        title: const Text(
-          "Change Username",
-          style: ProjectTextStyles.appBarTextStyle,
+          ],
         ),
-        content: TextField(
-          controller: usernameController,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            labelText: "New Username",
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: ProjectTextStyles.appBarTextStyle.copyWith(
-                fontSize: 16,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                String newUsername = usernameController.text.trim();
-                if (newUsername.isEmpty) {
-                  throw Exception("Username cannot be empty");
-                }
-
-                await _firestoreService
-                    .updateUserData({"username": newUsername});
-
-                setState(() {
-                  userData?["username"] = newUsername;
-                });
-
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
-                        ),
-                      ),
-                      content: Text("Username updated successfully!",
-                          style: ProjectTextStyles.appBarTextStyle.copyWith(
-                            fontSize: 16,
-                          ))),
-                );
-                Navigator.pop(context);
-              } catch (e) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
-                        ),
-                      ),
-                      content:
-                          Text("Failed to update username: ${e.toString()},",
-                              style: ProjectTextStyles.appBarTextStyle.copyWith(
-                                fontSize: 16,
-                              ))),
-                );
-              }
-            },
-            style: ProjectDecorations.elevatedButtonStyle,
-            child: const Text(
-              "Update",
-              style: ProjectTextStyles.buttonTextStyle,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showDeleteAccountDialog() async {
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        title: const Text(
-          "Delete Account",
-          style: ProjectTextStyles.appBarTextStyle,
-        ),
-        content: const Text(
-          "Are you sure you want to delete your account? This action cannot be undone.",
-          style: ProjectTextStyles.cardDescriptionTextStyle,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: ProjectTextStyles.appBarTextStyle.copyWith(
-                fontSize: 16,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            style: ProjectDecorations.elevatedButtonStyle
-                .copyWith(backgroundColor: WidgetStateProperty.all(Colors.red)),
-            onPressed: () async {
-              try {
-                await _firestoreService.deleteAccount();
-
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
-                        ),
-                      ),
-                      content: Text("Account deleted successfully!",
-                          style: ProjectTextStyles.appBarTextStyle.copyWith(
-                            fontSize: 16,
-                          ))),
-                );
-                Navigator.pop(context);
-                Navigator.of(context).pop();
-              } catch (e) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
-                        ),
-                      ),
-                      content: Text("Failed to delete account: ${e.toString()}",
-                          style: ProjectTextStyles.appBarTextStyle.copyWith(
-                            fontSize: 16,
-                          ))),
-                );
-              }
-            },
-            child: const Text(
-              "Delete",
-              style: ProjectTextStyles.buttonTextStyle,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -420,54 +103,101 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(color: Colors.deepPurple),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Loading profile...",
+                    style: GoogleFonts.poppins(
+                      color: Colors.grey[600],
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            )
           : CustomScrollView(
               slivers: [
-                // Custom App Bar ve Profil Header
+                // Modern AppBar
                 SliverAppBar(
                   expandedHeight: 300,
                   floating: false,
                   pinned: true,
-                  backgroundColor: Colors.deepPurple,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(16),
-                      bottomRight: Radius.circular(16),
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  stretch: true,
+                  leading: Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ),
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back,
+                          color: Colors.deepPurple),
+                      onPressed: () => Navigator.pop(context),
+                    ),
                   ),
                   flexibleSpace: FlexibleSpaceBar(
                     background: Stack(
                       fit: StackFit.expand,
                       children: [
-                        // Gradient Background
+                        // Gradient Background with Design Elements
                         Container(
                           decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(16),
-                              bottomRight: Radius.circular(16),
-                            ),
                             gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                               colors: [
                                 Colors.deepPurple.shade300,
-                                Colors.deepPurple.shade700,
+                                Colors.deepPurple.shade800,
                               ],
                             ),
                           ),
                         ),
+                        // Decorative Circles
+                        Positioned(
+                          top: -50,
+                          right: -50,
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.1),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: -80,
+                          left: -80,
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.1),
+                            ),
+                          ),
+                        ),
                         // Profile Content
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
+                        Align(
+                          alignment: Alignment.center,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              // Profile Image with Edit Button
                               Stack(
-                                alignment: Alignment.bottomRight,
                                 children: [
                                   Container(
                                     decoration: BoxDecoration(
@@ -479,13 +209,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 10,
-                                          spreadRadius: 5,
+                                          blurRadius: 15,
+                                          offset: const Offset(0, 5),
                                         ),
                                       ],
                                     ),
                                     child: CircleAvatar(
                                       radius: 60,
+                                      backgroundColor: Colors.white,
                                       backgroundImage: userData?[
                                                   'profileImageUrl'] !=
                                               null
@@ -495,42 +226,67 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'),
                                     ),
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 5,
-                                          spreadRadius: 1,
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.2),
+                                            blurRadius: 5,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.deepPurple,
+                                          shape: BoxShape.circle,
                                         ),
-                                      ],
-                                    ),
-                                    child: const Icon(
-                                      Icons.camera_alt,
-                                      color: Colors.deepPurple,
-                                      size: 20,
+                                        child: const Icon(
+                                          Icons.camera_alt,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 20),
+                              // User Name
                               Text(
                                 "${userData?['firstName'] ?? ''} ${userData?['lastName'] ?? ''}",
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: GoogleFonts.poppins(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Text(
-                                userData?['email'] ?? '',
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 16,
+                              // User Email
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  userData?['email'] ?? '',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             ],
@@ -539,133 +295,866 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ],
                     ),
                   ),
-                ),
-
-                // Form Alanları
+                ), // Form and Settings
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Kişisel Bilgiler Card'ı
-                        Card(
-                          color: Colors.white,
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Transform.translate(
+                    offset: const Offset(0, -20),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 16),
+                            // Personal Information Section
+                            Row(
                               children: [
-                                const Text(
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepPurple.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.person_outline,
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
                                   "Personal Information",
-                                  style: TextStyle(
-                                    fontSize: 18,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.deepPurple,
                                   ),
                                 ),
-                                const SizedBox(height: 16),
-                                _buildEditableField(
-                                  label: "First Name",
-                                  value: userData?['firstName'] ?? '',
-                                  icon: Icons.person_outline,
-                                  onSave: (value) async {
-                                    await _firestoreService
-                                        .updateUserData({'firstName': value});
-                                    setState(
-                                        () => userData?['firstName'] = value);
-                                  },
-                                ),
-                                const Divider(height: 24),
-                                _buildEditableField(
-                                  label: "Last Name",
-                                  value: userData?['lastName'] ?? '',
-                                  icon: Icons.person_outline,
-                                  onSave: (value) async {
-                                    await _firestoreService
-                                        .updateUserData({'lastName': value});
-                                    setState(
-                                        () => userData?['lastName'] = value);
-                                  },
-                                ),
-                                const Divider(height: 24),
-                                _buildEditableField(
-                                  label: "Age",
-                                  value: userData?['age']?.toString() ?? '',
-                                  icon: Icons.cake_outlined,
-                                  onSave: (value) async {
-                                    await _firestoreService.updateUserData(
-                                        {'age': int.parse(value)});
-                                    setState(() =>
-                                        userData?['age'] = int.parse(value));
-                                  },
-                                ),
                               ],
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+                            const SizedBox(height: 20),
+                            _buildEditableField(
+                              label: "First Name",
+                              value: userData?['firstName'] ?? '',
+                              icon: Icons.badge_outlined,
+                              onSave: (value) async {
+                                await _firestoreService
+                                    .updateUserData({'firstName': value});
+                                setState(() => userData?['firstName'] = value);
+                                _showSuccessSnackBar(
+                                    "First name updated successfully!");
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            _buildEditableField(
+                              label: "Last Name",
+                              value: userData?['lastName'] ?? '',
+                              icon: Icons.badge_outlined,
+                              onSave: (value) async {
+                                await _firestoreService
+                                    .updateUserData({'lastName': value});
+                                setState(() => userData?['lastName'] = value);
+                                _showSuccessSnackBar(
+                                    "Last name updated successfully!");
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            _buildEditableField(
+                              label: "Age",
+                              value: userData?['age']?.toString() ?? '',
+                              icon: Icons.cake_outlined,
+                              onSave: (value) async {
+                                await _firestoreService
+                                    .updateUserData({'age': int.parse(value)});
+                                setState(
+                                    () => userData?['age'] = int.parse(value));
+                                _showSuccessSnackBar(
+                                    "Age updated successfully!");
+                              },
+                            ),
+                            const SizedBox(height: 32),
 
-                        // Hesap Ayarları Card'ı
-                        Card(
-                          elevation: 2,
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            // Account Settings Section
+                            Row(
                               children: [
-                                const Text(
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepPurple.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.settings_outlined,
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
                                   "Account Settings",
-                                  style: TextStyle(
-                                    fontSize: 18,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.deepPurple,
                                   ),
                                 ),
-                                const SizedBox(height: 16),
-                                _buildSettingsButton(
-                                  label: "Change Email",
-                                  icon: Icons.mail_outline,
-                                  onTap: _showEmailChangeDialog,
-                                ),
-                                const Divider(height: 4),
-                                _buildSettingsButton(
-                                  label: "Change Password",
-                                  icon: Icons.lock_outline,
-                                  onTap: _showPasswordChangeDialog,
-                                ),
-                                const Divider(height: 4),
-                                _buildSettingsButton(
-                                  label: "Change Username",
-                                  icon: Icons.person_outline,
-                                  onTap: _showUsernameChangeDialog,
-                                ),
-                                const Divider(height: 4),
-                                _buildSettingsButton(
-                                  label: "Delete Account",
-                                  icon: Icons.delete_outline,
-                                  color: Colors.red,
-                                  onTap: _showDeleteAccountDialog,
-                                ),
                               ],
                             ),
-                          ),
+                            const SizedBox(height: 20),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  _buildSettingsButton(
+                                    label: "Change Email",
+                                    icon: Icons.mail_outline,
+                                    description: "Update your email address",
+                                    onTap: _showEmailChangeDialog,
+                                  ),
+                                  const Divider(height: 1),
+                                  _buildSettingsButton(
+                                    label: "Change Username",
+                                    icon: Icons.person_outline,
+                                    description: "Update your username",
+                                    onTap: _showUsernameChangeDialog,
+                                  ),
+                                  const Divider(height: 1),
+                                  _buildSettingsButton(
+                                    label: "Change Password",
+                                    icon: Icons.lock_outline,
+                                    description: "Update your password",
+                                    onTap: _showPasswordChangeDialog,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Delete Account Button
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: _buildSettingsButton(
+                                label: "Delete Account",
+                                icon: Icons.delete_outline,
+                                description: "Permanently delete your account",
+                                onTap: _showDeleteAccountDialog,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 32),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
+    );
+  }
+
+  Future<void> _showUsernameChangeDialog() async {
+    final TextEditingController usernameController = TextEditingController();
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple.withOpacity(0.1),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.person_outline,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      "Change Username",
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Enter your new username",
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.grey[200]!,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: usernameController,
+                        decoration: InputDecoration(
+                          hintText: "New Username",
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey[400],
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.all(16),
+                          prefixIcon: Icon(
+                            Icons.person_outline,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              "Cancel",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              try {
+                                String newUsername =
+                                    usernameController.text.trim();
+                                if (newUsername.isEmpty) {
+                                  throw Exception("Username cannot be empty");
+                                }
+
+                                await _firestoreService
+                                    .updateUserData({"username": newUsername});
+
+                                setState(() {
+                                  userData?["username"] = newUsername;
+                                });
+
+                                if (!mounted) return;
+                                Navigator.pop(context);
+                                _showSuccessSnackBar(
+                                    "Username updated successfully!");
+                              } catch (e) {
+                                _showErrorSnackBar(
+                                    "Failed to update username: ${e.toString()}");
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              "Update",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showEmailChangeDialog() async {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple.withOpacity(0.1),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.mail_outline,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      "Change Email",
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Enter your new email address",
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.grey[200]!,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          hintText: "New Email",
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey[400],
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.all(16),
+                          prefixIcon: Icon(
+                            Icons.mail_outline,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              "Cancel",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              try {
+                                String newEmail = emailController.text.trim();
+                                if (newEmail.isEmpty) {
+                                  throw Exception("Email cannot be empty");
+                                }
+
+                                await _auth.currentUser
+                                    ?.verifyBeforeUpdateEmail(newEmail);
+                                await _firestoreService
+                                    .updateUserData({"email": newEmail});
+
+                                setState(() {
+                                  userData?["email"] = newEmail;
+                                });
+
+                                if (!mounted) return;
+                                Navigator.pop(context);
+                                _showSuccessSnackBar(
+                                    "Email updated successfully!");
+                              } catch (e) {
+                                _showErrorSnackBar(
+                                    "Failed to update email: ${e.toString()}");
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              "Update",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showPasswordChangeDialog() async {
+    final TextEditingController newPasswordController = TextEditingController();
+    bool isPasswordVisible = false;
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withOpacity(0.1),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.deepPurple.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.lock_outline,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        "Change Password",
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Enter your new password",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.grey[200]!,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: newPasswordController,
+                          obscureText: !isPasswordVisible,
+                          decoration: InputDecoration(
+                            hintText: "New Password",
+                            hintStyle: GoogleFonts.poppins(
+                              color: Colors.grey[400],
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.all(16),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
+                              color: Colors.grey[400],
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                isPasswordVisible
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: Colors.grey[400],
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  isPasswordVisible = !isPasswordVisible;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Password must be at least 6 characters",
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: Colors.grey[500],
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: TextButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Text(
+                                "Cancel",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                try {
+                                  String newPassword =
+                                      newPasswordController.text.trim();
+                                  if (newPassword.isEmpty) {
+                                    throw Exception("Password cannot be empty");
+                                  }
+                                  if (newPassword.length < 6) {
+                                    throw Exception(
+                                        "Password must be at least 6 characters");
+                                  }
+
+                                  await _auth.currentUser
+                                      ?.updatePassword(newPassword);
+                                  if (!mounted) return;
+                                  Navigator.pop(context);
+                                  _showSuccessSnackBar(
+                                      "Password updated successfully!");
+                                } catch (e) {
+                                  _showErrorSnackBar(
+                                      "Failed to update password: ${e.toString()}");
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurple,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: Text(
+                                "Update",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showDeleteAccountDialog() async {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Warning Icon
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.red,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Title
+              Text(
+                "Delete Account",
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Message
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  "This action cannot be undone. All your data will be permanently deleted.",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Buttons
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          "Cancel",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          try {
+                            await _firestoreService.deleteAccount();
+                            if (!mounted) return;
+                            Navigator.pop(context);
+                            Navigator.of(context).pop();
+                            _showSuccessSnackBar(
+                                "Account deleted successfully!");
+                          } catch (e) {
+                            _showErrorSnackBar(
+                                "Failed to delete account: ${e.toString()}");
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          "Delete",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -679,8 +1168,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -689,8 +1185,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             decoration: BoxDecoration(
               color: Colors.deepPurple.withOpacity(0.1),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8),
-                bottomLeft: Radius.circular(8),
+                topLeft: Radius.circular(12),
+                bottomLeft: Radius.circular(12),
               ),
             ),
             child: Icon(icon, color: Colors.deepPurple),
@@ -701,20 +1197,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
               decoration: InputDecoration(
                 labelText: label,
                 border: InputBorder.none,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                labelStyle: TextStyle(color: Colors.grey[600]),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                labelStyle: GoogleFonts.poppins(
+                  color: Colors.grey[600],
+                ),
               ),
+              style: GoogleFonts.poppins(),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.check_circle_outline),
-            color: Colors.deepPurple,
-            onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                onSave(controller.text.trim());
-              }
-            },
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
+              onTap: () {
+                if (controller.text.trim().isNotEmpty) {
+                  onSave(controller.text.trim());
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: const Icon(
+                  Icons.check_circle_outline,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -723,29 +1233,55 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Widget _buildSettingsButton({
     required String label,
+    required String description,
     required IconData icon,
     required VoidCallback onTap,
     Color color = Colors.deepPurple,
   }) {
-    return ListTile(
-      onTap: onTap,
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: color,
+                      ),
+                    ),
+                    Text(
+                      description,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: color),
+            ],
+          ),
         ),
-        child: Icon(icon, color: color, size: 20),
       ),
-      title: Text(
-        label,
-        style: TextStyle(
-          fontSize: 16,
-          color: color,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      trailing: Icon(Icons.chevron_right, color: color),
     );
   }
 }
