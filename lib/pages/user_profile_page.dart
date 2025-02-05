@@ -401,6 +401,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 borderRadius: BorderRadius.circular(25),
               ),
               child: TabBar(
+                indicatorPadding: const EdgeInsets.symmetric(horizontal: -12),
                 dividerHeight: 0,
                 indicator: BoxDecoration(
                   color: Colors.deepPurple,
@@ -551,7 +552,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
           itemBuilder: (context, index) {
             final groupData = groups[index].data() as Map<String, dynamic>;
             final group = Group.fromMap(groupData);
-
+            final String memberCount = group.members.length == 1
+                ? "${group.members.length} member"
+                : "${group.members.length} members";
             return Container(
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
@@ -605,8 +608,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       fit: BoxFit.cover,
                                       loadingBuilder:
                                           (context, child, loadingProgress) {
-                                        if (loadingProgress == null)
+                                        if (loadingProgress == null) {
                                           return child;
+                                        }
                                         return Container(
                                           color: Colors.grey[200],
                                           child: Center(
@@ -690,7 +694,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      "${group.members.length} members",
+                                      memberCount,
                                       style: GoogleFonts.poppins(
                                         fontSize: 12,
                                         color: Colors.deepPurple,
