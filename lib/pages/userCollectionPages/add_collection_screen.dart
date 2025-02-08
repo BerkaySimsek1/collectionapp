@@ -56,7 +56,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -297,29 +297,16 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: ElevatedButton(
+      floatingActionButton: Container(
+        margin: const EdgeInsets.all(16),
+        child: FloatingActionButton.extended(
           onPressed: _isLoading ? null : () => _saveCollection(context),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepPurple,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 0,
+          backgroundColor: Colors.deepPurple,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          child: _isLoading
+          label: _isLoading
               ? const SizedBox(
                   height: 24,
                   width: 24,
@@ -329,7 +316,6 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                   ),
                 )
               : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.save_outlined, color: Colors.white),
                     const SizedBox(width: 8),
@@ -345,6 +331,8 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                 ),
         ),
       ),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 }

@@ -38,197 +38,205 @@ class AuctionUploadScreen extends StatelessWidget {
         ),
         body: Consumer<AuctionCreateViewModel>(
           builder: (context, viewModel, child) {
-            return Column(
+            return Stack(
               children: [
-                // Gradient Header
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.deepPurple.shade400,
-                        Colors.deepPurple.shade700,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 48),
-                      child: Column(
-                        children: [
-                          Row(
+                Column(
+                  children: [
+                    // Gradient Header
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.deepPurple.shade400,
+                            Colors.deepPurple.shade700,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 80),
+                          child: Column(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.gavel,
-                                  color: Colors.white,
-                                  size: 24,
-                                ),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.gavel,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Create New Auction",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Fill in the details below",
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                            color:
+                                                Colors.white.withOpacity(0.8),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Transform.translate(
+                        offset: const Offset(0, -60),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30),
+                            ),
+                          ),
+                          child: ListView(
+                            padding: const EdgeInsets.all(24),
+                            children: [
+                              Form(
+                                key: viewModel.formKey,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    // Images Section
+                                    _buildImageSection(context, viewModel),
+                                    const SizedBox(height: 24),
+
+                                    // Auction Details Section
                                     Text(
-                                      "Create New Auction",
+                                      "Auction Details",
                                       style: GoogleFonts.poppins(
-                                        fontSize: 24,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                        color: Colors.deepPurple,
                                       ),
                                     ),
-                                    Text(
-                                      "Fill in the details below",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        color: Colors.white.withOpacity(0.8),
-                                      ),
+                                    const SizedBox(height: 16),
+                                    _buildTextField(
+                                      controller: viewModel.nameController,
+                                      label: "Auction Name",
+                                      icon: Icons.title,
+                                      validator: (value) => value!.isEmpty
+                                          ? "This field is required"
+                                          : null,
                                     ),
+                                    const SizedBox(height: 16),
+                                    _buildTextField(
+                                      controller: viewModel.priceController,
+                                      label: "Starting Price",
+                                      icon: Icons.attach_money,
+                                      keyboardType: TextInputType.number,
+                                      validator: (value) => value!.isEmpty
+                                          ? "This field is required"
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _buildDurationDropdown(viewModel),
+                                    const SizedBox(height: 16),
+                                    _buildTextField(
+                                      controller:
+                                          viewModel.descriptionController,
+                                      label: "Description",
+                                      icon: Icons.description,
+                                      maxLines: 3,
+                                      validator: (value) => value!.isEmpty
+                                          ? "This field is required"
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 32),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Form Content
-                Expanded(
-                  child: Transform.translate(
-                    offset: const Offset(0, -30),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
                         ),
                       ),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Form(
-                            key: viewModel.formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                  ],
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, -5),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                      ),
+                      onPressed: viewModel.isUploading
+                          ? null
+                          : () => viewModel.uploadAuction(context),
+                      child: viewModel.isUploading
+                          ? const SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                // Images Section
-                                _buildImageSection(context, viewModel),
-                                const SizedBox(height: 24),
-
-                                // Auction Details Section
+                                const Icon(Icons.gavel_outlined,
+                                    color: Colors.white),
+                                const SizedBox(width: 8),
                                 Text(
-                                  "Auction Details",
+                                  "Create Auction",
                                   style: GoogleFonts.poppins(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.deepPurple,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
                                   ),
-                                ),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: viewModel.nameController,
-                                  label: "Auction Name",
-                                  icon: Icons.title,
-                                  validator: (value) => value!.isEmpty
-                                      ? "This field is required"
-                                      : null,
-                                ),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: viewModel.priceController,
-                                  label: "Starting Price",
-                                  icon: Icons.attach_money,
-                                  keyboardType: TextInputType.number,
-                                  validator: (value) => value!.isEmpty
-                                      ? "This field is required"
-                                      : null,
-                                ),
-                                const SizedBox(height: 16),
-                                _buildDurationDropdown(viewModel),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: viewModel.descriptionController,
-                                  label: "Description",
-                                  icon: Icons.description,
-                                  maxLines: 3,
-                                  validator: (value) => value!.isEmpty
-                                      ? "This field is required"
-                                      : null,
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 ),
               ],
-            );
-          },
-        ),
-        bottomNavigationBar: Consumer<AuctionCreateViewModel>(
-          builder: (context, viewModel, child) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                onPressed: viewModel.isUploading
-                    ? null
-                    : () => viewModel.uploadAuction(context),
-                child: viewModel.isUploading
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.gavel_outlined, color: Colors.white),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Create Auction",
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-              ),
             );
           },
         ),
