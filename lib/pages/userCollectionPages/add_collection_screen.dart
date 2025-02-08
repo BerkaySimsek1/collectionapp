@@ -1,7 +1,7 @@
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:flutter/material.dart";
-import "package:collectionapp/design_elements.dart";
-import "package:collectionapp/models/predefined_collections.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:collectionapp/models/predefined_collections.dart';
 
 class AddCollectionScreen extends StatefulWidget {
   final String userId;
@@ -17,36 +17,39 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   String? _selectedCollection;
   final TextEditingController _customCollectionController =
       TextEditingController();
+  bool _isLoading = false;
 
   void _onCollectionTypeChanged(String? value) {
     setState(() {
       _selectedCollection = value;
-      // Bu kısımda _customFields devre dışı bırakıldığı için hiçbir şey yapmıyoruz
-      // if (predefinedCollections.containsKey(value)) {
-      //   _customFields = predefinedCollections[value]!;
-      // } else {
-      //   _customFields = [];
-      // }
     });
   }
 
   Future<void> _saveCollection(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      final collectionName = _selectedCollection == "Diğer"
-          ? _customCollectionController.text.trim()
-          : _selectedCollection;
+      setState(() => _isLoading = true);
 
-      await FirebaseFirestore.instance
-          .collection("userCollections")
-          .doc(widget.userId)
-          .collection("collectionsList")
-          .doc(collectionName)
-          .set({
-        "name": collectionName,
-        "createdAt": DateTime.now().toIso8601String(),
-      });
+      try {
+        final collectionName = _selectedCollection == "Diğer"
+            ? _customCollectionController.text.trim()
+            : _selectedCollection;
 
-      Navigator.pop(context);
+        await FirebaseFirestore.instance
+            .collection("userCollections")
+            .doc(widget.userId)
+            .collection("collectionsList")
+            .doc(collectionName)
+            .set({
+          "name": collectionName,
+          "createdAt": DateTime.now().toIso8601String(),
+        });
+
+        if (mounted) Navigator.pop(context);
+      } catch (e) {
+        // Error handling
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -54,82 +57,292 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: const ProjectAppbar(
-        titleText: "Add New Collection",
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              DropdownButtonFormField<String>(
-                dropdownColor: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                decoration: InputDecoration(
-                  labelText: "Collection Type",
-                  labelStyle: ProjectTextStyles.subtitleTextStyle,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
-                value: _selectedCollection,
-                items: [
-                  ...predefinedCollections.keys.map((type) => DropdownMenuItem(
-                      value: type,
-                      child: Text(
-                        type,
-                        style: ProjectTextStyles.appBarTextStyle
-                            .copyWith(fontSize: 16),
-                      ))),
-                  DropdownMenuItem(
-                      value: "Diğer",
-                      child: Text(
-                        "Diğer",
-                        style: ProjectTextStyles.appBarTextStyle
-                            .copyWith(fontSize: 16),
-                      )),
-                ],
-                onChanged: _onCollectionTypeChanged,
-                validator: (value) =>
-                    value == null ? "Please select collection type" : null,
-              ),
-              if (_selectedCollection == "Diğer") ...[
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _customCollectionController,
-                  decoration: InputDecoration(
-                    labelText: "Collection Name",
-                    labelStyle: ProjectTextStyles.subtitleTextStyle,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  validator: (value) {
-                    if (_selectedCollection == "Diğer" &&
-                        (value == null || value.isEmpty)) {
-                      return "Please enter collection name";
-                    }
-                    return null;
-                  },
-                ),
-              ],
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => _saveCollection(context),
-                style: ProjectDecorations.elevatedButtonStyle,
-                child: const Text(
-                  "Save",
-                  style: ProjectTextStyles.buttonTextStyle,
-                ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          // Header Section
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.deepPurple.shade400,
+                  Colors.deepPurple.shade700,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.add_box_outlined,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          "Add New Collection",
+                          style: GoogleFonts.poppins(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Choose a collection type or create your own",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Form Section
+          Expanded(
+            child: Transform.translate(
+              offset: const Offset(0, -20),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Collection Details",
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Collection Type Dropdown
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            value: _selectedCollection,
+                            decoration: InputDecoration(
+                              labelText: "Collection Type",
+                              labelStyle: GoogleFonts.poppins(
+                                color: Colors.grey[600],
+                              ),
+                              prefixIcon: Container(
+                                padding: const EdgeInsets.all(12),
+                                margin: const EdgeInsets.only(right: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.deepPurple.withOpacity(0.1),
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(16),
+                                    bottomLeft: Radius.circular(16),
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.category_outlined,
+                                  color: Colors.deepPurple,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            items: [
+                              ...predefinedCollections.keys
+                                  .map((type) => DropdownMenuItem(
+                                        value: type,
+                                        child: Text(
+                                          type,
+                                          style: GoogleFonts.poppins(),
+                                        ),
+                                      )),
+                              DropdownMenuItem(
+                                value: "Diğer",
+                                child: Text(
+                                  "Diğer",
+                                  style: GoogleFonts.poppins(),
+                                ),
+                              ),
+                            ],
+                            onChanged: _onCollectionTypeChanged,
+                            validator: (value) => value == null
+                                ? "Please select a collection type"
+                                : null,
+                          ),
+                        ),
+
+                        if (_selectedCollection == "Diğer") ...[
+                          const SizedBox(height: 24),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: TextFormField(
+                              controller: _customCollectionController,
+                              decoration: InputDecoration(
+                                labelText: "Collection Name",
+                                labelStyle: GoogleFonts.poppins(
+                                  color: Colors.grey[600],
+                                ),
+                                prefixIcon: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  margin: const EdgeInsets.only(right: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepPurple.withOpacity(0.1),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(16),
+                                      bottomLeft: Radius.circular(16),
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit_outlined,
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              validator: (value) {
+                                if (_selectedCollection == "Diğer" &&
+                                    (value == null || value.isEmpty)) {
+                                  return "Please enter a collection name";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: ElevatedButton(
+          onPressed: _isLoading ? null : () => _saveCollection(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurple,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 0,
+          ),
+          child: _isLoading
+              ? const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.save_outlined, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Create Collection",
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
