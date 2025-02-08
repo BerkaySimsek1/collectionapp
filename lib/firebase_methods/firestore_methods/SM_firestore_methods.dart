@@ -96,6 +96,100 @@ class GroupDetailService {
     }
   }
 
+  Future<bool> isUserAdmin(String groupId, String userId) async {
+    final groupDoc = await _firestore.collection("groups").doc(groupId).get();
+    if (!groupDoc.exists) return false;
+
+    final adminIds = List<String>.from(groupDoc.data()?["adminIds"] ?? []);
+    return adminIds.contains(userId);
+  }
+
+  Future<void> deletePost(String postId) async {
+    try {
+      final postDoc = await _firestore.collection("posts").doc(postId).get();
+
+      if (!postDoc.exists) {
+        throw Exception("Post bulunamadı.");
+      }
+
+      final data = postDoc.data();
+      final imageUrl = data?["imageUrl"] as String?;
+
+      // Gönderide bir fotoğraf varsa Storage'tan sil
+      if (imageUrl != null && imageUrl.isNotEmpty) {
+        try {
+          final storageRef = FirebaseStorage.instance.refFromURL(imageUrl);
+          await storageRef.delete();
+        } catch (e) {
+          debugPrint("Post fotoğrafını silerken hata oluştu: $e");
+        }
+      }
+
+      // Son olarak Firestore dokümanını sil
+      await _firestore.collection("posts").doc(postId).delete();
+    } catch (e) {
+      debugPrint("Post silinirken hata oluştu: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> updatePost(String postId, Map<String, dynamic> data) async {
+    await _firestore.collection("posts").doc(postId).update(data);
+  }
+
+  Future<void> deleteCommentFromPost(String postId, Comment comment) async {
+    try {
+      final postRef = _firestore.collection('posts').doc(postId);
+
+      await postRef.update({
+        'comments': FieldValue.arrayRemove([comment.toMap()])
+      });
+    } catch (e) {
+      throw Exception('Failed to remove comment: $e');
+    }
+  }
+
+  Future<void> deleteGroup(String groupId) async {
+    try {
+      final groupDoc = await _firestore.collection("groups").doc(groupId).get();
+
+      if (!groupDoc.exists) {
+        throw Exception("Grup bulunamadı.");
+      }
+
+      final data = groupDoc.data();
+      final coverImageUrl = data?["coverImageUrl"] as String?;
+
+      // Kapak resmi varsa Storage'tan sil
+      if (coverImageUrl != null && coverImageUrl.isNotEmpty) {
+        try {
+          final storageRef = FirebaseStorage.instance.refFromURL(coverImageUrl);
+          await storageRef.delete();
+        } catch (e) {
+          debugPrint("Grup kapak fotoğrafını silerken hata oluştu: $e");
+        }
+      }
+
+      // İsteğe bağlı: Bu grup altındaki post’ları da silmek isterseniz
+      // burada önce ilgili post’ları çekip tek tek deletePost ile silebilirsiniz.
+      // Örnek (dikkat: büyük koleksiyonlarda transaction/fonksiyon gerektirebilir):
+      //
+      // final postsQuery = await _firestore
+      //     .collection("posts")
+      //     .where("groupId", isEqualTo: groupId)
+      //     .get();
+      // for (var doc in postsQuery.docs) {
+      //   await deletePost(doc.id);
+      // }
+
+      // Son olarak grup dokümanını sil
+      await _firestore.collection("groups").doc(groupId).delete();
+    } catch (e) {
+      debugPrint("Grup silinirken hata oluştu: $e");
+      rethrow;
+    }
+  }
+
   Stream<List<Comment>> getPostComments(String groupId, String postId) {
     return FirebaseFirestore.instance
         .collection("posts")
@@ -113,31 +207,27 @@ class GroupDetailService {
 
   // Gruba Katılma İsteği Gönderme
   Future<void> sendJoinRequest(String groupId, String userId) async {
-    await _firestore.collection("group_join_requests").doc(groupId).set({
-      "groupId": groupId,
+    await FirebaseFirestore.instance
+        .collection("joinRequests")
+        .doc(groupId)
+        .collection("requests") // Kullanıcı bazlı koleksiyon
+        .doc(userId)
+        .set({
       "userId": userId,
       "status": "pending",
       "requestedAt": FieldValue.serverTimestamp(),
     });
   }
 
-  Future<Map<String, dynamic>?> getJoinRequest(
-      String groupId, String userId) async {
-    try {
-      DocumentSnapshot documentSnapshot =
-          await _firestore.collection("group_join_requests").doc(groupId).get();
+  Future<bool> getJoinRequest(String groupId, String userId) async {
+    final requestDoc = await FirebaseFirestore.instance
+        .collection("joinRequests")
+        .doc(groupId)
+        .collection("requests") // Kullanıcı bazlı alt koleksiyon
+        .doc(userId)
+        .get();
 
-      if (documentSnapshot.exists && documentSnapshot.data() != null) {
-        Map<String, dynamic> requestData =
-            documentSnapshot.data() as Map<String, dynamic>;
-        return requestData;
-      } else {
-        return null; // Join request not found
-      }
-    } catch (e) {
-      debugPrint("Error retrieving join request: $e");
-      return null;
-    }
+    return requestDoc.exists;
   }
 
   // Kullanıcının Gruba Üyelik Durumunu Kontrol Etme

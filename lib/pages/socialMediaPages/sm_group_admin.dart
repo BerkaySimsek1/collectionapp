@@ -13,28 +13,56 @@ class SmGroupAdmin extends StatefulWidget {
 class _SmGroupAdminState extends State<SmGroupAdmin> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Yeni eklenen fonksiyonlar:
+  Future<void> sendJoinRequest(String groupId, String userId) async {
+    await _firestore
+        .collection("joinRequests")
+        .doc(groupId)
+        .collection("requests") // kullanıcı bazlı alt koleksiyon
+        .doc(userId)
+        .set({
+      "userId": userId,
+      "status": "pending",
+      "requestedAt": FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<bool> getJoinRequest(String groupId, String userId) async {
+    final requestDoc = await _firestore
+        .collection("joinRequests")
+        .doc(groupId)
+        .collection("requests") // kullanıcı bazlı alt koleksiyon
+        .doc(userId)
+        .get();
+    return requestDoc.exists;
+  }
+
+  /// joinRequests alt koleksiyonundan gelen istekleri dinleyen Stream.
   Stream<List<Map<String, dynamic>>> _getJoinRequestsStream() {
     return _firestore
-        .collection("group_join_requests")
-        .where("groupId", isEqualTo: widget.groupId)
+        .collection("joinRequests")
+        .doc(widget.groupId)
+        .collection("requests")
         .snapshots()
         .asyncMap((querySnapshot) async {
       List<Map<String, dynamic>> joinRequests = [];
 
       for (var doc in querySnapshot.docs) {
         var requestData = doc.data();
-        var userDoc = await _firestore
-            .collection("users")
-            .doc(requestData["userId"])
-            .get();
+        final userId = requestData["userId"];
+        if (userId == null) continue;
+
+        // İlgili kullanıcının profil bilgilerini çek
+        var userDoc = await _firestore.collection("users").doc(userId).get();
 
         if (userDoc.exists) {
           var userData = userDoc.data() as Map<String, dynamic>;
           joinRequests.add({
-            "requestId": doc.id, // Doküman ID'sini de ekleyelim
-            "userId": requestData["userId"],
-            "firstName": userData["firstName"],
-            "lastName": userData["lastName"],
+            "requestId":
+                doc.id, // Alt koleksiyonda requestId = userId ile aynı olabilir
+            "userId": userId,
+            "firstName": userData["firstName"] ?? "",
+            "lastName": userData["lastName"] ?? "",
             "status": requestData["status"],
             "requestedAt": requestData["requestedAt"],
           });
@@ -45,6 +73,7 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
     });
   }
 
+  /// İsteğin durumunu güncelleyen fonksiyon (kabul / reddet).
   Future<void> _updateJoinRequestStatus(
       String requestId, String userId, String status) async {
     try {
@@ -63,9 +92,11 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
         ),
       );
 
-      // Join request'i güncelle
+      // Join request'i güncelle (joinRequests → groupId → requests → userId dokümanı)
       await _firestore
-          .collection("group_join_requests")
+          .collection("joinRequests")
+          .doc(widget.groupId)
+          .collection("requests")
           .doc(requestId)
           .update({"status": status});
 
@@ -190,7 +221,9 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
                           CircleAvatar(
                             backgroundColor: Colors.deepPurple,
                             child: Text(
-                              request["firstName"][0],
+                              request["firstName"].isNotEmpty
+                                  ? request["firstName"][0]
+                                  : "?",
                               style: const TextStyle(color: Colors.white),
                             ),
                           ),
