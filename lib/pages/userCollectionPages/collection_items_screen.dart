@@ -1,10 +1,10 @@
-import "dart:io";
-import "package:collectionapp/design_elements.dart";
-import "package:flutter/material.dart";
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:path_provider/path_provider.dart";
-import "package:collectionapp/pages/userCollectionPages/item_details_screen.dart";
-import "package:collectionapp/pages/userCollectionPages/add_item_screen.dart";
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'item_details_screen.dart';
+import 'add_item_screen.dart';
 
 class CollectionItemsScreen extends StatelessWidget {
   final String userId;
@@ -36,156 +36,410 @@ class CollectionItemsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: ProjectAppbar(
-        titleText: "$collectionName Collection",
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection("userCollections")
-              .doc(userId)
-              .collection("collectionsList")
-              .doc(collectionName)
-              .collection("items")
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(
+      body: Column(
+        children: [
+          // Header Section
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.deepPurple.shade400,
+                  Colors.deepPurple.shade700,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 48),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.grid_off, size: 80, color: Colors.grey),
-                    const SizedBox(height: 16),
-                    Text(
-                      "No items added yet.",
-                      style: ProjectTextStyles.subtitleTextStyle,
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.grid_view_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                collectionName,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                "Collection Items",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  color: Colors.white.withOpacity(0.8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              );
-            }
+              ),
+            ),
+          ),
 
-            final items = snapshot.data!.docs;
-
-            return ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                final photos = item["Photos"] as List<dynamic>?;
-
-                return FutureBuilder<String>(
-                  future: photos != null && photos.isNotEmpty
-                      ? _ensureLocalCopy(photos[0])
-                      : Future.value(""),
-                  builder: (context, fileSnapshot) {
-                    if (fileSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+          // Items List Section
+          Expanded(
+            child: Transform.translate(
+              offset: const Offset(0, -20),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("userCollections")
+                      .doc(userId)
+                      .collection("collectionsList")
+                      .doc(collectionName)
+                      .collection("items")
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CircularProgressIndicator(
+                              color: Colors.deepPurple,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "Loading items...",
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
                     }
 
-                    final localPath = fileSnapshot.data ?? "";
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: Colors.deepPurple.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.grid_off,
+                                size: 64,
+                                color: Colors.deepPurple.withOpacity(0.5),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "No items yet",
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              "Add your first item to this collection",
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    final items = snapshot.data!.docs;
 
-                    return Card(
-                      elevation: 2,
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: photos != null && photos.isNotEmpty
-                                ? Image.network(
-                                    photos[0].toString(),
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          color: Colors.deepPurple,
-                                          value: loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          final item = items[index];
+                          final photos = item["Photos"] as List<dynamic>?;
+
+                          return FutureBuilder<String>(
+                            future: photos != null && photos.isNotEmpty
+                                ? _ensureLocalCopy(photos[0])
+                                : Future.value(""),
+                            builder: (context, fileSnapshot) {
+                              if (fileSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.deepPurple,
+                                  ),
+                                );
+                              }
+
+                              final localPath = fileSnapshot.data ?? "";
+
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(16),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ItemDetailsScreen(
+                                            userId: userId,
+                                            collectionName: collectionName,
+                                            itemId: item.id,
+                                          ),
                                         ),
                                       );
                                     },
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(Icons.error,
-                                                color: Colors.red),
-                                  )
-                                : localPath.isNotEmpty
-                                    ? Image.file(
-                                        File(localPath.toString()),
-                                        width: 50,
-                                        height: 50,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : const Icon(Icons.broken_image),
-                          ),
-                        ),
-                        title: Text(
-                          item["İsim"] ?? "İsimsiz Ürün",
-                          style: ProjectTextStyles.cardHeaderTextStyle,
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ItemDetailsScreen(
-                                userId: userId,
-                                collectionName: collectionName,
-                                itemId: item.id,
-                              ),
-                            ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        children: [
+                                          // Item Image
+                                          Container(
+                                            width: 80,
+                                            height: 80,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.1),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              child: photos != null &&
+                                                      photos.isNotEmpty
+                                                  ? Image.network(
+                                                      photos[0].toString(),
+                                                      fit: BoxFit.cover,
+                                                      loadingBuilder: (context,
+                                                          child,
+                                                          loadingProgress) {
+                                                        if (loadingProgress ==
+                                                            null) {
+                                                          return child;
+                                                        }
+                                                        return Container(
+                                                          color:
+                                                              Colors.grey[200],
+                                                          child: Center(
+                                                            child:
+                                                                CircularProgressIndicator(
+                                                              color: Colors
+                                                                  .deepPurple,
+                                                              value: loadingProgress
+                                                                          .expectedTotalBytes !=
+                                                                      null
+                                                                  ? loadingProgress
+                                                                          .cumulativeBytesLoaded /
+                                                                      loadingProgress
+                                                                          .expectedTotalBytes!
+                                                                  : null,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                      errorBuilder: (context,
+                                                              error,
+                                                              stackTrace) =>
+                                                          Container(
+                                                        color: Colors.grey[200],
+                                                        child: const Icon(
+                                                          Icons.error_outline,
+                                                          color: Colors.red,
+                                                          size: 32,
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : localPath.isNotEmpty
+                                                      ? Image.file(
+                                                          File(localPath),
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : Container(
+                                                          color:
+                                                              Colors.grey[200],
+                                                          child: Icon(
+                                                            Icons
+                                                                .image_outlined,
+                                                            color: Colors
+                                                                .grey[400],
+                                                            size: 32,
+                                                          ),
+                                                        ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+
+                                          // Item Details
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  item["İsim"] ??
+                                                      "İsimsiz Ürün",
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey[800],
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  "Tap to view details",
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize: 12,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          // Arrow Icon
+                                          Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: Colors.deepPurple
+                                                  .withOpacity(0.1),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(
+                                              Icons.arrow_forward_ios,
+                                              color: Colors.deepPurple,
+                                              size: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         },
                       ),
                     );
                   },
-                );
-              },
-            );
-          },
-        ),
-      ),
-      floatingActionButton: ElevatedButton.icon(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddItemScreen(
-                userId: userId,
-                collectionName: collectionName,
+                ),
               ),
             ),
-          );
-        },
-        style: ProjectDecorations.elevatedButtonStyle,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          "Add Item",
-          style: ProjectTextStyles.buttonTextStyle,
+          ),
+        ],
+      ),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.all(16),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddItemScreen(
+                  userId: userId,
+                  collectionName: collectionName,
+                ),
+              ),
+            );
+          },
+          backgroundColor: Colors.deepPurple,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: Text(
+            "Add Item",
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
