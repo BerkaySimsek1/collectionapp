@@ -7,6 +7,8 @@ class UserInfoModel {
   final String username;
   final List<String> groups;
   final List<String> auctions;
+  final List<String> followers;
+  final List<String> following;
 
   UserInfoModel({
     required this.age,
@@ -17,6 +19,8 @@ class UserInfoModel {
     required this.username,
     required this.groups,
     required this.auctions,
+    required this.followers,
+    required this.following,
   });
 
   // Firestore"dan veya JSON"dan veri almak için fromJson constructor
@@ -30,6 +34,8 @@ class UserInfoModel {
       username: json["username"] ?? "",
       groups: List<String>.from(json["groups"] ?? []),
       auctions: List<String>.from(json["auctions"] ?? []),
+      followers: List<String>.from(json["followers"] ?? []),
+      following: List<String>.from(json["following"] ?? []),
     );
   }
 
@@ -44,6 +50,8 @@ class UserInfoModel {
       "username": username,
       "groups": groups,
       "auctions": auctions,
+      "followers": followers,
+      "following": following,
     };
   }
 }
