@@ -21,6 +21,12 @@ class UserFirestoreMethods {
     }
   }
 
+  Future<Map<String, dynamic>?> getUserDataById(String userId) async {
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return doc.data();
+  }
+
   // Kullanıcı bilgilerini güncelle
   Future<void> updateUserData(Map<String, dynamic> updatedData) async {
     User? currentUser = _auth.currentUser;

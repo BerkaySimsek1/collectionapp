@@ -3,6 +3,7 @@ import "package:collectionapp/models/GroupModel.dart";
 import "package:collectionapp/models/PostModel.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_group_admin.dart";
 import "package:collectionapp/pages/socialMediaPages/create_post_widget.dart";
+import "package:collectionapp/pages/user_profile_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:collectionapp/design_elements.dart";
@@ -388,37 +389,55 @@ class PostWidget extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: post.userProfilePic.isNotEmpty
-                      ? NetworkImage(post.userProfilePic)
-                      : null,
-                  backgroundColor: Colors.deepPurple,
-                  child: post.userProfilePic.isEmpty
-                      ? Text(post.username[0],
-                          style: const TextStyle(color: Colors.white))
-                      : null,
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UserProfilePage(userId: post.userId),
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundImage: post.userProfilePic.isNotEmpty
+                        ? NetworkImage(post.userProfilePic)
+                        : null,
+                    backgroundColor: Colors.deepPurple,
+                    child: post.userProfilePic.isEmpty
+                        ? Text(post.username[0],
+                            style: const TextStyle(color: Colors.white))
+                        : null,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        post.username,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            UserProfilePage(userId: post.userId),
                       ),
-                      Text(
-                        "${post.createdAt.day}.${post.createdAt.month}.${post.createdAt.year}",
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          post.username,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                    ],
+                        Text(
+                          "${post.createdAt.day}.${post.createdAt.month}.${post.createdAt.year}",
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 IconButton(
@@ -588,18 +607,26 @@ class PostWidget extends StatelessWidget {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundImage: comment
-                                            .userProfilePic.isNotEmpty
-                                        ? NetworkImage(comment.userProfilePic)
-                                        : null,
-                                    backgroundColor: Colors.deepPurple,
-                                    child: comment.userProfilePic.isEmpty
-                                        ? Text(username[0],
-                                            style: const TextStyle(
-                                                color: Colors.white))
-                                        : null,
+                                  GestureDetector(
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => UserProfilePage(
+                                              userId: comment.userId),
+                                        )),
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: comment
+                                              .userProfilePic.isNotEmpty
+                                          ? NetworkImage(comment.userProfilePic)
+                                          : null,
+                                      backgroundColor: Colors.deepPurple,
+                                      child: comment.userProfilePic.isEmpty
+                                          ? Text(username[0],
+                                              style: const TextStyle(
+                                                  color: Colors.white))
+                                          : null,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
@@ -609,10 +636,20 @@ class PostWidget extends StatelessWidget {
                                       children: [
                                         Row(
                                           children: [
-                                            Text(
-                                              username,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
+                                            GestureDetector(
+                                              onTap: () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        UserProfilePage(
+                                                            userId:
+                                                                comment.userId),
+                                                  )),
+                                              child: Text(
+                                                username,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
                                             const SizedBox(width: 8),

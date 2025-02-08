@@ -2,6 +2,7 @@ import 'package:collectionapp/firebase_methods/firestore_methods/user_firestore_
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:collectionapp/models/GroupModel.dart';
 import 'package:collectionapp/pages/edit_profile_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/pages/socialMediaPages/SM_group_detail_page.dart';
@@ -10,7 +11,8 @@ import 'package:collectionapp/pages/userCollectionPages/collection_items_screen.
 import 'package:google_fonts/google_fonts.dart';
 
 class UserProfilePage extends StatefulWidget {
-  const UserProfilePage({super.key});
+  final String? userId;
+  const UserProfilePage({Key? key, this.userId}) : super(key: key);
 
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
@@ -22,15 +24,36 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Map<String, dynamic>? userData;
   bool isLoading = true;
 
+  bool get isCurrentUser {
+    // Eğer userId null ise veya userId, şu anki kullanıcının ID'siyle eşleşiyorsa current user
+    return widget.userId == null ||
+        widget.userId == FirebaseAuth.instance.currentUser!.uid;
+  }
+
   @override
   void initState() {
     super.initState();
     _loadUserData();
   }
 
+  String _formatFollowerCount(int count) {
+    if (count >= 1000) {
+      return "${(count / 1000).toStringAsFixed(1)}k followers";
+    }
+    return "$count followers";
+  }
+
   Future<void> _loadUserData() async {
     try {
-      final data = await _firestoreService.getUserData();
+      Map<String, dynamic>? data; // nullable tanımlandı
+      if (isCurrentUser) {
+        data = await _firestoreService.getUserData();
+      } else {
+        data = await _firestoreService.getUserDataById(widget.userId!);
+      }
+      if (data == null) {
+        throw Exception("User data not found");
+      }
       setState(() {
         userData = data;
         isLoading = false;
@@ -181,46 +204,54 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         width: 1,
                         color: Colors.white.withOpacity(0.3),
                       ),
-                      _buildStatItem(
-                        icon: Icons.people_outline,
-                        label: "30.5k followers",
+                      GestureDetector(
+                        onTap: () => _showFollowersDialog(),
+                        child: _buildStatItem(
+                          icon: Icons.people_outline,
+                          label: _formatFollowerCount(
+                              (userData?["followers"] as List?)?.length ?? 0),
+                        ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // Takip Et Butonu
-                Container(
-                  height: 45,
-                  margin: const EdgeInsets.symmetric(horizontal: 32),
-                  child: ElevatedButton(
-                    onPressed: () => _showFollowDialog(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.deepPurple,
-                      elevation: 5,
-                      shadowColor: Colors.black.withOpacity(0.3),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                if (!isCurrentUser &&
+                    !(((userData?["followers"] as List?) ?? [])
+                        .contains(FirebaseAuth.instance.currentUser!.uid))) ...[
+                  // Takip Et Butonu
+                  Container(
+                    height: 45,
+                    margin: const EdgeInsets.symmetric(horizontal: 32),
+                    child: ElevatedButton(
+                      onPressed: () => _showFollowDialog(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.deepPurple,
+                        elevation: 5,
+                        shadowColor: Colors.black.withOpacity(0.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.person_add_outlined),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Follow",
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.person_add_outlined),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Follow",
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -243,6 +274,79 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
         ),
       ],
+    );
+  }
+
+  Future<void> _showFollowersDialog() async {
+    // userData içerisindeki "followers" alanı, takipçilerin uid'lerini içermeli.
+    List<dynamic> followers = userData?["followers"] ?? [];
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Followers",
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+          content: Container(
+            width: double.maxFinite,
+            child: followers.isEmpty
+                ? Center(
+                    child:
+                        Text("No followers yet", style: GoogleFonts.poppins()),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: followers.length,
+                    itemBuilder: (context, index) {
+                      final followerId = followers[index];
+                      return FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(followerId)
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return ListTile(
+                              leading: CircleAvatar(
+                                child: CircularProgressIndicator(),
+                              ),
+                              title: Text("Loading...",
+                                  style: GoogleFonts.poppins()),
+                            );
+                          }
+                          if (!snapshot.hasData || !snapshot.data!.exists) {
+                            return ListTile(
+                              title: Text("Unknown user",
+                                  style: GoogleFonts.poppins()),
+                            );
+                          }
+                          final followerData =
+                              snapshot.data!.data() as Map<String, dynamic>;
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                followerData["profileImageUrl"] ??
+                                    "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
+                              ),
+                            ),
+                            title: Text(
+                              "${followerData["firstName"] ?? ""} ${followerData["lastName"] ?? ""}",
+                              style: GoogleFonts.poppins(),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Close", style: GoogleFonts.poppins()),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -319,33 +423,79 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              behavior: SnackBarBehavior.floating,
-                              margin: const EdgeInsets.all(16),
-                              backgroundColor: Colors.deepPurple,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              content: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.check_circle_outline,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    "Following successfully!",
-                                    style: GoogleFonts.poppins(
+                        onPressed: () async {
+                          // Önce geçerli ScaffoldMessenger referansını alalım.
+                          final messenger = ScaffoldMessenger.of(context);
+
+                          Navigator.pop(context); // Dialog'u kapatıyoruz.
+
+                          final currentUserId =
+                              FirebaseAuth.instance.currentUser!.uid;
+                          final targetUserId = userData?["uid"];
+                          if (targetUserId == null) return;
+
+                          try {
+                            // Takip edilen kullanıcının 'followers' alanına ekle
+                            await FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(targetUserId)
+                                .update({
+                              "followers":
+                                  FieldValue.arrayUnion([currentUserId])
+                            });
+                            // Takip eden kullanıcının 'following' alanına ekle
+                            await FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(currentUserId)
+                                .update({
+                              "following": FieldValue.arrayUnion([targetUserId])
+                            });
+                            // Güncel verileri tekrar yükleyerek UI’yı güncelle
+                            await _loadUserData();
+
+                            messenger.showSnackBar(
+                              SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                margin: const EdgeInsets.all(16),
+                                backgroundColor: Colors.deepPurple,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                content: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_outline,
                                       color: Colors.white,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      "Following successfully!",
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          } catch (e) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                margin: const EdgeInsets.all(16),
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                content: Text(
+                                  "Failed to follow user",
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurple,
@@ -1220,31 +1370,33 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
         ),
         actions: [
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.edit_rounded, color: Colors.deepPurple),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditProfilePage(userData: userData!),
+          if (isCurrentUser) // Sadece kendi profilinde
+            Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                ).then((_) => _loadUserData());
-              },
+                ],
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.edit_rounded, color: Colors.deepPurple),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EditProfilePage(userData: userData!),
+                    ),
+                  ).then((_) => _loadUserData());
+                },
+              ),
             ),
-          ),
         ],
       ),
       body: isLoading
