@@ -36,11 +36,13 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   Future<void> _initializeStatus() async {
     final isMember = await _groupDetailService.isUserMember(
         widget.group.id, _currentUser!.uid);
-    final joinRequest = await _groupDetailService.getJoinRequest(
-        widget.group.id, _currentUser.uid);
+    final hasUserRequest = await _groupDetailService.getJoinRequest(
+        widget.group.id, _currentUser.uid); // Sadece kendi isteğini kontrol et
+
     setState(() {
       _isMember = isMember;
-      hasJoinRequest = joinRequest != null;
+      hasJoinRequest =
+          hasUserRequest; // Diğer kullanıcıların istekleri önemli değil
     });
   }
 
@@ -50,6 +52,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     });
 
     try {
+      // Yeni yapı: join request belgesi artık "user" alanı altında "userId" ve "status" bilgilerini içeriyor.
       await _groupDetailService.sendJoinRequest(
           widget.group.id, _currentUser!.uid);
     } catch (e) {
@@ -365,10 +368,135 @@ class PostWidget extends StatelessWidget {
     required this.groupDetailService,
   });
 
-  Future<String> _getUsername(String userId) async {
-    final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    return userDoc.data()?['username'] ?? 'Anonymous';
+  Future<void> _deletePost(BuildContext context) async {
+    try {
+      // Kullanıcıdan onay almak isterseniz:
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Delete Post'),
+          content: const Text('Are you sure you want to delete this post?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Delete'),
+            ),
+          ],
+        ),
+      );
+      if (confirm == null || confirm == false) return;
+
+      // groupDetailService içindeki deletePost metodunu çağırın
+      await groupDetailService.deletePost(post.id);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Post deleted successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete post: $e')),
+      );
+    }
+  }
+
+  // POST DÜZENLEME
+  Future<void> _editPost(BuildContext context) async {
+    final TextEditingController _editController =
+        TextEditingController(text: post.content);
+
+    // Yeni içeriği, bir BottomSheet veya Dialog üzerinden alabiliriz
+    final updatedContent = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              const Text(
+                'Edit Post',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: TextField(
+                  controller: _editController,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                    labelText: 'Post content',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop(_editController.text.trim());
+                },
+                child: const Text('Save'),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (updatedContent == null || updatedContent.isEmpty) return;
+
+    // Güncellenen içeriği Firestore'a gönder
+    try {
+      await groupDetailService.updatePost(post.id, {"content": updatedContent});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Post updated')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update post: $e')),
+      );
+    }
+  }
+
+  void _deleteComment(BuildContext context, Comment comment) async {
+    // Kullanıcıya onay sormak isterseniz:
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Comment'),
+        content: const Text('Are you sure you want to delete this comment?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == null || !confirm) return;
+
+    try {
+      await groupDetailService.deleteCommentFromPost(post.id, comment);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment deleted successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete comment: $e')),
+      );
+    }
   }
 
   @override
@@ -440,9 +568,65 @@ class PostWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.more_horiz),
-                  onPressed: () {},
+                FutureBuilder<bool>(
+                  future: groupDetailService.isUserAdmin(
+                    post.groupId,
+                    currentUser!.uid,
+                  ),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // Henüz admin bilgisi yüklenmeden boş dönelim (veya progress)
+                      return const SizedBox.shrink();
+                    }
+                    if (snapshot.hasError) {
+                      return const SizedBox.shrink();
+                    }
+
+                    final bool isAdmin = snapshot.data ?? false;
+                    final bool isOwner = (post.userId == currentUser.uid);
+
+                    // Eğer admin veya owner değilse menu hiç gözükmesin
+                    if (!isAdmin && !isOwner) {
+                      return const SizedBox.shrink();
+                    }
+
+                    // Silme: Admin veya Owner
+                    final bool canDelete = isAdmin || isOwner;
+                    // Düzenleme: Sadece Owner
+                    final bool canEdit = isOwner;
+
+                    return PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'delete') {
+                          _deletePost(context);
+                        } else if (value == 'edit') {
+                          _editPost(context);
+                        }
+                      },
+                      itemBuilder: (ctx) {
+                        List<PopupMenuItem<String>> items = [];
+
+                        if (canDelete) {
+                          items.add(
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Delete'),
+                            ),
+                          );
+                        }
+                        if (canEdit) {
+                          items.add(
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Text('Edit'),
+                            ),
+                          );
+                        }
+                        return items;
+                      },
+                      child: const Icon(Icons.more_horiz),
+                    );
+                  },
                 ),
               ],
             ),
@@ -491,7 +675,7 @@ class PostWidget extends StatelessWidget {
               children: [
                 _InteractionButton(
                   icon: Icons.favorite,
-                  isActive: post.likes.contains(currentUser!.uid),
+                  isActive: post.likes.contains(currentUser.uid),
                   activeColor: Colors.red,
                   count: post.likes.length,
                   label: likeCount,
@@ -582,22 +766,33 @@ class PostWidget extends StatelessWidget {
                     );
                   }
 
+                  final currentUser = FirebaseAuth.instance.currentUser!;
+
                   return ListView.builder(
                     controller: scrollController,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final comment = snapshot.data![index];
-                      return FutureBuilder<String>(
-                        future: _getUsername(comment.userId),
-                        builder: (context, usernameSnapshot) {
-                          if (usernameSnapshot.connectionState ==
+
+                      return FutureBuilder<bool>(
+                        future: groupDetailService.isUserAdmin(
+                            comment.groupId, currentUser.uid),
+                        builder: (context, adminSnapshot) {
+                          // Admin bilgisi gelene kadar küçük bir bekleme gösterebiliriz veya hiçbir şey göstermeyebiliriz.
+                          if (adminSnapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
+                            return const SizedBox
+                                .shrink(); // Ya da bir progress indicator
+                          }
+                          if (adminSnapshot.hasError) {
+                            return const SizedBox.shrink();
                           }
 
-                          final username = usernameSnapshot.data ?? 'Anonymous';
+                          final bool isAdmin = adminSnapshot.data ?? false;
+                          final bool isOwner =
+                              (comment.userId == currentUser.uid);
+                          final canDelete = isAdmin || isOwner;
 
                           return Card(
                             elevation: 0,
@@ -607,13 +802,15 @@ class PostWidget extends StatelessWidget {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  // Kullanıcı Profil Fotoğrafı veya baş harfi
                                   GestureDetector(
                                     onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => UserProfilePage(
-                                              userId: comment.userId),
-                                        )),
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UserProfilePage(
+                                            userId: comment.userId),
+                                      ),
+                                    ),
                                     child: CircleAvatar(
                                       radius: 20,
                                       backgroundImage: comment
@@ -622,13 +819,16 @@ class PostWidget extends StatelessWidget {
                                           : null,
                                       backgroundColor: Colors.deepPurple,
                                       child: comment.userProfilePic.isEmpty
-                                          ? Text(username[0],
+                                          ? Text(
+                                              comment.username[0],
                                               style: const TextStyle(
-                                                  color: Colors.white))
+                                                  color: Colors.white),
+                                            )
                                           : null,
                                     ),
                                   ),
                                   const SizedBox(width: 12),
+                                  // Kullanıcı Adı, Tarih ve Yorum Metni
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -638,15 +838,16 @@ class PostWidget extends StatelessWidget {
                                           children: [
                                             GestureDetector(
                                               onTap: () => Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        UserProfilePage(
-                                                            userId:
-                                                                comment.userId),
-                                                  )),
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      UserProfilePage(
+                                                          userId:
+                                                              comment.userId),
+                                                ),
+                                              ),
                                               child: Text(
-                                                username,
+                                                comment.username,
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -654,7 +855,9 @@ class PostWidget extends StatelessWidget {
                                             ),
                                             const SizedBox(width: 8),
                                             Text(
-                                              "${comment.createdAt.day}.${comment.createdAt.month} ${comment.createdAt.hour}:${comment.createdAt.minute.toString().padLeft(2, "0")}",
+                                              "${comment.createdAt.day}.${comment.createdAt.month} "
+                                              "${comment.createdAt.hour}:"
+                                              "${comment.createdAt.minute.toString().padLeft(2, "0")}",
                                               style: TextStyle(
                                                 color: Colors.grey[600],
                                                 fontSize: 12,
@@ -667,6 +870,22 @@ class PostWidget extends StatelessWidget {
                                       ],
                                     ),
                                   ),
+                                  // Üç Nokta (Popup Menü) - Eğer admin veya yorumun sahibiyse
+                                  if (canDelete)
+                                    PopupMenuButton<String>(
+                                      onSelected: (value) {
+                                        if (value == 'delete') {
+                                          _deleteComment(context, comment);
+                                        }
+                                      },
+                                      itemBuilder: (ctx) => [
+                                        const PopupMenuItem(
+                                          value: 'delete',
+                                          child: Text('Delete'),
+                                        ),
+                                      ],
+                                      child: const Icon(Icons.more_vert),
+                                    ),
                                 ],
                               ),
                             ),
