@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/models/UserInfoModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -21,21 +25,56 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
+  File? _pickedImage;
 
   final _formKey = GlobalKey<FormState>(); // Form validation için
 
+  Future<void> _pickImage() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        setState(() {
+          _pickedImage = File(image.path);
+        });
+      }
+    } catch (e) {
+      _showErrorDialog(e.toString());
+    }
+  }
+
   Future signUp() async {
+    // Form validasyonu
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
       try {
         if (passwordConfirmed()) {
+          // Firebase Auth ile kullanıcı oluşturma
           UserCredential userCredential =
               await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
           );
 
+          // Kullanıcı başarılı şekilde oluşturuldu, şimdi profil fotoğrafını yükle
+          String downloadUrl = "";
+          if (_pickedImage != null) {
+            // Storage referansı
+            final storageRef = FirebaseStorage.instance
+                .ref()
+                .child('profilePics')
+                .child('${userCredential.user!.uid}.jpg');
+
+            // Dosyayı Storage'a yükle
+            await storageRef.putFile(_pickedImage!);
+
+            // Yüklenen dosyanın URL'ini al
+            downloadUrl = await storageRef.getDownloadURL();
+          }
+
+          // Modeli oluştur
           UserInfoModel newUser = UserInfoModel(
             email: _emailController.text.trim(),
             username: _usernameController.text.trim(),
@@ -47,17 +86,21 @@ class _RegisterPageState extends State<RegisterPage> {
             auctions: [],
             followers: [],
             following: [],
+            profileImageUrl: downloadUrl, // Seçilen resmin URL'si
           );
 
+          // Firestore’a kaydet
           await addUserDetails(newUser);
         } else {
           _showErrorDialog("Passwords don't match");
         }
       } catch (e) {
         _showErrorDialog(e.toString());
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
-
-      setState(() => _isLoading = false);
     }
   }
 
@@ -182,27 +225,46 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Welcome Icon
-                        Container(
-                          height: 100,
-                          width: 100,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.deepPurple.shade100,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(
-                              color: Colors.deepPurple,
-                              shape: BoxShape.circle,
+                        Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            // Avatar
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.deepPurple.shade100,
+                              backgroundImage: _pickedImage != null
+                                  ? FileImage(_pickedImage!) // Seçili resim
+                                  : null,
+                              child: _pickedImage == null
+                                  ? const Icon(
+                                      Icons.person,
+                                      size: 50,
+                                      color: Colors.white,
+                                    )
+                                  : null,
                             ),
-                            child: const Icon(
-                              Icons.person_add_outlined,
-                              color: Colors.white,
-                              size: 32,
+                            // Fotoğraf Seç Butonu
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: InkWell(
+                                onTap: _pickImage,
+                                child: Container(
+                                  height: 35,
+                                  width: 35,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.deepPurple,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                         const SizedBox(height: 32),
 

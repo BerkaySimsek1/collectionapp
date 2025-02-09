@@ -9,6 +9,7 @@ class UserInfoModel {
   final List<String> auctions;
   final List<String> followers;
   final List<String> following;
+  final String profileImageUrl; // <-- Yeni alan
 
   UserInfoModel({
     required this.age,
@@ -21,9 +22,9 @@ class UserInfoModel {
     required this.auctions,
     required this.followers,
     required this.following,
+    required this.profileImageUrl, // <-- Yeni alan
   });
 
-  // Firestore"dan veya JSON"dan veri almak için fromJson constructor
   factory UserInfoModel.fromJson(Map<String, dynamic> json) {
     return UserInfoModel(
       age: json["age"] ?? 0,
@@ -36,10 +37,10 @@ class UserInfoModel {
       auctions: List<String>.from(json["auctions"] ?? []),
       followers: List<String>.from(json["followers"] ?? []),
       following: List<String>.from(json["following"] ?? []),
+      profileImageUrl: json["profileImageUrl"] ?? "",
     );
   }
 
-  // Firestore veya JSON"a veri göndermek için toJson metodu
   Map<String, dynamic> toJson() {
     return {
       "age": age,
@@ -52,6 +53,7 @@ class UserInfoModel {
       "auctions": auctions,
       "followers": followers,
       "following": following,
+      "profileImageUrl": profileImageUrl,
     };
   }
 }
