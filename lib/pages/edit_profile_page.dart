@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import '../firebase_methods/firestore_methods/user_firestore_methods.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -18,6 +22,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController emailController;
   late TextEditingController passwordController;
 
+  File? _pickedImage;
+  bool _isUpdatingPhoto = false;
+
   Map<String, dynamic>? userData;
   bool isLoading = true;
 
@@ -27,6 +34,58 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _loadUserData();
     emailController = TextEditingController(text: widget.userData['email']);
     passwordController = TextEditingController();
+  }
+
+  Future<void> _pickProfileImage() async {
+    try {
+      // Eğer image_picker paketini eklemediyseniz, pubspec.yaml'e eklemeyi unutmayın
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        setState(() {
+          _pickedImage = File(image.path);
+        });
+        // Ardından seçilen fotoğrafı Firebase'e yükle
+        await _uploadProfileImage(_pickedImage!);
+      }
+    } catch (e) {
+      _showErrorSnackBar("Failed to pick image: $e");
+    }
+  }
+
+  Future<void> _uploadProfileImage(File imageFile) async {
+    setState(() => _isUpdatingPhoto = true);
+
+    try {
+      // Kullanıcı UID'sini al (auth ile veya userData içinden)
+      final uid = _auth.currentUser?.uid ?? userData?['uid'];
+      if (uid == null) throw Exception("User not found");
+
+      // Storage referansı oluştur (profilePics klasörünün içine uid.jpg)
+      final storageRef =
+          FirebaseStorage.instance.ref().child('profilePics/$uid.jpg');
+
+      // Dosyayı yükle
+      await storageRef.putFile(imageFile);
+
+      // Yüklenen dosyanın URL'ini al
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      // Firestore'da profileImageUrl güncelle
+      await _firestoreService.updateUserData({"profileImageUrl": downloadUrl});
+
+      // Ekrandaki userData bilgisini güncelle
+      setState(() {
+        userData?["profileImageUrl"] = downloadUrl;
+      });
+
+      _showSuccessSnackBar("Profile photo updated successfully!");
+    } catch (e) {
+      _showErrorSnackBar("Failed to upload photo: $e");
+    } finally {
+      setState(() => _isUpdatingPhoto = false);
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -229,30 +288,45 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   Positioned(
                                     bottom: 0,
                                     right: 0,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.2),
-                                            blurRadius: 5,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
+                                    child: InkWell(
+                                      onTap: _isUpdatingPhoto
+                                          ? null // Yükleme devam ederken tekrar tıklamayı önleyebilirsiniz
+                                          : _pickProfileImage,
                                       child: Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: const BoxDecoration(
-                                          color: Colors.deepPurple,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.camera_alt,
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
                                           color: Colors.white,
-                                          size: 20,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.2),
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.deepPurple,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: _isUpdatingPhoto
+                                              ? const SizedBox(
+                                                  height: 20,
+                                                  width: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                    strokeWidth: 2,
+                                                  ),
+                                                )
+                                              : const Icon(
+                                                  Icons.camera_alt,
+                                                  color: Colors.white,
+                                                  size: 20,
+                                                ),
                                         ),
                                       ),
                                     ),

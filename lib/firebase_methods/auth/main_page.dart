@@ -47,11 +47,16 @@ class MainPage extends StatelessWidget {
                           color: Colors.grey[400],
                         ),
                         const SizedBox(height: 16),
-                        Text(
-                          "User data not found.",
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            color: Colors.grey[600],
+                        GestureDetector(
+                          onTap: () {
+                            FirebaseAuth.instance.signOut();
+                          },
+                          child: Text(
+                            "User data not found.",
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                            ),
                           ),
                         ),
                       ],
@@ -64,6 +69,7 @@ class MainPage extends StatelessWidget {
                   userSnapshot.data!.data() as Map<String, dynamic>;
               final firstName = userData["firstName"] ?? "Unknown";
               final lastName = userData["lastName"] ?? "User";
+              var photoUrl = userData["profileImageUrl"] ?? "";
 
               return Scaffold(
                 backgroundColor: Colors.grey[100],
@@ -154,14 +160,19 @@ class MainPage extends StatelessWidget {
                                   width: 2,
                                 ),
                               ),
-                              child: const CircleAvatar(
+                              child: CircleAvatar(
                                 radius: 35,
                                 backgroundColor: Colors.white24,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 40,
-                                  color: Colors.white,
-                                ),
+                                backgroundImage: photoUrl.isNotEmpty
+                                    ? NetworkImage(photoUrl)
+                                    : null,
+                                child: photoUrl.isEmpty
+                                    ? const Icon(
+                                        Icons.person,
+                                        size: 40,
+                                        color: Colors.white,
+                                      )
+                                    : null,
                               ),
                             ),
                             Text(

@@ -304,12 +304,28 @@ class AuctionDetail extends StatelessWidget {
                                     child: Row(
                                       children: [
                                         CircleAvatar(
-                                          backgroundColor: Colors.deepPurple
-                                              .withOpacity(0.1),
-                                          child: const Icon(
-                                            Icons.person_outline,
-                                            color: Colors.deepPurple,
-                                          ),
+                                          backgroundColor: Colors.white,
+                                          backgroundImage:
+                                              (viewModel.bidderInfo != null &&
+                                                      viewModel
+                                                          .bidderInfo!
+                                                          .profileImageUrl
+                                                          .isNotEmpty)
+                                                  ? NetworkImage(viewModel
+                                                      .bidderInfo!
+                                                      .profileImageUrl)
+                                                  : null,
+                                          child:
+                                              (viewModel.bidderInfo == null ||
+                                                      viewModel
+                                                          .bidderInfo!
+                                                          .profileImageUrl
+                                                          .isEmpty)
+                                                  ? const Icon(
+                                                      Icons.person,
+                                                      size: 40,
+                                                    )
+                                                  : null,
                                         ),
                                         const SizedBox(width: 12),
                                         Expanded(
@@ -372,16 +388,23 @@ class AuctionDetail extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.deepPurple.withOpacity(0.1),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.store_outlined,
-                                      color: Colors.deepPurple,
-                                    ),
+                                  CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    backgroundImage:
+                                        (viewModel.creatorInfo != null &&
+                                                viewModel.creatorInfo!
+                                                    .profileImageUrl.isNotEmpty)
+                                            ? NetworkImage(viewModel
+                                                .creatorInfo!.profileImageUrl)
+                                            : null,
+                                    child: (viewModel.creatorInfo == null ||
+                                            viewModel.creatorInfo!
+                                                .profileImageUrl.isEmpty)
+                                        ? const Icon(
+                                            Icons.person,
+                                            size: 40,
+                                          )
+                                        : null,
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(

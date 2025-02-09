@@ -71,6 +71,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildProfileHeader() {
+    final String? profileImageUrl = userData?["profileImageUrl"];
     return Container(
       height: 400,
       decoration: BoxDecoration(
@@ -131,30 +132,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           ),
                         ],
                       ),
-                      child: const CircleAvatar(
+                      child: CircleAvatar(
                         radius: 60,
                         backgroundColor: Colors.white,
-                        backgroundImage: NetworkImage(
-                          "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border:
-                              Border.all(color: Colors.deepPurple, width: 2),
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          size: 20,
-                          color: Colors.deepPurple,
-                        ),
+                        backgroundImage: (profileImageUrl != null &&
+                                profileImageUrl.isNotEmpty)
+                            ? NetworkImage(profileImageUrl)
+                            : null,
+                        child:
+                            (profileImageUrl == null || profileImageUrl.isEmpty)
+                                ? const Icon(
+                                    Icons.person,
+                                    size: 80,
+                                  )
+                                : null,
                       ),
                     ),
                   ],
@@ -307,7 +298,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return ListTile(
-                              leading: CircleAvatar(
+                              leading: const CircleAvatar(
                                 child: CircularProgressIndicator(),
                               ),
                               title: Text("Loading...",

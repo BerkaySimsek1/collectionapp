@@ -971,11 +971,17 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     return userDoc.data()?['username'] ?? 'Anonymous';
   }
 
+  Future<String?> _getPhoto(String userId) async {
+    final userDoc = await _firestore.collection('users').doc(userId).get();
+    return userDoc.data()?['profileImageUrl'];
+  }
+
   void _submitComment() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null || _commentController.text.trim().isEmpty) return;
 
     final username = await _getUsername(currentUser.uid);
+    final photo = await _getPhoto(currentUser.uid) ?? "";
 
     final comment = Comment(
       id: DateTime.now().toString(), // Consider using a unique ID generator
@@ -983,7 +989,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       content: _commentController.text.trim(),
       createdAt: DateTime.now(),
       username: username,
-      userProfilePic: currentUser.photoURL ?? "",
+      userProfilePic: photo,
       groupId: widget.post.groupId, // Add this field to pass group context
     );
 

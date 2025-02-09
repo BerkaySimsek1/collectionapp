@@ -40,6 +40,10 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
         .collection("users")
         .doc(_currentUser!.uid)
         .get();
+
+    // Güvenli bir şekilde Firestore'dan dönen veriye erişim
+    final userData = userDoc.data() ?? {};
+
     if (_postController.text.isNotEmpty || _imageFile != null) {
       try {
         await _postService.createPost(
@@ -47,8 +51,8 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
           userId: _currentUser.uid,
           content: _postController.text,
           imageFile: _imageFile,
-          username: userDoc["username"] ?? "Kullanıcı",
-          userProfilePic: _currentUser.photoURL ?? "",
+          username: userData["username"] ?? "Kullanıcı",
+          userProfilePic: userData["profileImageUrl"] ?? "",
         );
 
         // Gönderi sonrası temizlik
