@@ -276,13 +276,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     child: CircleAvatar(
                                       radius: 60,
                                       backgroundColor: Colors.white,
-                                      backgroundImage: userData?[
-                                                  'profileImageUrl'] !=
-                                              null
-                                          ? NetworkImage(
-                                              userData!['profileImageUrl'])
-                                          : const NetworkImage(
-                                              'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'),
+                                      backgroundImage:
+                                          (userData?['profileImageUrl'] !=
+                                                      null &&
+                                                  userData?['profileImageUrl']
+                                                      .isNotEmpty)
+                                              ? NetworkImage(
+                                                  userData?['profileImageUrl'])
+                                              : null,
+                                      child: (userData?['profileImageUrl'] ==
+                                                  null ||
+                                              userData?['profileImageUrl']
+                                                  .isEmpty)
+                                          ? const Icon(
+                                              Icons.person,
+                                              size: 80,
+                                            )
+                                          : null,
                                     ),
                                   ),
                                   Positioned(

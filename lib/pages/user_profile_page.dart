@@ -12,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class UserProfilePage extends StatefulWidget {
   final String? userId;
-  const UserProfilePage({Key? key, this.userId}) : super(key: key);
+  const UserProfilePage({super.key, this.userId});
 
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
@@ -39,8 +39,21 @@ class _UserProfilePageState extends State<UserProfilePage> {
   String _formatFollowerCount(int count) {
     if (count >= 1000) {
       return "${(count / 1000).toStringAsFixed(1)}k followers";
+    } else if (count >= 1000000) {
+      return "${(count / 1000000).toStringAsFixed(1)}m followers";
+    } else if (count > 1 && count < 1000) {
+      return "$count followers";
     }
-    return "$count followers";
+    return "$count follower";
+  }
+
+  String _formatFollowingCount(int count) {
+    if (count >= 1000) {
+      return "${(count / 1000).toStringAsFixed(1)}k following";
+    } else if (count >= 1000000) {
+      return "${(count / 1000000).toStringAsFixed(1)}m following";
+    }
+    return "$count following";
   }
 
   Future<void> _loadUserData() async {
@@ -184,7 +197,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildStatItem(
                         icon: Icons.location_on_outlined,
@@ -201,6 +214,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           icon: Icons.people_outline,
                           label: _formatFollowerCount(
                               (userData?["followers"] as List?)?.length ?? 0),
+                        ),
+                      ),
+                      Container(
+                        height: 24,
+                        width: 1,
+                        color: Colors.white.withOpacity(0.3),
+                      ),
+                      GestureDetector(
+                        onTap: () => _showFollowingDialog(),
+                        child: _buildStatItem(
+                          icon: Icons.people_outline,
+                          label: _formatFollowingCount(
+                              (userData?["following"] as List?)?.length ?? 0),
                         ),
                       ),
                     ],
@@ -255,7 +281,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Row(
       children: [
         Icon(icon, color: Colors.white, size: 20),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
         Text(
           label,
           style: GoogleFonts.poppins(
@@ -268,6 +294,90 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
+  Future<void> _showFollowingDialog() async {
+    // userData içerisindeki "followers" alanı, takipçilerin uid'lerini içermeli.
+    List<dynamic> following = userData?["following"] ?? [];
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text("Following",
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: following.isEmpty
+                ? Center(
+                    child:
+                        Text("No following yet", style: GoogleFonts.poppins()),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: following.length,
+                    itemBuilder: (context, index) {
+                      final followerId = following[index];
+                      return FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(followerId)
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return ListTile(
+                              leading: const CircleAvatar(
+                                child: CircularProgressIndicator(),
+                              ),
+                              title: Text("Loading...",
+                                  style: GoogleFonts.poppins()),
+                            );
+                          }
+                          if (!snapshot.hasData || !snapshot.data!.exists) {
+                            return ListTile(
+                              title: Text("Unknown user",
+                                  style: GoogleFonts.poppins()),
+                            );
+                          }
+                          final followerData =
+                              snapshot.data!.data() as Map<String, dynamic>;
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.grey[200],
+                              backgroundImage:
+                                  (followerData["profileImageUrl"] != null &&
+                                          followerData["profileImageUrl"]
+                                              .isNotEmpty)
+                                      ? NetworkImage(
+                                          followerData["profileImageUrl"])
+                                      : null,
+                              child: (followerData["profileImageUrl"] == null ||
+                                      followerData["profileImageUrl"].isEmpty)
+                                  ? const Icon(
+                                      Icons.person,
+                                    )
+                                  : null,
+                            ),
+                            title: Text(
+                              "${followerData["firstName"] ?? ""} ${followerData["lastName"] ?? ""}",
+                              style: GoogleFonts.poppins(),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Close", style: GoogleFonts.poppins()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _showFollowersDialog() async {
     // userData içerisindeki "followers" alanı, takipçilerin uid'lerini içermeli.
     List<dynamic> followers = userData?["followers"] ?? [];
@@ -275,9 +385,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text("Followers",
               style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             child: followers.isEmpty
                 ? Center(
@@ -315,10 +426,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               snapshot.data!.data() as Map<String, dynamic>;
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                followerData["profileImageUrl"] ??
-                                    "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
-                              ),
+                              backgroundColor: Colors.grey[200],
+                              backgroundImage:
+                                  (followerData["profileImageUrl"] != null &&
+                                          followerData["profileImageUrl"]
+                                              .isNotEmpty)
+                                      ? NetworkImage(
+                                          followerData["profileImageUrl"])
+                                      : null,
+                              child: (followerData["profileImageUrl"] == null ||
+                                      followerData["profileImageUrl"].isEmpty)
+                                  ? const Icon(
+                                      Icons.person,
+                                    )
+                                  : null,
                             ),
                             title: Text(
                               "${followerData["firstName"] ?? ""} ${followerData["lastName"] ?? ""}",
@@ -346,7 +467,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       context: context,
       builder: (context) {
         return Dialog(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(

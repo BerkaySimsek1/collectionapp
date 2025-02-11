@@ -1,7 +1,7 @@
 import "dart:async";
 import "package:cloud_firestore/cloud_firestore.dart";
-import "package:collectionapp/design_elements.dart";
 import "package:flutter/material.dart";
+import "package:google_fonts/google_fonts.dart";
 
 class CountdownTimer extends StatefulWidget {
   final DateTime endTime;
@@ -108,7 +108,10 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
     return Text(
       timerText,
-      style: ProjectTextStyles.cardDescriptionTextStyle,
+      style: GoogleFonts.poppins(
+        fontSize: 15,
+        color: Colors.black,
+      ),
     );
   }
 }
