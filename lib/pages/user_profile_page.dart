@@ -10,6 +10,37 @@ import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
 import 'package:collectionapp/pages/userCollectionPages/collection_items_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
+  }
+}
+
 class UserProfilePage extends StatefulWidget {
   final String? userId;
   const UserProfilePage({super.key, this.userId});
@@ -25,7 +56,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   bool isLoading = true;
 
   bool get isCurrentUser {
-    // Eğer userId null ise veya userId, şu anki kullanıcının ID'siyle eşleşiyorsa current user
+// Eğer userId null ise veya userId, şu anki kullanıcının ID'siyle eşleşiyorsa current user
     return widget.userId == null ||
         widget.userId == FirebaseAuth.instance.currentUser!.uid;
   }
@@ -83,200 +114,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
     }
   }
 
-  Widget _buildProfileHeader() {
-    final String? profileImageUrl = userData?["profileImageUrl"];
-    return Container(
-      height: 400,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.deepPurple.shade400,
-            Colors.deepPurple.shade800,
-          ],
-        ),
-      ),
-      child: Stack(
-        children: [
-          // Dekoratif Daireler
-          Positioned(
-            top: -50,
-            right: -50,
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -80,
-            left: -80,
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-              ),
-            ),
-          ),
-
-          // Profil İçeriği
-          SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                // Profil Fotoğrafı
-                Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 4),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 15,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.white,
-                        backgroundImage: (profileImageUrl != null &&
-                                profileImageUrl.isNotEmpty)
-                            ? NetworkImage(profileImageUrl)
-                            : null,
-                        child:
-                            (profileImageUrl == null || profileImageUrl.isEmpty)
-                                ? const Icon(
-                                    Icons.person,
-                                    size: 80,
-                                  )
-                                : null,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // İsim ve Durum
-                Text(
-                  "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
-                  style: GoogleFonts.poppins(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    "Active Bidder",
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // İstatistikler
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildStatItem(
-                        icon: Icons.location_on_outlined,
-                        label: "Sunnyvale, CA",
-                      ),
-                      Container(
-                        height: 24,
-                        width: 1,
-                        color: Colors.white.withOpacity(0.3),
-                      ),
-                      GestureDetector(
-                        onTap: () => _showFollowersDialog(),
-                        child: _buildStatItem(
-                          icon: Icons.people_outline,
-                          label: _formatFollowerCount(
-                              (userData?["followers"] as List?)?.length ?? 0),
-                        ),
-                      ),
-                      Container(
-                        height: 24,
-                        width: 1,
-                        color: Colors.white.withOpacity(0.3),
-                      ),
-                      GestureDetector(
-                        onTap: () => _showFollowingDialog(),
-                        child: _buildStatItem(
-                          icon: Icons.people_outline,
-                          label: _formatFollowingCount(
-                              (userData?["following"] as List?)?.length ?? 0),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                if (!isCurrentUser &&
-                    !(((userData?["followers"] as List?) ?? [])
-                        .contains(FirebaseAuth.instance.currentUser!.uid))) ...[
-                  // Takip Et Butonu
-                  Container(
-                    height: 45,
-                    margin: const EdgeInsets.symmetric(horizontal: 32),
-                    child: ElevatedButton(
-                      onPressed: () => _showFollowDialog(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.deepPurple,
-                        elevation: 5,
-                        shadowColor: Colors.black.withOpacity(0.3),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.person_add_outlined),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Follow",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildStatItem({required IconData icon, required String label}) {
     return Row(
       children: [
@@ -295,7 +132,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Future<void> _showFollowingDialog() async {
-    // userData içerisindeki "followers" alanı, takipçilerin uid'lerini içermeli.
+// userData içerisindeki "followers" alanı, takipçilerin uid'lerini içermeli.
     List<dynamic> following = userData?["following"] ?? [];
     await showDialog(
       context: context,
@@ -303,7 +140,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: Text("Following",
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              )),
           content: SizedBox(
             width: double.maxFinite,
             child: following.isEmpty
@@ -379,7 +219,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Future<void> _showFollowersDialog() async {
-    // userData içerisindeki "followers" alanı, takipçilerin uid'lerini içermeli.
+// userData içerisindeki "followers" alanı, takipçilerin uid'lerini içermeli.
     List<dynamic> followers = userData?["followers"] ?? [];
     await showDialog(
       context: context,
@@ -387,7 +227,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: Text("Followers",
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              )),
           content: SizedBox(
             width: double.maxFinite,
             child: followers.isEmpty
@@ -536,7 +379,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
-                          // Önce geçerli ScaffoldMessenger referansını alalım.
+// Önce geçerli ScaffoldMessenger referansını alalım.
                           final messenger = ScaffoldMessenger.of(context);
 
                           Navigator.pop(context); // Dialog'u kapatıyoruz.
@@ -652,102 +495,347 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
         ],
       ),
-      child: DefaultTabController(
-        length: 3,
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: TabBar(
-                indicatorPadding: const EdgeInsets.symmetric(horizontal: -12),
-                dividerHeight: 0,
-                indicator: BoxDecoration(
-                  color: Colors.deepPurple,
-                  borderRadius: BorderRadius.circular(25),
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: TabBar(
+          indicatorPadding: const EdgeInsets.symmetric(horizontal: -12),
+          dividerHeight: 0,
+          indicator: BoxDecoration(
+            color: Colors.deepPurple,
+            borderRadius: BorderRadius.circular(25),
+          ),
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey[600],
+          labelStyle: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+          tabs: const [
+            SizedBox(
+              height: 45,
+              child: Tab(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.group_outlined),
+                      SizedBox(width: 8),
+                      Text(
+                        "Groups",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
                 ),
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.grey[600],
-                labelStyle: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-                tabs: const [
-                  SizedBox(
-                    height: 45,
-                    child: Tab(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.group_outlined),
-                            SizedBox(width: 8),
-                            Text(
-                              "Groups",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 45,
-                    child: Tab(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.gavel_outlined),
-                            SizedBox(width: 8),
-                            Text(
-                              "Auctions",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 45,
-                    child: Tab(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.collections_outlined),
-                            SizedBox(width: 8),
-                            Text(
-                              "Collections",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
             SizedBox(
-              height: 500,
-              child: TabBarView(
-                children: [
-                  _buildGroupsTab(),
-                  _buildAuctionsTab(),
-                  _buildCollectionsTab(),
-                ],
+              height: 45,
+              child: Tab(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.gavel_outlined),
+                      SizedBox(width: 8),
+                      Text(
+                        "Auctions",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 45,
+              child: Tab(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.collections_outlined),
+                      SizedBox(width: 8),
+                      Text(
+                        "Collections",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    final String? profileImageUrl = userData?["profileImageUrl"];
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.deepPurple.shade400,
+            Colors.deepPurple.shade800,
+          ],
+        ),
+      ),
+      child: Stack(
+        children: [
+          // Dekoratif Daireler
+          Positioned(
+            top: -50,
+            right: -50,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.1),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -80,
+            left: -80,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.1),
+              ),
+            ),
+          ),
+
+          // Profil İçeriği
+          SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                // Profil Fotoğrafı
+                Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 55,
+                        backgroundColor: Colors.white,
+                        backgroundImage: (profileImageUrl != null &&
+                                profileImageUrl.isNotEmpty)
+                            ? NetworkImage(profileImageUrl)
+                            : null,
+                        child:
+                            (profileImageUrl == null || profileImageUrl.isEmpty)
+                                ? const Icon(
+                                    Icons.person,
+                                    size: 55,
+                                    color: Colors.deepPurple,
+                                  )
+                                : null,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // İsim
+                Text(
+                  "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
+                  style: GoogleFonts.poppins(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Konum ve Durum
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Sunnyvale, CA",
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        "Active Bidder",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Followers ve Following
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _showFollowersDialog(),
+                        child: Column(
+                          children: [
+                            Text(
+                              (userData?["followers"] as List?)
+                                      ?.length
+                                      .toString() ??
+                                  "0",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              "Followers",
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 1,
+                        color: Colors.white.withOpacity(0.3),
+                      ),
+                      GestureDetector(
+                        onTap: () => _showFollowingDialog(),
+                        child: Column(
+                          children: [
+                            Text(
+                              (userData?["following"] as List?)
+                                      ?.length
+                                      .toString() ??
+                                  "0",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              "Following",
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Follow Butonu
+                if (!isCurrentUser &&
+                    !(((userData?["followers"] as List?) ?? [])
+                        .contains(FirebaseAuth.instance.currentUser!.uid))) ...[
+                  const SizedBox(height: 24),
+                  Container(
+                    height: 45,
+                    margin: const EdgeInsets.symmetric(horizontal: 32),
+                    child: ElevatedButton(
+                      onPressed: () => _showFollowDialog(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.deepPurple,
+                        elevation: 5,
+                        shadowColor: Colors.black.withOpacity(0.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.person_add_outlined),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Follow",
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1457,75 +1545,117 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      extendBodyBehindAppBar: true, // AppBar'ı saydam yapmak için
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
-        actions: [
-          if (isCurrentUser) // Sadece kendi profilinde
-            Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.edit_rounded, color: Colors.deepPurple),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          EditProfilePage(userData: userData!),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        backgroundColor: Colors.grey[100],
+        extendBodyBehindAppBar: true,
+        body: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: Colors.deepPurple),
+              )
+            : NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    SliverAppBar(
+                      backgroundColor: Colors.deepPurple,
+                      elevation: 0,
+                      floating: false,
+                      pinned: true,
+                      expandedHeight: (!isCurrentUser &&
+                              !(((userData?["followers"] as List?) ?? [])
+                                  .contains(
+                                      FirebaseAuth.instance.currentUser!.uid)))
+                          ? MediaQuery.of(context).size.height * 0.48
+                          : MediaQuery.of(context).size.height * 0.40,
+                      leading: Container(
+                        margin: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back,
+                              color: Colors.deepPurple),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ),
+                      actions: [
+                        if (isCurrentUser)
+                          Container(
+                            margin: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.edit_rounded,
+                                  color: Colors.deepPurple),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        EditProfilePage(userData: userData!),
+                                  ),
+                                ).then((_) => _loadUserData());
+                              },
+                            ),
+                          ),
+                      ],
+                      flexibleSpace: FlexibleSpaceBar(
+                        title: AnimatedOpacity(
+                          // profil yukarı kaydırıldıkça isim görünür olacak
+                          duration: const Duration(milliseconds: 100),
+                          opacity: innerBoxIsScrolled ? 1.0 : 0.0,
+                          child: Text(
+                            "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        background: _buildProfileHeader(),
+                      ),
                     ),
-                  ).then((_) => _loadUserData());
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _SliverAppBarDelegate(
+                        minHeight: 100,
+                        maxHeight: 100,
+                        child: Container(
+                          color: Colors.white,
+                          child: _buildTabSection(),
+                        ),
+                      ),
+                    ),
+                  ];
                 },
+                body: TabBarView(
+                  children: [
+                    _buildGroupsTab(),
+                    _buildAuctionsTab(),
+                    _buildCollectionsTab(),
+                  ],
+                ),
               ),
-            ),
-        ],
       ),
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Colors.deepPurple),
-            )
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.55,
-                    child: _buildProfileHeader(),
-                  ),
-                  _buildTabSection(),
-                ],
-              ),
-            ),
     );
   }
 }
