@@ -1,3 +1,4 @@
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,51 +9,6 @@ class UserCollectionsScreen extends StatelessWidget {
   final String userId;
 
   const UserCollectionsScreen({super.key, required this.userId});
-
-  IconData _getIconForCollectionType(String type) {
-    switch (type) {
-      case 'Record':
-        return Icons.album_outlined;
-      case 'Stamp':
-        return Icons.local_post_office_outlined;
-      case 'Coin':
-        return Icons.monetization_on_outlined;
-      case 'Book':
-        return Icons.menu_book_outlined;
-      case 'Painting':
-        return Icons.palette_outlined;
-      case 'Comic Book':
-        return Icons.auto_stories_outlined;
-      case 'Vintage Posters':
-        return Icons.image_outlined;
-      case 'Diğer':
-        return Icons.category_outlined;
-      default:
-        return Icons.category_outlined;
-    }
-  }
-
-  Color _getColorForCollectionType(String type) {
-    switch (type) {
-      case 'Record':
-        return Colors.purple;
-      case 'Stamp':
-        return Colors.blue;
-      case 'Coin':
-        return Colors.amber;
-      case 'Book':
-        return Colors.green;
-      case 'Painting':
-        return Colors.orange;
-      case 'Comic Book':
-        return Colors.red;
-      case 'Vintage Posters':
-        return Colors.teal;
-      default:
-        return Colors.deepPurple;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -251,7 +207,7 @@ class UserCollectionsScreen extends StatelessWidget {
                       final collectionData =
                           collectionDoc.data() as Map<String, dynamic>;
                       final collectionType = collectionData['name'] ?? 'Diğer';
-                      final color = _getColorForCollectionType(collectionType);
+                      final color = getColorForCollectionType(collectionType);
 
                       return GestureDetector(
                         onTap: () {
@@ -287,7 +243,7 @@ class UserCollectionsScreen extends StatelessWidget {
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
-                                  _getIconForCollectionType(collectionType),
+                                  getIconForCollectionType(collectionType),
                                   color: color,
                                   size: 40,
                                 ),
