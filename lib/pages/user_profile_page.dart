@@ -67,24 +67,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
     _loadUserData();
   }
 
-  String _formatFollowerCount(int count) {
-    if (count >= 1000) {
-      return "${(count / 1000).toStringAsFixed(1)}k followers";
-    } else if (count >= 1000000) {
-      return "${(count / 1000000).toStringAsFixed(1)}m followers";
-    } else if (count > 1 && count < 1000) {
-      return "$count followers";
+  String _formatNumber(int number) {
+    if (number >= 0 && number < 1000) {
+      return "$number";
+    } else if (number >= 1000 && number < 1000000) {
+      return "${(number / 1000).toStringAsFixed(1)}k";
+    } else if (number >= 1000000) {
+      return "${(number / 1000000).toStringAsFixed(1)}m";
+    } else {
+      return "$number";
     }
-    return "$count follower";
-  }
-
-  String _formatFollowingCount(int count) {
-    if (count >= 1000) {
-      return "${(count / 1000).toStringAsFixed(1)}k following";
-    } else if (count >= 1000000) {
-      return "${(count / 1000000).toStringAsFixed(1)}m following";
-    }
-    return "$count following";
   }
 
   Future<void> _loadUserData() async {
@@ -112,23 +104,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
         );
       }
     }
-  }
-
-  Widget _buildStatItem({required IconData icon, required String label}) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors.white, size: 20),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
   }
 
   Future<void> _showFollowingDialog() async {
@@ -479,6 +454,181 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
+  Future<void> _showUnfollowDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close_outlined,
+                    color: Colors.deepPurple,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Unfollow User",
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Do you want to unfollow this user?",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text(
+                          "Cancel",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+// Önce geçerli ScaffoldMessenger referansını alalım.
+                          final messenger = ScaffoldMessenger.of(context);
+
+                          Navigator.pop(context); // Dialog'u kapatıyoruz.
+
+                          final currentUserId =
+                              FirebaseAuth.instance.currentUser!.uid;
+                          final targetUserId = userData?["uid"];
+                          if (targetUserId == null) return;
+
+                          try {
+                            // Takip edilen kullanıcının 'followers' alanına ekle
+                            await FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(targetUserId)
+                                .update({
+                              "followers":
+                                  FieldValue.arrayRemove([currentUserId])
+                            });
+                            // Takip eden kullanıcının 'following' alanına ekle
+                            await FirebaseFirestore.instance
+                                .collection("users")
+                                .doc(currentUserId)
+                                .update({
+                              "following":
+                                  FieldValue.arrayRemove([targetUserId])
+                            });
+                            // Güncel verileri tekrar yükleyerek UI’yı güncelle
+                            await _loadUserData();
+
+                            messenger.showSnackBar(
+                              SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                margin: const EdgeInsets.all(16),
+                                backgroundColor: Colors.deepPurple,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                content: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_outline,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      "Unfollowing successfully!",
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                margin: const EdgeInsets.all(16),
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                content: Text(
+                                  "Failed to unfollow user",
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          "Unfollow",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildTabSection() {
     return Container(
       decoration: BoxDecoration(
@@ -496,7 +646,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         ],
       ),
       child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+        margin: const EdgeInsets.fromLTRB(16, 12, 16, 12),
         decoration: BoxDecoration(
           color: Colors.grey[100],
           borderRadius: BorderRadius.circular(25),
@@ -516,7 +666,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
           tabs: const [
             SizedBox(
-              height: 45,
+              height: 40,
               child: Tab(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
@@ -535,7 +685,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
             ),
             SizedBox(
-              height: 45,
+              height: 40,
               child: Tab(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
@@ -554,7 +704,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
             ),
             SizedBox(
-              height: 45,
+              height: 40,
               child: Tab(
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
@@ -725,11 +875,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ],
                 ),
                 const SizedBox(height: 24),
-
                 // Followers ve Following
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 32),
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -742,10 +891,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         child: Column(
                           children: [
                             Text(
-                              (userData?["followers"] as List?)
-                                      ?.length
-                                      .toString() ??
-                                  "0",
+                              // takipçi sayısı burada gösteriliyor
+                              _formatNumber(
+                                (userData?["followers"] as List?)?.length ?? 0,
+                              ),
                               style: GoogleFonts.poppins(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -753,7 +902,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               ),
                             ),
                             Text(
-                              "Followers",
+                              // takipçi sayısı çoğulsa "Followers" tekilse "Follower" yazdırılıyor
+                              ((userData?["followers"] as List?)?.length ??
+                                          0) <=
+                                      1
+                                  ? "Follower"
+                                  : "Followers",
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 color: Colors.white.withOpacity(0.8),
@@ -795,43 +949,59 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ],
                   ),
                 ),
-
                 // Follow Butonu
-                if (!isCurrentUser &&
-                    !(((userData?["followers"] as List?) ?? [])
-                        .contains(FirebaseAuth.instance.currentUser!.uid))) ...[
-                  const SizedBox(height: 24),
-                  Container(
-                    height: 45,
-                    margin: const EdgeInsets.symmetric(horizontal: 32),
-                    child: ElevatedButton(
-                      onPressed: () => _showFollowDialog(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.deepPurple,
-                        elevation: 5,
-                        shadowColor: Colors.black.withOpacity(0.3),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.person_add_outlined),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Follow",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                const SizedBox(height: 24),
+                !isCurrentUser
+                    ? Container(
+                        height: 45,
+                        margin: const EdgeInsets.symmetric(horizontal: 32),
+                        child: ElevatedButton(
+                          // follow butonu, eğer zaten takip ediliyorsa unfollow butonuna dönüşür
+                          onPressed: (((userData?["followers"] as List?) ?? [])
+                                  .contains(
+                                      FirebaseAuth.instance.currentUser!.uid))
+                              ? _showUnfollowDialog
+                              : _showFollowDialog,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.deepPurple,
+                            elevation: 5,
+                            shadowColor: Colors.black.withOpacity(0.3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: (((userData?["followers"] as List?) ?? [])
+                                    .contains(
+                                        FirebaseAuth.instance.currentUser!.uid))
+                                ? [
+                                    const Icon(Icons.close),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Unfollow",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ]
+                                : [
+                                    const Icon(Icons.person_add_outlined),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Follow",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                          ),
+                        ),
+                      )
+                    : Container(),
               ],
             ),
           ),
@@ -1562,12 +1732,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       elevation: 0,
                       floating: false,
                       pinned: true,
-                      expandedHeight: (!isCurrentUser &&
-                              !(((userData?["followers"] as List?) ?? [])
-                                  .contains(
-                                      FirebaseAuth.instance.currentUser!.uid)))
-                          ? MediaQuery.of(context).size.height * 0.48
-                          : MediaQuery.of(context).size.height * 0.40,
+                      expandedHeight: isCurrentUser
+                          ? 360
+                          : 430, // kendi profilimize bakıyorsak 360 değilse 430
                       leading: Container(
                         margin: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -1637,8 +1804,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     SliverPersistentHeader(
                       pinned: true,
                       delegate: _SliverAppBarDelegate(
-                        minHeight: 100,
-                        maxHeight: 100,
+                        minHeight: 80,
+                        maxHeight: 80,
                         child: Container(
                           color: Colors.white,
                           child: _buildTabSection(),

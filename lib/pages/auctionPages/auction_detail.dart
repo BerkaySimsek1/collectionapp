@@ -187,7 +187,6 @@ class AuctionDetail extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 16),
-
                           // Description
                           Text(
                             auction.description,
@@ -198,7 +197,6 @@ class AuctionDetail extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 24),
-
                           // Price and Timer Section
                           Container(
                             padding: const EdgeInsets.all(16),
@@ -363,7 +361,6 @@ class AuctionDetail extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 24),
-
                           // Creator Info
                           Container(
                             padding: const EdgeInsets.all(16),
@@ -477,33 +474,19 @@ class AuctionDetail extends StatelessWidget {
           builder: (context, viewModel, child) {
             if (viewModel.currentUser.uid != auction.creatorId &&
                 !auction.isAuctionEnd) {
-              return Container(
-                margin: const EdgeInsets.all(16),
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () => _showBidDialog(context, viewModel, auction),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.gavel_outlined, color: Colors.white),
-                      const SizedBox(width: 8),
-                      Text(
-                        "Place a Bid",
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+              return FloatingActionButton.extended(
+                onPressed: () => _showBidDialog(context, viewModel, auction),
+                backgroundColor: Colors.deepPurple,
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                icon: const Icon(Icons.gavel_outlined, color: Colors.white),
+                label: Text(
+                  "Place Bid",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               );
@@ -511,7 +494,7 @@ class AuctionDetail extends StatelessWidget {
             return const SizedBox.shrink();
           },
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }
