@@ -1,3 +1,4 @@
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:collectionapp/models/GroupModel.dart';
@@ -8,38 +9,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/pages/socialMediaPages/SM_group_detail_page.dart';
 import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
 import 'package:collectionapp/pages/userCollectionPages/collection_items_screen.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate({
-    required this.minHeight,
-    required this.maxHeight,
-    required this.child,
-  });
-
-  final double minHeight;
-  final double maxHeight;
-  final Widget child;
-
-  @override
-  double get minExtent => minHeight;
-
-  @override
-  double get maxExtent => maxHeight;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return SizedBox.expand(child: child);
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return maxHeight != oldDelegate.maxHeight ||
-        minHeight != oldDelegate.minHeight ||
-        child != oldDelegate.child;
-  }
-}
 
 class UserProfilePage extends StatefulWidget {
   final String? userId;
@@ -90,13 +61,21 @@ class _UserProfilePageState extends State<UserProfilePage> {
       if (data == null) {
         throw Exception("User data not found");
       }
-      setState(() {
-        userData = data;
-        isLoading = false;
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            userData = data;
+            isLoading = false;
+          });
+        }
       });
     } catch (e) {
-      setState(() {
-        isLoading = false;
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -809,14 +788,18 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
                 // İsim
-                Text(
-                  "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
-                  style: GoogleFonts.poppins(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
+                  child: Text(
+                    "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
+                    style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1509,50 +1492,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildCollectionsTab() {
-    IconData getIconForCollectionType(String type) {
-      switch (type) {
-        case 'Record':
-          return Icons.album_outlined;
-        case 'Stamp':
-          return Icons.local_post_office_outlined;
-        case 'Coin':
-          return Icons.monetization_on_outlined;
-        case 'Book':
-          return Icons.menu_book_outlined;
-        case 'Painting':
-          return Icons.palette_outlined;
-        case 'Comic Book':
-          return Icons.auto_stories_outlined;
-        case 'Vintage Posters':
-          return Icons.image_outlined;
-        case 'Diğer':
-          return Icons.category_outlined;
-        default:
-          return Icons.category_outlined;
-      }
-    }
-
-    Color getColorForCollectionType(String type) {
-      switch (type) {
-        case 'Record':
-          return Colors.purple;
-        case 'Stamp':
-          return Colors.blue;
-        case 'Coin':
-          return Colors.amber;
-        case 'Book':
-          return Colors.green;
-        case 'Painting':
-          return Colors.orange;
-        case 'Comic Book':
-          return Colors.red;
-        case 'Vintage Posters':
-          return Colors.teal;
-        default:
-          return Colors.deepPurple;
-      }
-    }
-
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection("userCollections")
@@ -1728,29 +1667,80 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
                     SliverAppBar(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: Colors.transparent,
+                      flexibleSpace: LayoutBuilder(
+                        builder:
+                            (BuildContext context, BoxConstraints constraints) {
+                          final double scrollPercent =
+                              constraints.maxHeight > kToolbarHeight
+                                  ? 1 -
+                                      (constraints.maxHeight - kToolbarHeight) /
+                                          (isCurrentUser
+                                              ? 360
+                                              : 420 - kToolbarHeight)
+                                  : 1.0;
+                          final double opacity =
+                              ((scrollPercent - 0.3) / 0.45).clamp(0.0, 1.0);
+
+                          return Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.deepPurple.shade400,
+                                  Colors.deepPurple.shade800,
+                                ],
+                              ),
+                            ),
+                            child: FlexibleSpaceBar(
+                              centerTitle: true,
+                              titlePadding: const EdgeInsets.only(bottom: 16),
+                              title: Opacity(
+                                opacity: opacity,
+                                child: Text(
+                                  "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              background: _buildProfileHeader(),
+                            ),
+                          );
+                        },
+                      ),
                       elevation: 0,
                       floating: false,
                       pinned: true,
-                      expandedHeight: isCurrentUser
-                          ? 360
-                          : 430, // kendi profilimize bakıyorsak 360 değilse 430
+                      expandedHeight: isCurrentUser ? 360 : 420,
                       leading: Container(
                         margin: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: innerBoxIsScrolled
+                              ? Colors.white.withOpacity(0.2)
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
+                            if (!innerBoxIsScrolled)
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.arrow_back,
-                              color: Colors.deepPurple),
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color: innerBoxIsScrolled
+                                ? Colors.white
+                                : Colors.deepPurple,
+                          ),
                           onPressed: () => Navigator.of(context).pop(),
                         ),
                       ),
@@ -1759,19 +1749,26 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           Container(
                             margin: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: innerBoxIsScrolled
+                                  ? Colors.white.withOpacity(0.2)
+                                  : Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
+                                if (!innerBoxIsScrolled)
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
                               ],
                             ),
                             child: IconButton(
-                              icon: const Icon(Icons.edit_rounded,
-                                  color: Colors.deepPurple),
+                              icon: Icon(
+                                Icons.edit_rounded,
+                                color: innerBoxIsScrolled
+                                    ? Colors.white
+                                    : Colors.deepPurple,
+                              ),
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -1784,26 +1781,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             ),
                           ),
                       ],
-                      flexibleSpace: FlexibleSpaceBar(
-                        title: AnimatedOpacity(
-                          // profil yukarı kaydırıldıkça isim görünür olacak
-                          duration: const Duration(milliseconds: 100),
-                          opacity: innerBoxIsScrolled ? 1.0 : 0.0,
-                          child: Text(
-                            "${userData?["firstName"] ?? "First"} ${userData?["lastName"] ?? "Last"}",
-                            style: GoogleFonts.poppins(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        background: _buildProfileHeader(),
-                      ),
                     ),
                     SliverPersistentHeader(
                       pinned: true,
-                      delegate: _SliverAppBarDelegate(
+                      delegate: SliverAppBarDelegate(
                         minHeight: 80,
                         maxHeight: 80,
                         child: Container(

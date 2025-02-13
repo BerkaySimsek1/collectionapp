@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -109,9 +109,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.red.shade400,
+        backgroundColor: Colors.red,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         content: Row(
           children: [
             const Icon(Icons.error_outline, color: Colors.white),
@@ -135,9 +137,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.green.shade400,
+        backgroundColor: Colors.green,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         content: Row(
           children: [
             const Icon(Icons.check_circle_outline, color: Colors.white),
@@ -159,405 +163,136 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(color: Colors.deepPurple),
-                  const SizedBox(height: 16),
-                  Text(
-                    "Loading profile...",
-                    style: GoogleFonts.poppins(
-                      color: Colors.grey[600],
-                      fontSize: 16,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Colors.grey[100],
+        extendBodyBehindAppBar: true,
+        body: isLoading
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(color: Colors.deepPurple),
+                    const SizedBox(height: 16),
+                    Text(
+                      "Loading profile...",
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          : CustomScrollView(
-              slivers: [
-                // Modern AppBar
-                SliverAppBar(
-                  expandedHeight: 300,
-                  floating: false,
-                  pinned: true,
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  stretch: true,
-                  leading: Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                  ],
+                ),
+              )
+            : NotificationListener<ScrollNotification>(
+                onNotification: (scrollNotification) {
+                  return false;
+                },
+                child: NestedScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  headerSliverBuilder: (context, innerBoxIsScrolled) {
+                    return [
+                      SliverAppBar(
+                        backgroundColor: Colors.transparent,
+                        flexibleSpace: LayoutBuilder(
+                          builder: (BuildContext context,
+                              BoxConstraints constraints) {
+                            final scrollPercent = constraints.maxHeight >
+                                    kToolbarHeight
+                                ? 1 -
+                                    (constraints.maxHeight - kToolbarHeight) /
+                                        (360 - kToolbarHeight)
+                                : 1.0;
+                            final opacity =
+                                ((scrollPercent - 0.3) / 0.7).clamp(0.0, 1.0);
+
+                            return Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Colors.deepPurple.shade400,
+                                    Colors.deepPurple.shade800,
+                                  ],
+                                ),
+                              ),
+                              child: FlexibleSpaceBar(
+                                centerTitle: true,
+                                titlePadding: const EdgeInsets.only(bottom: 16),
+                                title: Opacity(
+                                  opacity: opacity,
+                                  child: Text(
+                                    "Edit Profile",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                background: _buildProfileHeader(),
+                              ),
+                            );
+                          },
                         ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back,
-                          color: Colors.deepPurple),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        // Gradient Background with Design Elements
-                        Container(
+                        elevation: 0,
+                        floating: false,
+                        pinned: true,
+                        expandedHeight: 360,
+                        leading: Container(
+                          margin: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.deepPurple.shade300,
-                                Colors.deepPurple.shade800,
-                              ],
-                            ),
-                          ),
-                        ),
-                        // Decorative Circles
-                        Positioned(
-                          top: -50,
-                          right: -50,
-                          child: Container(
-                            width: 200,
-                            height: 200,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white.withOpacity(0.1),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: -80,
-                          left: -80,
-                          child: Container(
-                            width: 200,
-                            height: 200,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white.withOpacity(0.1),
-                            ),
-                          ),
-                        ),
-                        // Profile Content
-                        Align(
-                          alignment: Alignment.center,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Profile Image with Edit Button
-                              Stack(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 4,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 15,
-                                          offset: const Offset(0, 5),
-                                        ),
-                                      ],
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: 60,
-                                      backgroundColor: Colors.white,
-                                      backgroundImage:
-                                          (userData?['profileImageUrl'] !=
-                                                      null &&
-                                                  userData?['profileImageUrl']
-                                                      .isNotEmpty)
-                                              ? NetworkImage(
-                                                  userData?['profileImageUrl'])
-                                              : null,
-                                      child: (userData?['profileImageUrl'] ==
-                                                  null ||
-                                              userData?['profileImageUrl']
-                                                  .isEmpty)
-                                          ? const Icon(
-                                              Icons.person,
-                                              size: 80,
-                                            )
-                                          : null,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: InkWell(
-                                      onTap: _isUpdatingPhoto
-                                          ? null // Yükleme devam ederken tekrar tıklamayı önleyebilirsiniz
-                                          : _pickProfileImage,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.2),
-                                              blurRadius: 5,
-                                              offset: const Offset(0, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: const BoxDecoration(
-                                            color: Colors.deepPurple,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: _isUpdatingPhoto
-                                              ? const SizedBox(
-                                                  height: 20,
-                                                  width: 20,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    color: Colors.white,
-                                                    strokeWidth: 2,
-                                                  ),
-                                                )
-                                              : const Icon(
-                                                  Icons.camera_alt,
-                                                  color: Colors.white,
-                                                  size: 20,
-                                                ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              // User Name
-                              Text(
-                                "${userData?['firstName'] ?? ''} ${userData?['lastName'] ?? ''}",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                            color: innerBoxIsScrolled
+                                ? Colors.white.withOpacity(0.2)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              if (!innerBoxIsScrolled)
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // User Email
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  userData?['email'] ?? '',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ), // Form and Settings
-                SliverToBoxAdapter(
-                  child: Transform.translate(
-                    offset: const Offset(0, -20),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: innerBoxIsScrolled
+                                  ? Colors.white
+                                  : Colors.deepPurple,
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                          ),
                         ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 16),
-                            // Personal Information Section
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.deepPurple.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(
-                                    Icons.person_outline,
-                                    color: Colors.deepPurple,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  "Personal Information",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.deepPurple,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            _buildEditableField(
-                              label: "First Name",
-                              value: userData?['firstName'] ?? '',
-                              icon: Icons.badge_outlined,
-                              onSave: (value) async {
-                                await _firestoreService
-                                    .updateUserData({'firstName': value});
-                                setState(() => userData?['firstName'] = value);
-                                _showSuccessSnackBar(
-                                    "First name updated successfully!");
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            _buildEditableField(
-                              label: "Last Name",
-                              value: userData?['lastName'] ?? '',
-                              icon: Icons.badge_outlined,
-                              onSave: (value) async {
-                                await _firestoreService
-                                    .updateUserData({'lastName': value});
-                                setState(() => userData?['lastName'] = value);
-                                _showSuccessSnackBar(
-                                    "Last name updated successfully!");
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            _buildEditableField(
-                              label: "Age",
-                              value: userData?['age']?.toString() ?? '',
-                              icon: Icons.cake_outlined,
-                              onSave: (value) async {
-                                await _firestoreService
-                                    .updateUserData({'age': int.parse(value)});
-                                setState(
-                                    () => userData?['age'] = int.parse(value));
-                                _showSuccessSnackBar(
-                                    "Age updated successfully!");
-                              },
-                            ),
-                            const SizedBox(height: 32),
-
-                            // Account Settings Section
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.deepPurple.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: const Icon(
-                                    Icons.settings_outlined,
-                                    color: Colors.deepPurple,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  "Account Settings",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.deepPurple,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  _buildSettingsButton(
-                                    label: "Change Email",
-                                    icon: Icons.mail_outline,
-                                    description: "Update your email address",
-                                    onTap: _showEmailChangeDialog,
-                                  ),
-                                  const Divider(height: 1),
-                                  _buildSettingsButton(
-                                    label: "Change Username",
-                                    icon: Icons.person_outline,
-                                    description: "Update your username",
-                                    onTap: _showUsernameChangeDialog,
-                                  ),
-                                  const Divider(height: 1),
-                                  _buildSettingsButton(
-                                    label: "Change Password",
-                                    icon: Icons.lock_outline,
-                                    description: "Update your password",
-                                    onTap: _showPasswordChangeDialog,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-
-                            // Delete Account Button
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: _buildSettingsButton(
-                                label: "Delete Account",
-                                icon: Icons.delete_outline,
-                                description: "Permanently delete your account",
-                                onTap: _showDeleteAccountDialog,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: SliverAppBarDelegate(
+                          minHeight: 80,
+                          maxHeight: 80,
+                          child: Container(
+                            color: Colors.white,
+                            child: _buildTabSection(),
+                          ),
                         ),
                       ),
-                    ),
+                    ];
+                  },
+                  body: TabBarView(
+                    physics: const ClampingScrollPhysics(),
+                    children: [
+                      _buildPersonalInfoTab(),
+                      _buildAccountSettingsTab(),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+      ),
     );
   }
 
@@ -732,6 +467,236 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTabSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            offset: const Offset(0, -4),
+            blurRadius: 16,
+          ),
+        ],
+      ),
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: TabBar(
+          indicatorPadding: const EdgeInsets.symmetric(horizontal: -12),
+          dividerHeight: 0,
+          indicator: BoxDecoration(
+            color: Colors.deepPurple,
+            borderRadius: BorderRadius.circular(25),
+          ),
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey[600],
+          labelStyle: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+          tabs: const [
+            SizedBox(
+              height: 45,
+              child: Tab(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person_outline),
+                    SizedBox(width: 8),
+                    Text("Personal Info"),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 45,
+              child: Tab(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.settings_outlined),
+                    SizedBox(width: 8),
+                    Text("Settings"),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPersonalInfoTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.person_outline,
+                  color: Colors.deepPurple,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Personal Information",
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildEditableField(
+            label: "First Name",
+            value: userData?['firstName'] ?? '',
+            icon: Icons.badge_outlined,
+            onSave: (value) async {
+              await _firestoreService.updateUserData({'firstName': value});
+              setState(() => userData?['firstName'] = value);
+              _showSuccessSnackBar("First name updated successfully!");
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildEditableField(
+            label: "Last Name",
+            value: userData?['lastName'] ?? '',
+            icon: Icons.badge_outlined,
+            onSave: (value) async {
+              await _firestoreService.updateUserData({'lastName': value});
+              setState(() => userData?['lastName'] = value);
+              _showSuccessSnackBar("Last name updated successfully!");
+            },
+          ),
+          const SizedBox(height: 16),
+          _buildEditableField(
+            label: "Age",
+            value: userData?['age']?.toString() ?? '',
+            icon: Icons.cake_outlined,
+            onSave: (value) async {
+              await _firestoreService.updateUserData({'age': int.parse(value)});
+              setState(() => userData?['age'] = int.parse(value));
+              _showSuccessSnackBar("Age updated successfully!");
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccountSettingsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.settings_outlined,
+                  color: Colors.deepPurple,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Account Settings",
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                _buildSettingsButton(
+                  label: "Change Email",
+                  icon: Icons.mail_outline,
+                  description: "Update your email address",
+                  onTap: _showEmailChangeDialog,
+                ),
+                const Divider(height: 1),
+                _buildSettingsButton(
+                  label: "Change Username",
+                  icon: Icons.person_outline,
+                  description: "Update your username",
+                  onTap: _showUsernameChangeDialog,
+                ),
+                const Divider(height: 1),
+                _buildSettingsButton(
+                  label: "Change Password",
+                  icon: Icons.lock_outline,
+                  description: "Update your password",
+                  onTap: _showPasswordChangeDialog,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: _buildSettingsButton(
+              label: "Delete Account",
+              icon: Icons.delete_outline,
+              description: "Permanently delete your account",
+              onTap: _showDeleteAccountDialog,
+              color: Colors.red,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1238,6 +1203,237 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.deepPurple.shade400,
+            Colors.deepPurple.shade800,
+          ],
+        ),
+      ),
+      child: Stack(
+        children: [
+          // Dekoratif Daireler
+          Positioned(
+            top: -50,
+            right: -50,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.1),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -80,
+            left: -80,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.1),
+              ),
+            ),
+          ),
+
+          // Profil İçeriği
+          SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                // Profil Fotoğrafı
+                Center(
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 4),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Colors.white,
+                          backgroundImage:
+                              (userData?['profileImageUrl'] != null &&
+                                      userData?['profileImageUrl'].isNotEmpty)
+                                  ? NetworkImage(userData?['profileImageUrl'])
+                                  : null,
+                          child: (userData?['profileImageUrl'] == null ||
+                                  userData?['profileImageUrl'].isEmpty)
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 55,
+                                  color: Colors.deepPurple,
+                                )
+                              : null,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: _isUpdatingPhoto ? null : _pickProfileImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: const BoxDecoration(
+                                color: Colors.deepPurple,
+                                shape: BoxShape.circle,
+                              ),
+                              child: _isUpdatingPhoto
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // İsim
+                Text(
+                  "${userData?['firstName'] ?? 'First'} ${userData?['lastName'] ?? 'Last'}",
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Email
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.mail_outline,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        userData?['email'] ?? '',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Konum ve Durum
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Sunnyvale, CA",
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        "Active Bidder",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
