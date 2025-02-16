@@ -1,7 +1,7 @@
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
-import "package:collectionapp/design_elements.dart";
+import "package:google_fonts/google_fonts.dart";
 import "package:intl/intl.dart";
 import 'package:collectionapp/pages/userCollectionPages/edit_item_screen.dart';
 
@@ -22,116 +22,123 @@ class ItemDetailsScreen extends StatefulWidget {
 }
 
 class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
-  void _deleteItem(BuildContext context) async {
-    final bool? confirmDelete = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          title: const Text("Are you sure?"),
-          content: const Text("Do you really want to delete this item?"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text("Delete"),
-            ),
-          ],
-        );
-      },
-    );
+  late PageController _pageController;
+  int _currentPage = 0;
 
-    if (confirmDelete == true) {
-      await FirebaseFirestore.instance
-          .collection("userCollections")
-          .doc(widget.userId)
-          .collection("collectionsList")
-          .doc(widget.collectionName)
-          .collection("items")
-          .doc(widget.itemId)
-          .delete();
-      Navigator.pop(context);
-    }
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
   }
 
-  Widget _buildFieldWidget({
-    required String fieldName,
-    required dynamic fieldValue,
-  }) {
-    String displayValue;
-
-    if (fieldValue is Timestamp) {
-      // Firestore Timestamp ise, DateTime'e çevir
-      DateTime dateTime = fieldValue.toDate();
-      displayValue = DateFormat('dd.MM.yyyy').format(dateTime);
-    } else if (fieldValue is DateTime) {
-      // Eğer doğrudan DateTime geliyorsa
-      displayValue = DateFormat('dd.MM.yyyy').format(fieldValue);
-    } else if (fieldValue is String) {
-      // Eğer string bir tarih ise, DateTime'a çevir ve formatla
-      try {
-        DateTime dateTime = DateTime.parse(fieldValue);
-        displayValue = DateFormat('dd.MM.yyyy').format(dateTime);
-      } catch (e) {
-        // Eğer parse edilemezse, olduğu gibi göster
-        displayValue = fieldValue;
-      }
-    } else {
-      // Diğer durumlar için
-      displayValue = fieldValue.toString();
-    }
-
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: ListTile(
-        title: Text(
-          fieldName,
-          style: ProjectTextStyles.cardHeaderTextStyle,
-        ),
-        subtitle: Text(
-          displayValue,
-          style: ProjectTextStyles.cardDescriptionTextStyle,
-        ),
-      ),
-    );
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: ProjectAppbar(
-        titleText: "Item Details",
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditItemScreen(
-                    userId: widget.userId,
-                    collectionName: widget.collectionName,
-                    itemId: widget.itemId,
+          Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: PopupMenuButton<String>(
+              color: Colors.white,
+              icon: const Icon(
+                Icons.more_vert,
+                color: Colors.deepPurple,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: "Edit",
+                  child: Row(
+                    children: [
+                      const Icon(Icons.edit, color: Colors.deepPurple),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Edit",
+                        style: GoogleFonts.poppins(
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-              if (result == true) {
-                setState(() {});
-              }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => _deleteItem(context),
+                PopupMenuItem(
+                  value: "Delete",
+                  child: Row(
+                    children: [
+                      const Icon(Icons.delete, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Delete",
+                        style: GoogleFonts.poppins(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              onSelected: (value) {
+                if (value == "Edit") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditItemScreen(
+                        userId: widget.userId,
+                        collectionName: widget.collectionName,
+                        itemId: widget.itemId,
+                      ),
+                    ),
+                  ).then((result) {
+                    if (result == true) {
+                      setState(() {});
+                    }
+                  });
+                } else if (value == "Delete") {
+                  _deleteItem(context);
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -146,14 +153,38 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             .get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.deepPurple),
+            );
           }
 
           if (!snapshot.hasData || !snapshot.data!.exists) {
             return Center(
-              child: Text(
-                "Item not found",
-                style: ProjectTextStyles.subtitleTextStyle,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.deepPurple.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.deepPurple.withOpacity(0.5),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Item not found",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
               ),
             );
           }
@@ -161,91 +192,392 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           final item = snapshot.data!.data() as Map<String, dynamic>;
           final photos = item["Photos"] as List<dynamic>?;
 
-          final fieldWidgets = item.entries.map((entry) {
-            final fieldName = entry.key;
-            final fieldValue = entry.value;
-
-            if (fieldName == "Photos") return const SizedBox.shrink();
-
-            return _buildFieldWidget(
-              fieldName: fieldName,
-              fieldValue: fieldValue,
-            );
-          }).toList();
-
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              if (photos != null && photos.isNotEmpty)
-                Container(
-                  height: 250,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: photos.length,
-                    itemBuilder: (context, index) {
-                      final photo = photos[index];
-                      return Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            boxShadow: const [
-                              BoxShadow(
-                                  offset: Offset(0, 1),
-                                  blurRadius: 1,
-                                  spreadRadius: 1,
-                                  color: Colors.grey),
-                            ],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: photo.startsWith('http')
-                                ? Image.network(
-                                    photo,
-                                    height: 250,
-                                    width: 250,
-                                    fit: BoxFit.cover,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(Icons.error,
-                                                color: Colors.red),
-                                  )
-                                : Image.file(
-                                    File(photo),
-                                    height: 250,
-                                    width: 250,
-                                    fit: BoxFit.cover,
-                                  ),
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image Carousel
+                if (photos != null && photos.isNotEmpty)
+                  Stack(
+                    children: [
+                      Container(
+                        height: 350,
+                        width: double.infinity,
+                        color: Colors.grey[200],
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: photos.length,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _currentPage = index;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            final photo = photos[index];
+                            return GestureDetector(
+                              onTap: () =>
+                                  _showPhotoDialog(context, photos, index),
+                              child: Hero(
+                                tag: 'item_image_$index',
+                                child: photo.startsWith('http')
+                                    ? Image.network(
+                                        photo,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder:
+                                            (context, child, loadingProgress) {
+                                          if (loadingProgress == null)
+                                            return child;
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      loadingProgress
+                                                          .expectedTotalBytes!
+                                                  : null,
+                                              color: Colors.deepPurple,
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : Image.file(
+                                        File(photo),
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      if (photos.length > 1)
+                        Positioned(
+                          bottom: 16,
+                          left: 0,
+                          right: 0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              photos.length,
+                              (index) => Container(
+                                width: 8,
+                                height: 8,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _currentPage == index
+                                      ? Colors.deepPurple
+                                      : Colors.white.withOpacity(0.5),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      );
-                    },
+                    ],
+                  ),
+
+                // Details Section
+                Transform.translate(
+                  offset: const Offset(0, -30),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Item Name
+                          Text(
+                            item["İsim"] ?? "Untitled Item",
+                            style: GoogleFonts.poppins(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Details Cards
+                          ...item.entries.map((entry) {
+                            final fieldName = entry.key;
+                            final fieldValue = entry.value;
+
+                            if (fieldName == "Photos" || fieldName == "İsim") {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.deepPurple.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(
+                                      _getIconForField(fieldName),
+                                      color: Colors.deepPurple,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          fieldName,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          _formatFieldValue(fieldValue),
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey[800],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ...fieldWidgets,
-            ],
+              ],
+            ),
           );
         },
+      ),
+    );
+  }
+
+  IconData _getIconForField(String fieldName) {
+    switch (fieldName.toLowerCase()) {
+      case 'tarih':
+        return Icons.calendar_today;
+      case 'fiyat':
+        return Icons.attach_money;
+      case 'durum':
+        return Icons.info_outline;
+      default:
+        return Icons.label_outline;
+    }
+  }
+
+  String _formatFieldValue(dynamic value) {
+    if (value is Timestamp) {
+      return DateFormat('dd.MM.yyyy').format(value.toDate());
+    }
+    if (value is DateTime) {
+      return DateFormat('dd.MM.yyyy').format(value);
+    }
+    return value.toString();
+  }
+
+  Future<void> _showPhotoDialog(
+      BuildContext context, List<dynamic> photos, int initialIndex) {
+    return showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.black,
+                child: PageView.builder(
+                  controller: PageController(initialPage: initialIndex),
+                  itemCount: photos.length,
+                  itemBuilder: (context, index) {
+                    final photo = photos[index];
+                    return InteractiveViewer(
+                      minScale: 0.5,
+                      maxScale: 3.0,
+                      child: photo.startsWith('http')
+                          ? Image.network(
+                              photo,
+                              fit: BoxFit.contain,
+                            )
+                          : Image.file(
+                              File(photo),
+                              fit: BoxFit.contain,
+                            ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteItem(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.red,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "Delete Item",
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  "Are you sure you want to delete this item? This action cannot be undone.",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text(
+                          "Cancel",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await FirebaseFirestore.instance
+                              .collection("userCollections")
+                              .doc(widget.userId)
+                              .collection("collectionsList")
+                              .doc(widget.collectionName)
+                              .collection("items")
+                              .doc(widget.itemId)
+                              .delete();
+                          if (!context.mounted) return;
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          "Delete",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

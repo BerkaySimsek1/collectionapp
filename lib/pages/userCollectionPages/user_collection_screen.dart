@@ -65,30 +65,13 @@ class UserCollectionsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.5),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.collections_bookmark_outlined,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    // Description Text
-                    Text(
-                      "Manage your collections and items",
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
+                // Description Text
+                Text(
+                  "Manage your collections and items",
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
                 ),
                 const SizedBox(height: 16),
                 // Search Bar
@@ -96,7 +79,10 @@ class UserCollectionsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey[200]!),
+                    border: Border.all(
+                      color: Colors.grey[400]!,
+                      width: 1,
+                    ),
                   ),
                   child: TextField(
                     decoration: InputDecoration(
