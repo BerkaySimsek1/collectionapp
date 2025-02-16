@@ -2,7 +2,7 @@ import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:collectionapp/models/GroupModel.dart';
-import 'package:collectionapp/pages/edit_profile_page.dart';
+import 'package:collectionapp/pages/profilePages/edit_profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -366,7 +366,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               SnackBar(
                                 behavior: SnackBarBehavior.floating,
                                 margin: const EdgeInsets.all(16),
-                                backgroundColor: Colors.deepPurple,
+                                backgroundColor: Colors.green,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -462,7 +462,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    Icons.close_outlined,
+                    Icons.person_off_outlined,
                     color: Colors.deepPurple,
                     size: 32,
                   ),
@@ -541,7 +541,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               SnackBar(
                                 behavior: SnackBarBehavior.floating,
                                 margin: const EdgeInsets.all(16),
-                                backgroundColor: Colors.deepPurple,
+                                backgroundColor: Colors.red,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -932,59 +932,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ],
                   ),
                 ),
-                // Follow Butonu
-                const SizedBox(height: 24),
-                !isCurrentUser
-                    ? Container(
-                        height: 45,
-                        margin: const EdgeInsets.symmetric(horizontal: 32),
-                        child: ElevatedButton(
-                          // follow butonu, eğer zaten takip ediliyorsa unfollow butonuna dönüşür
-                          onPressed: (((userData?["followers"] as List?) ?? [])
-                                  .contains(
-                                      FirebaseAuth.instance.currentUser!.uid))
-                              ? _showUnfollowDialog
-                              : _showFollowDialog,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.deepPurple,
-                            elevation: 5,
-                            shadowColor: Colors.black.withOpacity(0.3),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: (((userData?["followers"] as List?) ?? [])
-                                    .contains(
-                                        FirebaseAuth.instance.currentUser!.uid))
-                                ? [
-                                    const Icon(Icons.close),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      "Unfollow",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ]
-                                : [
-                                    const Icon(Icons.person_add_outlined),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      "Follow",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                          ),
-                        ),
-                      )
-                    : Container(),
               ],
             ),
           ),
@@ -1654,6 +1601,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isFollowing = (((userData?["followers"] as List?) ?? [])
+        .contains(FirebaseAuth.instance.currentUser!.uid));
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -1675,9 +1624,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               constraints.maxHeight > kToolbarHeight
                                   ? 1 -
                                       (constraints.maxHeight - kToolbarHeight) /
-                                          (isCurrentUser
-                                              ? 360
-                                              : 420 - kToolbarHeight)
+                                          (360 - kToolbarHeight)
                                   : 1.0;
                           final double opacity =
                               ((scrollPercent - 0.3) / 0.45).clamp(0.0, 1.0);
@@ -1717,7 +1664,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       elevation: 0,
                       floating: false,
                       pinned: true,
-                      expandedHeight: isCurrentUser ? 360 : 420,
+                      expandedHeight: 360,
                       leading: Container(
                         margin: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -1745,31 +1692,33 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                       ),
                       actions: [
-                        if (isCurrentUser)
-                          Container(
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: innerBoxIsScrolled
-                                  ? Colors.white.withOpacity(0.2)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                if (!innerBoxIsScrolled)
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                              ],
+                        Container(
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: innerBoxIsScrolled
+                                ? Colors.white.withOpacity(0.2)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              if (!innerBoxIsScrolled)
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                            ],
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              isCurrentUser
+                                  ? Icons.edit_rounded
+                                  : (isFollowing
+                                      ? Icons.person_off_outlined
+                                      : Icons.person_add_outlined),
+                              color: Colors.deepPurple,
                             ),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.edit_rounded,
-                                color: innerBoxIsScrolled
-                                    ? Colors.white
-                                    : Colors.deepPurple,
-                              ),
-                              onPressed: () {
+                            onPressed: () {
+                              if (isCurrentUser) {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -1777,9 +1726,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         EditProfilePage(userData: userData!),
                                   ),
                                 ).then((_) => _loadUserData());
-                              },
-                            ),
+                              } else {
+                                isFollowing
+                                    ? _showUnfollowDialog()
+                                    : _showFollowDialog();
+                              }
+                            },
                           ),
+                        )
                       ],
                     ),
                     SliverPersistentHeader(

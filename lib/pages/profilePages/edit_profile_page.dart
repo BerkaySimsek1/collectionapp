@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import '../firebase_methods/firestore_methods/user_firestore_methods.dart';
+import '../../firebase_methods/firestore_methods/user_firestore_methods.dart';
 
 class EditProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;

@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/firebase_methods/auth/auth_page.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_main_page.dart";
-import "package:collectionapp/pages/user_profile_page.dart";
+import "package:collectionapp/pages/profilePages/user_profile_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
 import "package:collectionapp/pages/userCollectionPages/user_collection_screen.dart";

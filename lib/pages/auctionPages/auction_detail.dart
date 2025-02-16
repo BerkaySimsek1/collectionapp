@@ -1,4 +1,4 @@
-import 'package:collectionapp/pages/user_profile_page.dart';
+import 'package:collectionapp/pages/profilePages/user_profile_page.dart';
 import 'package:collectionapp/viewModels/auction_detail_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

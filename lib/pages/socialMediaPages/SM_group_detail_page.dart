@@ -3,7 +3,7 @@ import "package:collectionapp/models/GroupModel.dart";
 import "package:collectionapp/models/PostModel.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_group_admin.dart";
 import "package:collectionapp/pages/socialMediaPages/create_post_widget.dart";
-import "package:collectionapp/pages/user_profile_page.dart";
+import "package:collectionapp/pages/profilePages/user_profile_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:collectionapp/design_elements.dart";
