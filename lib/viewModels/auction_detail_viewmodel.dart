@@ -81,7 +81,10 @@ class AuctionDetailViewModel with ChangeNotifier {
     if (bidAmount <= auction.startingPrice) {
       return false;
     }
+    final user = FirebaseAuth.instance.currentUser;
 
+    final userRef =
+        FirebaseFirestore.instance.collection("users").doc(user!.uid);
     try {
       await FirebaseFirestore.instance
           .collection("auctions")
@@ -92,6 +95,12 @@ class AuctionDetailViewModel with ChangeNotifier {
       });
       auction.startingPrice = bidAmount;
       auction.bidderId = currentUser.uid;
+
+      // Kullanıcı zaten joinedAuctions’ta bu auctionId’ye sahipse, tekrar eklenmez.
+      // arrayUnion eklemek istediğimiz değeri bir dizi olarak alır.
+      await userRef.update({
+        "joinedAuctions": FieldValue.arrayUnion([auction.id]),
+      });
 
       await _loadUserInfo(); // Bidder bilgilerini güncelle
       notifyListeners();
