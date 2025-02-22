@@ -100,6 +100,14 @@ class AuctionCreateViewModel with ChangeNotifier {
           .doc(auction.id)
           .set(auction.toMap());
 
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+        // createdAuctions alanına yeni auction.id değerini ekliyoruz
+        "createdAuctions": FieldValue.arrayUnion([auction.id]),
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,

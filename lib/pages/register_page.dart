@@ -83,7 +83,8 @@ class _RegisterPageState extends State<RegisterPage> {
             lastName: _lastNameController.text.trim(),
             age: int.parse(_ageController.text.trim()),
             groups: [],
-            auctions: [],
+            createdAuctions: [],
+            joinedAuctions: [],
             followers: [],
             following: [],
             profileImageUrl: downloadUrl, // Seçilen resmin URL'si

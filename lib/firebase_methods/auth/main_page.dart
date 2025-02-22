@@ -1,3 +1,4 @@
+import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/firebase_methods/auth/auth_page.dart";
@@ -201,6 +202,18 @@ class MainPage extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => const UserProfilePage(),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.person_outline,
+                        title: "Auction Infos",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const UserAuctionsPage(),
                             ),
                           );
                         },

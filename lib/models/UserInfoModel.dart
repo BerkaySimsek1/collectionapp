@@ -6,7 +6,8 @@ class UserInfoModel {
   final String uid;
   final String username;
   final List<String> groups;
-  final List<String> auctions;
+  final List<String> createdAuctions;
+  final List<String> joinedAuctions;
   final List<String> followers;
   final List<String> following;
   final String profileImageUrl; // <-- Yeni alan
@@ -19,7 +20,8 @@ class UserInfoModel {
     required this.uid,
     required this.username,
     required this.groups,
-    required this.auctions,
+    required this.createdAuctions,
+    required this.joinedAuctions,
     required this.followers,
     required this.following,
     required this.profileImageUrl, // <-- Yeni alan
@@ -34,7 +36,8 @@ class UserInfoModel {
       uid: json["uid"] ?? "",
       username: json["username"] ?? "",
       groups: List<String>.from(json["groups"] ?? []),
-      auctions: List<String>.from(json["auctions"] ?? []),
+      createdAuctions: List<String>.from(json["createdAuctions"] ?? []),
+      joinedAuctions: List<String>.from(json["joinedAuctions"] ?? []),
       followers: List<String>.from(json["followers"] ?? []),
       following: List<String>.from(json["following"] ?? []),
       profileImageUrl: json["profileImageUrl"] ?? "",
@@ -50,7 +53,8 @@ class UserInfoModel {
       "uid": uid,
       "username": username,
       "groups": groups,
-      "auctions": auctions,
+      "createdAuctions": createdAuctions,
+      "joinedAuctions": joinedAuctions,
       "followers": followers,
       "following": following,
       "profileImageUrl": profileImageUrl,
