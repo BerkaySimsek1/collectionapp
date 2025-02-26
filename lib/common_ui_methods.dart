@@ -1,5 +1,7 @@
+import 'package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   SliverAppBarDelegate({
@@ -184,7 +186,12 @@ void projectSnackBar(BuildContext context, String message, String status) {
   );
 }
 
-Future<void> showReportDialog(BuildContext context, String object) {
+Future<void> showReportDialog(
+    BuildContext context, String object, String reportedId,
+    {String? auctionId}) {
+  String? reportReason;
+  final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
   return showDialog(
     context: context,
     builder: (context) => Dialog(
@@ -257,9 +264,11 @@ Future<void> showReportDialog(BuildContext context, String object) {
                       border: Border.all(color: Colors.grey[300]!),
                     ),
                     child: TextField(
-                      maxLines: 3,
+                      onChanged: (value) {
+                        reportReason = value;
+                      },
                       decoration: InputDecoration(
-                        hintText: "Describe the issue...",
+                        hintText: "Şikayet nedenini girin...",
                         hintStyle: GoogleFonts.poppins(
                           color: Colors.grey[400],
                         ),
@@ -293,33 +302,15 @@ Future<void> showReportDialog(BuildContext context, String object) {
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                backgroundColor: Colors.green,
-                                margin: const EdgeInsets.all(16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                content: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.check_circle_outline,
-                                      color: Colors.white,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      "Report submitted successfully",
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                          onPressed: () async {
+                            await UserFirestoreMethods().reportUserOrAuction(
+                              object,
+                              currentUserId,
+                              reportReason,
+                              reportedId: reportedId,
+                              auctionId: auctionId,
                             );
+                            Navigator.pop(context);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,

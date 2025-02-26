@@ -68,4 +68,35 @@ class UserFirestoreMethods {
       rethrow;
     }
   }
+
+  // Kullanıcı veya auction şikayetini kaydet
+  Future<void> reportUserOrAuction(
+      String object, String reporterId, String? reason,
+      {String? reportedId, String? auctionId}) async {
+    try {
+      final reportData = {
+        "reporterId": reporterId,
+        "reason": reason,
+        "timestamp": FieldValue.serverTimestamp(),
+        "reportedId": reportedId,
+        "auctionId": auctionId,
+      };
+
+      if (object == "user") {
+        await _firestore
+            .collection("reports")
+            .doc("user")
+            .collection(reporterId)
+            .add(reportData);
+      } else if (object == "auction") {
+        await _firestore
+            .collection("reports")
+            .doc("auction")
+            .collection(reporterId)
+            .add(reportData);
+      }
+    } catch (e) {
+      debugPrint("Error reporting: $e");
+    }
+  }
 }
