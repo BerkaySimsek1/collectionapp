@@ -88,9 +88,11 @@ class _RegisterPageState extends State<RegisterPage> {
             followers: [],
             following: [],
             profileImageUrl: downloadUrl, // Seçilen resmin URL'si
+            createdAt: DateTime.now(), // Oluşturma tarihini ekle
+            lastActive: DateTime.now(), // Son aktivite tarihini ekle
           );
 
-          // Firestore’a kaydet
+          // Firestore'a kaydet
           await addUserDetails(newUser);
         } else {
           _showErrorDialog("Passwords don't match");

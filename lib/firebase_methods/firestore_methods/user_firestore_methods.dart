@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:collectionapp/models/UserInfoModel.dart';
 
 class UserFirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -97,6 +98,35 @@ class UserFirestoreMethods {
       }
     } catch (e) {
       debugPrint("Error reporting: $e");
+    }
+  }
+
+  // Kullanıcının son aktif olma tarihini güncelle
+  Future<bool> updateLastActive() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return false;
+
+    try {
+      final userRef = _firestore.collection("users").doc(currentUser.uid);
+      final userDoc = await userRef.get();
+
+      if (userDoc.exists) {
+        final userData = userDoc.data() as Map<String, dynamic>;
+        final userInfo = UserInfoModel.fromJson(userData);
+        final updatedUserInfo = userInfo.updateLastActive();
+
+        await userRef.update({
+          "lastActive": updatedUserInfo.lastActive.millisecondsSinceEpoch,
+        });
+
+        debugPrint(
+            "Kullanıcı son aktivite tarihi güncellendi: ${updatedUserInfo.lastActive}");
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint("Son aktivite tarihi güncellenirken hata oluştu: $e");
+      return false;
     }
   }
 }

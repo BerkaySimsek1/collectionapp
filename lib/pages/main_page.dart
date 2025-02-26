@@ -1,4 +1,6 @@
 import "package:collectionapp/common_ui_methods.dart";
+import "package:collectionapp/models/UserInfoModel.dart";
+import "package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
@@ -20,6 +22,25 @@ class MainPage extends StatelessWidget {
       builder: (context, authSnapshot) {
         if (authSnapshot.hasData) {
           final user = authSnapshot.data;
+
+          // Kullanıcı aktif olduğunda lastActive alanını güncelle
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            try {
+              // UserFirestoreMethods sınıfını kullanarak son aktif olma tarihini güncelle
+              final userFirestoreMethods = UserFirestoreMethods();
+              final success = await userFirestoreMethods.updateLastActive();
+
+              if (success) {
+                debugPrint(
+                    "Kullanıcı son aktivite tarihi başarıyla güncellendi");
+              } else {
+                debugPrint("Kullanıcı son aktivite tarihi güncellenemedi");
+              }
+            } catch (e) {
+              debugPrint("Son aktivite tarihi güncellenirken hata oluştu: $e");
+            }
+          });
+
           return StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
                 .collection("users")

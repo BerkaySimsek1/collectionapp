@@ -1,5 +1,8 @@
 import "package:collectionapp/design_elements.dart";
+import "package:collectionapp/models/UserInfoModel.dart";
+import "package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart";
 import "package:collectionapp/pages/forgot_password_page.dart";
+import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
@@ -24,6 +27,15 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
+      final userFirestoreMethods = UserFirestoreMethods();
+      final success = await userFirestoreMethods.updateLastActive();
+
+      if (success) {
+        debugPrint("Kullanıcı son giriş tarihi başarıyla güncellendi");
+      } else {
+        debugPrint("Kullanıcı son giriş tarihi güncellenemedi");
+      }
     } catch (e) {
       showDialog(
         context: context,
