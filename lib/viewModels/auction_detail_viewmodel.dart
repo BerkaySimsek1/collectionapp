@@ -86,21 +86,30 @@ class AuctionDetailViewModel with ChangeNotifier {
     final userRef =
         FirebaseFirestore.instance.collection("users").doc(user!.uid);
     try {
+      // Teklif geçmişini güncelle
+      auction.addBid(currentUser.uid, bidAmount);
+
       await FirebaseFirestore.instance
           .collection("auctions")
           .doc(auction.id)
           .update({
         "starting_price": bidAmount,
         "bidder_id": currentUser.uid,
+        "bid_history": auction.bidHistory.map((bid) => bid.toMap()).toList(),
       });
-      auction.startingPrice = bidAmount;
-      auction.bidderId = currentUser.uid;
 
-      // Kullanıcı zaten joinedAuctions’ta bu auctionId’ye sahipse, tekrar eklenmez.
-      // arrayUnion eklemek istediğimiz değeri bir dizi olarak alır.
-      await userRef.update({
-        "joinedAuctions": FieldValue.arrayUnion([auction.id]),
-      });
+      // Kullanıcı bilgilerini güncelle, son aktivite tarihini yenile
+      final userDoc = await userRef.get();
+      if (userDoc.exists) {
+        final userInfo =
+            UserInfoModel.fromJson(userDoc.data() as Map<String, dynamic>);
+        final updatedUserInfo = userInfo.updateLastActive();
+
+        await userRef.update({
+          "joinedAuctions": FieldValue.arrayUnion([auction.id]),
+          "lastActive": updatedUserInfo.lastActive.millisecondsSinceEpoch,
+        });
+      }
 
       await _loadUserInfo(); // Bidder bilgilerini güncelle
       notifyListeners();
