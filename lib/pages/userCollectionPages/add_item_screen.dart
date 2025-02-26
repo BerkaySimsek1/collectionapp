@@ -307,6 +307,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     }
                                     return null;
                                   },
+                                  style: GoogleFonts.poppins(),
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -352,6 +353,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     filled: true,
                                     fillColor: Colors.white,
                                   ),
+                                  style: GoogleFonts.poppins(),
                                 ),
                               ),
                               const SizedBox(height: 24),
@@ -889,6 +891,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       fieldType == "NumberField" ? int.tryParse(value) : value;
                 });
               },
+              style: GoogleFonts.poppins(),
             ),
           );
         } else if (fieldType == "DatePicker") {
@@ -915,6 +918,28 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     initialDate: DateTime.now(),
                     firstDate: DateTime(2000),
                     lastDate: DateTime(2100),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ColorScheme.light(
+                            primary: Colors.deepPurple,
+                            onPrimary: Colors.white,
+                            onSurface: Colors.deepPurple.shade900,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.deepPurple,
+                            ),
+                          ),
+                          dialogTheme: DialogTheme(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
                   );
                   if (date != null) {
                     setState(() {
@@ -982,6 +1007,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
           return Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: DropdownButtonFormField<String>(
+              dropdownColor: Colors.white,
+              borderRadius: BorderRadius.circular(12),
               decoration: InputDecoration(
                 labelText: fieldName,
                 labelStyle: GoogleFonts.poppins(
@@ -1008,11 +1035,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
                 filled: true,
                 fillColor: Colors.white,
-                //////////
               ),
               items: options
-                  .map((option) =>
-                      DropdownMenuItem(value: option, child: Text(option)))
+                  .map((option) => DropdownMenuItem(
+                      value: option,
+                      child: Text(
+                        option,
+                        style: GoogleFonts.poppins(),
+                      )))
                   .toList(),
               onChanged: (value) {
                 setState(() {

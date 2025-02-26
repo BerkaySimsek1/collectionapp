@@ -1,3 +1,4 @@
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/pages/profilePages/user_profile_page.dart';
 import 'package:collectionapp/viewModels/auction_detail_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +59,7 @@ class AuctionDetail extends StatelessWidget {
                       ],
                     ),
                     child: PopupMenuButton<String>(
+                      color: Colors.white,
                       icon:
                           const Icon(Icons.more_vert, color: Colors.deepPurple),
                       shape: RoundedRectangleBorder(
@@ -104,8 +106,27 @@ class AuctionDetail extends StatelessWidget {
                       },
                     ),
                   );
+                } else {
+                  return Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.flag_outlined, color: Colors.red),
+                      onPressed: () => showReportDialog(context, "auction"),
+                      tooltip: "Report Auction",
+                    ),
+                  );
                 }
-                return const SizedBox.shrink();
               },
             ),
           ],
@@ -657,8 +678,8 @@ class __ImageCarouselState extends State<_ImageCarousel> {
 
         // Zoom Hint
         Positioned(
-          top: 16,
-          right: 16,
+          bottom: 16,
+          left: 16,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -738,8 +759,17 @@ class __ImageCarouselState extends State<_ImageCarousel> {
                       imageProvider: NetworkImage(widget.imageUrls[index]),
                       minScale: PhotoViewComputedScale.contained,
                       maxScale: PhotoViewComputedScale.covered * 2,
-                      backgroundDecoration: const BoxDecoration(
-                        color: Colors.black,
+                      backgroundDecoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.deepPurple.shade400,
+                            Colors.deepPurple.shade800,
+                          ],
+                        ),
+                        color: Colors.deepPurple,
+                        backgroundBlendMode: BlendMode.srcIn,
                       ),
                       loadingBuilder: (context, event) => Center(
                         child: CircularProgressIndicator(
