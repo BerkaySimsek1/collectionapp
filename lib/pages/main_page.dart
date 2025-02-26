@@ -1,3 +1,4 @@
+import "package:collectionapp/common_ui_methods.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
@@ -207,8 +208,8 @@ class MainPage extends StatelessWidget {
                         },
                       ),
                       _buildDrawerItem(
-                        icon: Icons.person_outline,
-                        title: "Auction Infos",
+                        icon: Icons.gavel,
+                        title: "My Auctions",
                         onTap: () {
                           Navigator.push(
                             context,
@@ -278,8 +279,10 @@ class MainPage extends StatelessWidget {
                         icon: Icons.logout,
                         title: "Log Out",
                         onTap: () {
-                          FirebaseAuth.instance.signOut();
-                          Navigator.pop(context);
+                          showWarningDialog(context, () {
+                            FirebaseAuth.instance.signOut();
+                            Navigator.pop(context);
+                          });
                         },
                       ),
                     ],

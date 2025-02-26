@@ -4,9 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:collectionapp/viewModels/auction_create_viewmodel.dart';
 
-class AuctionUploadScreen extends StatelessWidget {
+class AuctionUploadScreen extends StatefulWidget {
   const AuctionUploadScreen({super.key});
 
+  @override
+  State<AuctionUploadScreen> createState() => _AuctionUploadScreenState();
+}
+
+class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -242,8 +247,9 @@ class AuctionUploadScreen extends StatelessWidget {
         ),
       ),
     );
-  } // Image Section Widget
+  }
 
+  // Image Section Widget
   Widget _buildImageSection(
       BuildContext context, AuctionCreateViewModel viewModel) {
     return Container(
@@ -393,7 +399,12 @@ class AuctionUploadScreen extends StatelessWidget {
                                     top: 4,
                                     right: 4,
                                     child: GestureDetector(
-                                      onTap: () {},
+                                      onTap: () {
+                                        setState(() {
+                                          viewModel.selectedImages
+                                              .removeAt(index);
+                                        });
+                                      },
                                       child: Container(
                                         padding: const EdgeInsets.all(4),
                                         decoration: BoxDecoration(
@@ -475,6 +486,7 @@ class AuctionUploadScreen extends StatelessWidget {
           contentPadding: const EdgeInsets.all(16),
         ),
         validator: validator,
+        style: GoogleFonts.poppins(),
       ),
     );
   }
@@ -494,6 +506,8 @@ class AuctionUploadScreen extends StatelessWidget {
         ],
       ),
       child: DropdownButtonFormField<int>(
+        dropdownColor: Colors.white,
+        borderRadius: BorderRadius.circular(16),
         value: viewModel.selectedDays,
         items: List.generate(10, (index) => index + 1)
             .map((day) => DropdownMenuItem(

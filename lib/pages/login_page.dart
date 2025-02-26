@@ -139,6 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         child: TextField(
                           controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             hintText: "Email",
                             prefixIcon: Icon(

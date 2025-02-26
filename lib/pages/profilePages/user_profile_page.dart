@@ -333,11 +333,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
-// Önce geçerli ScaffoldMessenger referansını alalım.
-                          final messenger = ScaffoldMessenger.of(context);
-
-                          Navigator.pop(context); // Dialog'u kapatıyoruz.
-
                           final currentUserId =
                               FirebaseAuth.instance.currentUser!.uid;
                           final targetUserId = userData?["uid"];
@@ -359,51 +354,18 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 .update({
                               "following": FieldValue.arrayUnion([targetUserId])
                             });
-                            // Güncel verileri tekrar yükleyerek UI’yı güncelle
+                            // Güncel verileri tekrar yükleyerek UI'yı güncelle
                             await _loadUserData();
 
-                            messenger.showSnackBar(
-                              SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                margin: const EdgeInsets.all(16),
-                                backgroundColor: Colors.green,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                content: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.check_circle_outline,
-                                      color: Colors.white,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      "Following successfully!",
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
+                            if (!context.mounted) return;
+                            Navigator.pop(context);
+                            projectSnackBar(
+                                context, "Followed successfully!", "green");
                           } catch (e) {
-                            messenger.showSnackBar(
-                              SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                margin: const EdgeInsets.all(16),
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                content: Text(
-                                  "Failed to follow user",
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            );
+                            if (!context.mounted) return;
+                            Navigator.pop(context);
+                            projectSnackBar(
+                                context, "Failed to follow user", "red");
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -507,18 +469,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
-// Önce geçerli ScaffoldMessenger referansını alalım.
-                          final messenger = ScaffoldMessenger.of(context);
-
-                          Navigator.pop(context); // Dialog'u kapatıyoruz.
-
                           final currentUserId =
                               FirebaseAuth.instance.currentUser!.uid;
                           final targetUserId = userData?["uid"];
                           if (targetUserId == null) return;
 
                           try {
-                            // Takip edilen kullanıcının 'followers' alanına ekle
                             await FirebaseFirestore.instance
                                 .collection("users")
                                 .doc(targetUserId)
@@ -526,7 +482,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               "followers":
                                   FieldValue.arrayRemove([currentUserId])
                             });
-                            // Takip eden kullanıcının 'following' alanına ekle
                             await FirebaseFirestore.instance
                                 .collection("users")
                                 .doc(currentUserId)
@@ -534,51 +489,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               "following":
                                   FieldValue.arrayRemove([targetUserId])
                             });
-                            // Güncel verileri tekrar yükleyerek UI’yı güncelle
                             await _loadUserData();
 
-                            messenger.showSnackBar(
-                              SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                margin: const EdgeInsets.all(16),
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                content: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.check_circle_outline,
-                                      color: Colors.white,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      "Unfollowing successfully!",
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
+                            if (!context.mounted) return;
+                            Navigator.pop(context);
+                            projectSnackBar(
+                                context, "Unfollowed successfully!", "red");
                           } catch (e) {
-                            messenger.showSnackBar(
-                              SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                margin: const EdgeInsets.all(16),
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                content: Text(
-                                  "Failed to unfollow user",
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            );
+                            if (!context.mounted) return;
+                            Navigator.pop(context);
+                            projectSnackBar(
+                                context, "Failed to unfollow user", "red");
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -708,6 +629,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildProfileHeader() {
+    bool isFollowing = (((userData?["followers"] as List?) ?? [])
+        .contains(FirebaseAuth.instance.currentUser!.uid));
     final String? profileImageUrl = userData?["profileImageUrl"];
     return Container(
       decoration: BoxDecoration(
@@ -931,7 +854,41 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       ),
                     ],
                   ),
-                ),
+                ), // Followers ve Following container'ından sonra
+                const SizedBox(height: 16),
+                if (!isCurrentUser) // Sadece başka kullanıcıların profilinde göster
+                  SizedBox(
+                    width: 200, // Sabit genişlik
+                    height: 45,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        isFollowing
+                            ? _showUnfollowDialog()
+                            : _showFollowDialog();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.deepPurple,
+                        elevation: 5,
+                        shadowColor: Colors.black.withOpacity(0.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      icon: Icon(
+                        isFollowing
+                            ? Icons.person_off_outlined
+                            : Icons.person_add_outlined,
+                      ),
+                      label: Text(
+                        isFollowing ? "Unfollow" : "Follow",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -1601,8 +1558,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isFollowing = (((userData?["followers"] as List?) ?? [])
-        .contains(FirebaseAuth.instance.currentUser!.uid));
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -1664,7 +1619,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       elevation: 0,
                       floating: false,
                       pinned: true,
-                      expandedHeight: 360,
+                      expandedHeight: !isCurrentUser
+                          ? MediaQuery.sizeOf(context).height * 0.48
+                          : MediaQuery.sizeOf(context).height * 0.40,
                       leading: Container(
                         margin: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -1692,33 +1649,60 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                       ),
                       actions: [
-                        Container(
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: innerBoxIsScrolled
-                                ? Colors.white.withOpacity(0.2)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              if (!innerBoxIsScrolled)
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              isCurrentUser
-                                  ? Icons.edit_rounded
-                                  : (isFollowing
-                                      ? Icons.person_off_outlined
-                                      : Icons.person_add_outlined),
-                              color: Colors.deepPurple,
+                        if (!isCurrentUser) // Kullanıcı kendi profili değilse şikayet butonu göster
+                          Container(
+                            margin: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: innerBoxIsScrolled
+                                  ? Colors.white.withOpacity(0.2)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                if (!innerBoxIsScrolled)
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                              ],
                             ),
-                            onPressed: () {
-                              if (isCurrentUser) {
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.flag_outlined,
+                                color: innerBoxIsScrolled
+                                    ? Colors.white
+                                    : Colors.red,
+                              ),
+                              onPressed: () =>
+                                  showReportDialog(context, "user"),
+                              tooltip: "Report User",
+                            ),
+                          )
+                        else // Kendi profili ise edit butonu göster
+                          Container(
+                            margin: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: innerBoxIsScrolled
+                                  ? Colors.white.withOpacity(0.2)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                if (!innerBoxIsScrolled)
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.edit_rounded,
+                                color: innerBoxIsScrolled
+                                    ? Colors.white
+                                    : Colors.deepPurple,
+                              ),
+                              onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -1726,14 +1710,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         EditProfilePage(userData: userData!),
                                   ),
                                 ).then((_) => _loadUserData());
-                              } else {
-                                isFollowing
-                                    ? _showUnfollowDialog()
-                                    : _showFollowDialog();
-                              }
-                            },
+                              },
+                            ),
                           ),
-                        )
                       ],
                     ),
                     SliverPersistentHeader(

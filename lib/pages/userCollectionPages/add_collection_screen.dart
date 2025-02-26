@@ -183,6 +183,8 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                             ],
                           ),
                           child: DropdownButtonFormField<String>(
+                            borderRadius: BorderRadius.circular(16),
+                            dropdownColor: Colors.white,
                             value: _selectedCollection,
                             decoration: InputDecoration(
                               labelText: "Collection Type",
@@ -210,6 +212,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                               ),
                               filled: true,
                               fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.all(16),
                             ),
                             items: [
                               ...predefinedCollections.keys

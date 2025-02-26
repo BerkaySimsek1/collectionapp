@@ -1,4 +1,4 @@
-import 'package:collectionapp/onboarding_page.dart';
+import 'package:collectionapp/pages/onboarding_page.dart';
 import 'package:flutter/material.dart';
 import 'package:collectionapp/pages/login_page.dart';
 import 'package:collectionapp/pages/register_page.dart';

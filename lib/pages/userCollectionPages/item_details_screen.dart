@@ -43,6 +43,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
       backgroundColor: Colors.grey[100],
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        forceMaterialTransparency: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Container(
@@ -225,8 +226,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                         fit: BoxFit.cover,
                                         loadingBuilder:
                                             (context, child, loadingProgress) {
-                                          if (loadingProgress == null)
+                                          if (loadingProgress == null) {
                                             return child;
+                                          }
                                           return Center(
                                             child: CircularProgressIndicator(
                                               value: loadingProgress
@@ -370,7 +372,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                 ],
                               ),
                             );
-                          }).toList(),
+                          }),
                         ],
                       ),
                     ),

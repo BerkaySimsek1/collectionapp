@@ -44,10 +44,11 @@ class UserCollectionsScreen extends StatelessWidget {
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Search and Filter Section
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 24),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.only(
@@ -62,47 +63,14 @@ class UserCollectionsScreen extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Description Text
-                Text(
-                  "Manage your collections and items",
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+            child: Center(
+              child: Text(
+                "Manage your collections and items",
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.grey[600],
                 ),
-                const SizedBox(height: 16),
-                // Search Bar
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.grey[400]!,
-                      width: 1,
-                    ),
-                  ),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Search collections...",
-                      hintStyle: GoogleFonts.poppins(
-                        color: Colors.grey[400],
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.grey[400],
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ), // Collections Grid
           Expanded(
@@ -177,7 +145,7 @@ class UserCollectionsScreen extends StatelessWidget {
                 final collections = snapshot.data!.docs;
 
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                   child: GridView.builder(
                     physics: const BouncingScrollPhysics(),
                     gridDelegate:

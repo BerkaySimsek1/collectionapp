@@ -50,7 +50,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await _uploadProfileImage(_pickedImage!);
       }
     } catch (e) {
-      _showErrorSnackBar("Failed to pick image: $e");
+      projectSnackBar(context, "Failed to pick image: $e", "red");
     }
   }
 
@@ -80,9 +80,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         userData?["profileImageUrl"] = downloadUrl;
       });
 
-      _showSuccessSnackBar("Profile photo updated successfully!");
+      projectSnackBar(context, "Profile photo updated successfully!", "green");
     } catch (e) {
-      _showErrorSnackBar("Failed to upload photo: $e");
+      projectSnackBar(context, "Failed to upload photo: $e", "red");
     } finally {
       setState(() => _isUpdatingPhoto = false);
     }
@@ -100,65 +100,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         isLoading = false;
       });
       if (mounted) {
-        _showErrorSnackBar("Failed to load user data");
+        projectSnackBar(context, "Failed to load user data", "red");
       }
     }
-  }
-
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.red,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        content: Row(
-          children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.green,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle_outline, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                message,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -390,6 +334,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             color: Colors.grey[400],
                           ),
                         ),
+                        style: GoogleFonts.poppins(),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -434,11 +379,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                                 if (!mounted) return;
                                 Navigator.pop(context);
-                                _showSuccessSnackBar(
-                                    "Username updated successfully!");
+                                projectSnackBar(context,
+                                    "Username updated successfully!", "green");
                               } catch (e) {
-                                _showErrorSnackBar(
-                                    "Failed to update username: ${e.toString()}");
+                                projectSnackBar(
+                                    context,
+                                    "Failed to update username: ${e.toString()}",
+                                    "red");
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -577,7 +524,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onSave: (value) async {
               await _firestoreService.updateUserData({'firstName': value});
               setState(() => userData?['firstName'] = value);
-              _showSuccessSnackBar("First name updated successfully!");
+              projectSnackBar(
+                  context, "First name updated successfully!", "green");
             },
           ),
           const SizedBox(height: 16),
@@ -588,7 +536,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onSave: (value) async {
               await _firestoreService.updateUserData({'lastName': value});
               setState(() => userData?['lastName'] = value);
-              _showSuccessSnackBar("Last name updated successfully!");
+              projectSnackBar(
+                  context, "Last name updated successfully!", "green");
             },
           ),
           const SizedBox(height: 16),
@@ -599,7 +548,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onSave: (value) async {
               await _firestoreService.updateUserData({'age': int.parse(value)});
               setState(() => userData?['age'] = int.parse(value));
-              _showSuccessSnackBar("Age updated successfully!");
+              projectSnackBar(context, "Age updated successfully!", "green");
             },
           ),
         ],
@@ -793,8 +742,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             Icons.mail_outline,
                             color: Colors.grey[400],
                           ),
+                          labelStyle: GoogleFonts.poppins(
+                            color: Colors.grey[600],
+                          ),
                         ),
                         keyboardType: TextInputType.emailAddress,
+                        style: GoogleFonts.poppins(),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -840,11 +793,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                                 if (!mounted) return;
                                 Navigator.pop(context);
-                                _showSuccessSnackBar(
-                                    "Email updated successfully!");
+                                projectSnackBar(context,
+                                    "Email updated successfully!", "green");
                               } catch (e) {
-                                _showErrorSnackBar(
-                                    "Failed to update email: ${e.toString()}");
+                                projectSnackBar(
+                                    context,
+                                    "Failed to update email: ${e.toString()}",
+                                    "red");
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -987,6 +942,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               },
                             ),
                           ),
+                          style: GoogleFonts.poppins(),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -1040,11 +996,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       ?.updatePassword(newPassword);
                                   if (!mounted) return;
                                   Navigator.pop(context);
-                                  _showSuccessSnackBar(
-                                      "Password updated successfully!");
+                                  projectSnackBar(
+                                      context,
+                                      "Password updated successfully!",
+                                      "green");
                                 } catch (e) {
-                                  _showErrorSnackBar(
-                                      "Failed to update password: ${e.toString()}");
+                                  projectSnackBar(
+                                      context,
+                                      "Failed to update password: ${e.toString()}",
+                                      "red");
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -1172,11 +1132,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             if (!mounted) return;
                             Navigator.pop(context);
                             Navigator.of(context).pop();
-                            _showSuccessSnackBar(
-                                "Account deleted successfully!");
+                            projectSnackBar(context,
+                                "Account deleted successfully!", "green");
                           } catch (e) {
-                            _showErrorSnackBar(
-                                "Failed to delete account: ${e.toString()}");
+                            projectSnackBar(
+                                context,
+                                "Failed to delete account: ${e.toString()}",
+                                "red");
                           }
                         },
                         style: ElevatedButton.styleFrom(
