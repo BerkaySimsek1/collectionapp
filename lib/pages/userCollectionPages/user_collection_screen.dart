@@ -260,34 +260,30 @@ class UserCollectionsScreen extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: Container(
-        margin: const EdgeInsets.all(16),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddCollectionScreen(userId: userId),
-              ),
-            );
-          },
-          backgroundColor: Colors.deepPurple,
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: Text(
-            "Add Collection",
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddCollectionScreen(userId: userId),
             ),
+          );
+        },
+        backgroundColor: Colors.deepPurple,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: Text(
+          "Add Collection",
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

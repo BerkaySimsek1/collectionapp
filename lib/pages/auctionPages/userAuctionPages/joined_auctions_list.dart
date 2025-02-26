@@ -26,8 +26,8 @@ class JoinedAuctionsList extends StatelessWidget {
         if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
           return _buildEmptyState(
             icon: Icons.person_off_outlined,
-            title: "Kullanıcı bulunamadı",
-            subtitle: "Kullanıcı bilgilerinize ulaşılamıyor",
+            title: "User not logged in",
+            subtitle: "Information about the user is not available.",
           );
         }
 
@@ -37,8 +37,8 @@ class JoinedAuctionsList extends StatelessWidget {
         if (joinedAuctions.isEmpty) {
           return _buildEmptyState(
             icon: Icons.gavel_outlined,
-            title: "Hiç katıldığın auction yok",
-            subtitle: "Henüz bir açık artırmaya katılmadınız",
+            title: "There are no joined auctions",
+            subtitle: "You have not joined any auctions yet.",
           );
         }
 

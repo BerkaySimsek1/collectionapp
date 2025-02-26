@@ -28,8 +28,8 @@ class WonAuctionsList extends StatelessWidget {
         if (!snapshot.hasData) {
           return _buildEmptyState(
             icon: Icons.error_outline,
-            title: "Veri bulunamadı",
-            subtitle: "Auction verilerine ulaşılamıyor",
+            title: "Data has not loaded",
+            subtitle: "Auction data could not be fetched",
           );
         }
 
@@ -37,8 +37,8 @@ class WonAuctionsList extends StatelessWidget {
         if (docs.isEmpty) {
           return _buildEmptyState(
             icon: Icons.emoji_events_outlined,
-            title: "Hiç kazandığın auction yok",
-            subtitle: "Kazandığınız açık artırmalar burada görünecek",
+            title: "There are no won auctions",
+            subtitle: "Auctions you won will be listed here",
           );
         }
 

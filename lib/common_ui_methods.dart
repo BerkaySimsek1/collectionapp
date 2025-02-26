@@ -34,6 +34,27 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
+TextTheme projectTextTheme(BuildContext context) {
+  return GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme).copyWith(
+    labelSmall: GoogleFonts.poppins(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+    ),
+    titleMedium: GoogleFonts.poppins(
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+    ),
+    titleLarge: GoogleFonts.poppins(
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+    ),
+    headlineSmall: GoogleFonts.poppins(
+      fontSize: 24,
+      fontWeight: FontWeight.w600,
+    ),
+  );
+}
+
 Future<void> showWarningDialog(
   BuildContext context,
   VoidCallback onPressed,
@@ -268,7 +289,7 @@ Future<void> showReportDialog(
                         reportReason = value;
                       },
                       decoration: InputDecoration(
-                        hintText: "Şikayet nedenini girin...",
+                        hintText: "Describe the issue...",
                         hintStyle: GoogleFonts.poppins(
                           color: Colors.grey[400],
                         ),
@@ -310,7 +331,9 @@ Future<void> showReportDialog(
                               reportedId: reportedId,
                               auctionId: auctionId,
                             );
-                            Navigator.pop(context);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
