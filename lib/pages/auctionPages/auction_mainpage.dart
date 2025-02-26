@@ -264,6 +264,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
           label: Text(
             "Create Auction",
             style: GoogleFonts.poppins(
+              fontSize: 16,
               color: Colors.white,
               fontWeight: FontWeight.w600,
             ),

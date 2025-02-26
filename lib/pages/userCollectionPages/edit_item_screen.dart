@@ -1,4 +1,5 @@
 import "dart:io";
+import "package:collectionapp/common_ui_methods.dart";
 import "package:firebase_storage/firebase_storage.dart";
 import "package:image_picker/image_picker.dart";
 import "package:collectionapp/models/predefined_collections.dart";
@@ -348,6 +349,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                           ],
                         ),
                         child: DropdownButtonFormField<String>(
+                          dropdownColor: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
                           value: fieldType,
                           decoration: InputDecoration(
                             labelText: "Field Type",
@@ -564,6 +567,24 @@ class _EditItemScreenState extends State<EditItemScreen> {
                       initialDate: DateTime.now(),
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2100),
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ColorScheme.light(
+                              primary: Colors.deepPurple,
+                              onPrimary: Colors.white,
+                              onSurface: Colors.deepPurple.shade900,
+                            ),
+                            textTheme: projectTextTheme(context),
+                            dialogTheme: DialogTheme(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
                     );
                     if (date != null) {
                       setState(() {
@@ -681,6 +702,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                     fieldType == "NumberField" ? int.tryParse(value) : value;
               });
             },
+            style: GoogleFonts.poppins(),
           );
         } else {
           fieldWidget = InkWell(
@@ -690,6 +712,24 @@ class _EditItemScreenState extends State<EditItemScreen> {
                 initialDate: DateTime.now(),
                 firstDate: DateTime(2000),
                 lastDate: DateTime(2100),
+                builder: (context, child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: ColorScheme.light(
+                        primary: Colors.deepPurple,
+                        onPrimary: Colors.white,
+                        onSurface: Colors.deepPurple.shade900,
+                      ),
+                      textTheme: projectTextTheme(context),
+                      dialogTheme: DialogTheme(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    child: child!,
+                  );
+                },
               );
               if (date != null) {
                 setState(() {
@@ -1177,19 +1217,9 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 24),
 
                               // Predefined Fields Section
                               if (_predefinedFields.isNotEmpty) ...[
-                                Text(
-                                  "Collection Fields",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.deepPurple,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
                                 _buildPredefinedFieldInputs(),
                                 const SizedBox(height: 24),
                               ],
@@ -1225,7 +1255,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                               ),
                               const SizedBox(height: 16),
                               _buildCustomFieldInputs(),
-                              const SizedBox(height: 100),
+                              const SizedBox(height: 16),
                             ],
                           ),
                         ),

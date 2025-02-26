@@ -1,5 +1,4 @@
 import "package:collectionapp/common_ui_methods.dart";
-import "package:collectionapp/models/UserInfoModel.dart";
 import "package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
 import "package:flutter/material.dart";

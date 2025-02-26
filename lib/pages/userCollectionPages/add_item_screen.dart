@@ -1,4 +1,5 @@
 import "dart:io";
+import "package:collectionapp/common_ui_methods.dart";
 import "package:firebase_storage/firebase_storage.dart";
 import "package:image_picker/image_picker.dart";
 import "package:collectionapp/models/predefined_collections.dart";
@@ -526,7 +527,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                               ),
                               const SizedBox(height: 16),
                               _buildCustomFieldInputs(),
-                              const SizedBox(height: 100),
+                              const SizedBox(height: 16),
                             ],
                           ),
                         ),
@@ -700,6 +701,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             fillColor: Colors.white,
                           ),
                           onChanged: (value) => fieldName = value,
+                          style: GoogleFonts.poppins(),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -716,6 +718,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           ],
                         ),
                         child: DropdownButtonFormField<String>(
+                          dropdownColor: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
                           value: fieldType,
                           decoration: InputDecoration(
                             labelText: "Field Type",
@@ -926,11 +930,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             onPrimary: Colors.white,
                             onSurface: Colors.deepPurple.shade900,
                           ),
-                          textButtonTheme: TextButtonThemeData(
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.deepPurple,
-                            ),
-                          ),
+                          textTheme: projectTextTheme(context),
                           dialogTheme: DialogTheme(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -1104,6 +1104,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     fieldType == "NumberField" ? int.tryParse(value) : value;
               });
             },
+            style: GoogleFonts.poppins(),
           );
         } else {
           fieldWidget = InkWell(
@@ -1113,6 +1114,24 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 initialDate: DateTime.now(),
                 firstDate: DateTime(2000),
                 lastDate: DateTime(2100),
+                builder: (context, child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: ColorScheme.light(
+                        primary: Colors.deepPurple,
+                        onPrimary: Colors.white,
+                        onSurface: Colors.deepPurple.shade900,
+                      ),
+                      textTheme: projectTextTheme(context),
+                      dialogTheme: DialogTheme(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    child: child!,
+                  );
+                },
               );
               if (date != null) {
                 setState(() {

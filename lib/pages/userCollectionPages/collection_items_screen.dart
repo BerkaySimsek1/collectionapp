@@ -449,37 +449,33 @@ class CollectionItemsScreen extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: Container(
-        margin: const EdgeInsets.all(16),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddItemScreen(
-                  userId: userId,
-                  collectionName: collectionName,
-                ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddItemScreen(
+                userId: userId,
+                collectionName: collectionName,
               ),
-            );
-          },
-          backgroundColor: Colors.deepPurple,
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: Text(
-            "Add Item",
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
             ),
+          );
+        },
+        backgroundColor: Colors.deepPurple,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: Text(
+          "Add Item",
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

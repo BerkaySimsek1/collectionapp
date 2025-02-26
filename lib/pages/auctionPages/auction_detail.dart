@@ -508,6 +508,7 @@ class AuctionDetail extends StatelessWidget {
                 label: Text(
                   "Place Bid",
                   style: GoogleFonts.poppins(
+                    fontSize: 16,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1029,38 +1030,15 @@ Future<void> _showBidDialog(BuildContext context,
                                         auction.startingPrice + minIncrement) {
                                   bool success =
                                       await viewModel.placeBid(newBid!);
-                                  Navigator.pop(context);
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      behavior: SnackBarBehavior.floating,
-                                      backgroundColor:
-                                          success ? Colors.green : Colors.red,
-                                      margin: const EdgeInsets.all(16),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      content: Row(
-                                        children: [
-                                          Icon(
-                                            success
-                                                ? Icons.check_circle_outline
-                                                : Icons.error_outline,
-                                            color: Colors.white,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Text(
-                                            success
-                                                ? "Bid placed successfully!"
-                                                : "Failed to place bid",
-                                            style: GoogleFonts.poppins(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                    projectSnackBar(
+                                        context,
+                                        success
+                                            ? "Bid placed successfully!"
+                                            : "Failed to place bid",
+                                        success ? "green" : "red");
+                                  }
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -1245,38 +1223,16 @@ Future<void> _showEditDialog(
                                 );
 
                                 if (!context.mounted) return;
-                                Navigator.pop(context);
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    behavior: SnackBarBehavior.floating,
-                                    backgroundColor:
-                                        success ? Colors.green : Colors.red,
-                                    margin: const EdgeInsets.all(16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    content: Row(
-                                      children: [
-                                        Icon(
-                                          success
-                                              ? Icons.check_circle_outline
-                                              : Icons.error_outline,
-                                          color: Colors.white,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Text(
-                                          success
-                                              ? "Auction updated successfully!"
-                                              : "Failed to update auction",
-                                          style: GoogleFonts.poppins(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
+                                if (context.mounted) {
+                                  Navigator.pop(context);
+                                  projectSnackBar(
+                                      context,
+                                      success
+                                          ? "Auction updated successfully!"
+                                          : "Failed to update auction",
+                                      success ? "green" : "red");
+                                }
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -1348,6 +1304,7 @@ Widget _buildEditField({
         border: InputBorder.none,
         contentPadding: const EdgeInsets.all(16),
       ),
+      style: GoogleFonts.poppins(),
     ),
   );
 }
@@ -1444,35 +1401,16 @@ Future<void> _showDeleteConfirmation(
                       onPressed: () async {
                         final success = await viewModel.deleteAuction();
                         if (!context.mounted) return;
-                        Navigator.pop(context);
 
-                        if (success) {
+                        if (context.mounted && success) {
                           Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.red,
-                              margin: const EdgeInsets.all(16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              content: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.check_circle_outline,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    "Auction deleted successfully",
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+                          projectSnackBar(
+                              context,
+                              success
+                                  ? "Auction deleted successfully"
+                                  : "Failed to delete auction",
+                              success ? "green" : "red");
+                          Navigator.pop(context);
                         }
                       },
                       style: ElevatedButton.styleFrom(
