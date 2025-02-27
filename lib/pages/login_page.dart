@@ -1,4 +1,3 @@
-import "package:collectionapp/design_elements.dart";
 import "package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart";
 import "package:collectionapp/pages/forgot_password_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
@@ -163,6 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                             filled: true,
                             fillColor: Colors.white,
                           ),
+                          style: GoogleFonts.poppins(),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -197,6 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                             filled: true,
                             fillColor: Colors.white,
                           ),
+                          style: GoogleFonts.poppins(),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -214,12 +215,11 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             );
                           },
-                          child: const Text(
+                          child: Text(
                             "Forgot Password?",
-                            style: TextStyle(
-                              color: Colors.deepPurple,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: GoogleFonts.poppins(
+                                color: Colors.deepPurple,
+                                fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),
@@ -247,9 +247,12 @@ class _LoginPageState extends State<LoginPage> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text(
+                              : Text(
                                   "Sign In",
-                                  style: ProjectTextStyles.buttonTextStyle,
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
                                 ),
                         ),
                       ),
@@ -261,16 +264,16 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Text(
                             "Don't have an account? ",
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
+                            style: GoogleFonts.poppins(
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           GestureDetector(
                             onTap: widget.showRegisterPage,
-                            child: const Text(
+                            child: Text(
                               "Sign Up",
-                              style: TextStyle(
+                              style: GoogleFonts.poppins(
                                 color: Colors.deepPurple,
                                 fontWeight: FontWeight.bold,
                               ),

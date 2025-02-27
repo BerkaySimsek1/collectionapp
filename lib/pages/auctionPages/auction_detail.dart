@@ -23,24 +23,7 @@ class AuctionDetail extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
+          leading: const ProjectBackButton(),
           actions: [
             Consumer<AuctionDetailViewModel>(
               builder: (context, viewModel, child) {
@@ -768,7 +751,7 @@ class __ImageCarouselState extends State<_ImageCarousel> {
                           end: Alignment.bottomRight,
                           colors: [
                             Colors.deepPurple.shade400,
-                            Colors.deepPurple.shade800,
+                            Colors.deepPurple.shade900,
                           ],
                         ),
                         color: Colors.deepPurple,

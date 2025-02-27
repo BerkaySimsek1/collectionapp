@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:collectionapp/models/predefined_collections.dart';
@@ -61,24 +62,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
+        leading: const ProjectBackButton(),
       ),
       body: Column(
         children: [
@@ -300,39 +284,36 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
           ),
         ],
       ),
-      floatingActionButton: Container(
-        margin: const EdgeInsets.all(16),
-        child: FloatingActionButton.extended(
-          onPressed: _isLoading ? null : () => _saveCollection(context),
-          backgroundColor: Colors.deepPurple,
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          label: _isLoading
-              ? const SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
-              : Row(
-                  children: [
-                    const Icon(Icons.save_outlined, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(
-                      "Create Collection",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _isLoading ? null : () => _saveCollection(context),
+        backgroundColor: Colors.deepPurple,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
+        label: _isLoading
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Row(
+                children: [
+                  const Icon(Icons.save_outlined, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Create Collection",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
       ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,

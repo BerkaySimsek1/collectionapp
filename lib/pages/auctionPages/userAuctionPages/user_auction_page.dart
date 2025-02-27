@@ -98,7 +98,7 @@ class _UserAuctionsPageState extends State<UserAuctionsPage>
               gradient: LinearGradient(
                 colors: [
                   Colors.deepPurple.shade400,
-                  Colors.deepPurple.shade800,
+                  Colors.deepPurple.shade900,
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
