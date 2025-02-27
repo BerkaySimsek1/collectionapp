@@ -188,6 +188,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                               ),
                               child: Column(
                                 children: [
+                                  // Kapak Resmi Seçimi
                                   GestureDetector(
                                     onTap: _pickImage,
                                     child: Container(
@@ -200,16 +201,47 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                           color: Colors.deepPurple
                                               .withOpacity(0.3),
                                           width: 2,
+                                          style: BorderStyle.solid,
                                         ),
                                       ),
                                       child: _coverImage != null
-                                          ? ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              child: Image.file(
-                                                _coverImage!,
-                                                fit: BoxFit.cover,
-                                              ),
+                                          ? Stack(
+                                              fit: StackFit.expand,
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          18), // border width'i düşünerek 18
+                                                  child: Image.file(
+                                                    _coverImage!,
+                                                    fit: BoxFit.contain,
+                                                  ),
+                                                ),
+                                                // Kaldırma butonu
+                                                Positioned(
+                                                  top: 8,
+                                                  right: 8,
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black
+                                                          .withOpacity(0.6),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: IconButton(
+                                                      icon: const Icon(
+                                                        Icons.close,
+                                                        color: Colors.white,
+                                                        size: 20,
+                                                      ),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          _coverImage = null;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             )
                                           : Column(
                                               mainAxisAlignment:
