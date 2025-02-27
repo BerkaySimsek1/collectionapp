@@ -310,6 +310,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                 ],
                               ),
                               child: DropdownButtonFormField<String>(
+                                dropdownColor: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
                                 value: _category,
                                 decoration: InputDecoration(
                                   labelText: "Category",

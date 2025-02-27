@@ -186,7 +186,7 @@ void addCustomField(
                       ),
                       child: DropdownButtonFormField<String>(
                         dropdownColor: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                         value: fieldType,
                         decoration: InputDecoration(
                           labelText: "Field Type",
@@ -488,7 +488,7 @@ void projectSnackBar(BuildContext context, String message, String status) {
 
 Future<void> showReportDialog(
     BuildContext context, String object, String reportedId,
-    {String? auctionId}) {
+    {String? objectId}) {
   String? reportReason;
   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -608,7 +608,7 @@ Future<void> showReportDialog(
                               currentUserId,
                               reportReason,
                               reportedId: reportedId,
-                              auctionId: auctionId,
+                              auctionId: objectId,
                             );
                             if (context.mounted) {
                               Navigator.pop(context);

@@ -180,7 +180,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                     size: 64,
                                     color: Colors.white.withOpacity(0.3),
                                   ),
-                                ), // Gradient Overlay
+                                ),
+                          // Gradient Overlay
                           Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -293,17 +294,27 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               floating: false,
               pinned: true,
               expandedHeight: 300,
-              leading: Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
+              leading: const ProjectBackButton(),
+              actions: [
+                if (!widget.group.adminIds.contains(_currentUser!.uid))
+                  Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.flag_outlined,
+                          color: Colors.deepPurple),
+                      onPressed: () => showReportDialog(
+                        context,
+                        "group",
+                        widget.group.id,
+                      ),
+                      tooltip: "Report Group",
+                    ),
+                  ),
+              ],
             ), // Grup Açıklaması ve Admin Panel
             SliverToBoxAdapter(
               child: Container(
@@ -331,7 +342,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                         height: 1.5,
                       ),
                     ),
-                    if (widget.group.adminIds.contains(_currentUser!.uid)) ...[
+                    if (widget.group.adminIds.contains(_currentUser.uid)) ...[
                       const SizedBox(height: 20),
                       Container(
                         width: double.infinity,
@@ -402,7 +413,6 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  // Mevcut post listesi kodları aynen korundu
                   if (_isMember == null || hasJoinRequest == null) {
                     return Center(
                       child: Column(
@@ -423,7 +433,6 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                       ),
                     );
                   } else if (!_isMember!) {
-                    // Mevcut join request UI'ı aynen korundu
                     return Container(
                       margin: const EdgeInsets.all(16),
                       padding: const EdgeInsets.all(24),
@@ -1158,8 +1167,6 @@ class PostWidget extends StatelessWidget {
                   final bool isAdmin = snapshot.data ?? false;
                   final bool isOwner = (post.userId == currentUser.uid);
 
-                  if (!isAdmin && !isOwner) return const SizedBox.shrink();
-
                   return PopupMenuButton<String>(
                     color: Colors.white,
                     icon: Icon(Icons.more_vert, color: Colors.grey[600]),
@@ -1217,6 +1224,30 @@ class PostWidget extends StatelessWidget {
                         );
                       }
 
+                      if (!isAdmin && !isOwner) {
+                        items.add(
+                          PopupMenuItem(
+                            value: 'report',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.flag_outlined,
+                                  size: 20,
+                                  color: Colors.red[400],
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Report',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.red[400],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+
                       return items;
                     },
                     onSelected: (value) {
@@ -1224,6 +1255,12 @@ class PostWidget extends StatelessWidget {
                         _editPost(context);
                       } else if (value == 'delete') {
                         _deletePost(context);
+                      } else if (value == 'report') {
+                        showReportDialog(
+                          context,
+                          "post",
+                          post.id,
+                        );
                       }
                     },
                   );
@@ -1231,9 +1268,7 @@ class PostWidget extends StatelessWidget {
               ),
             ],
           ),
-        ),
-
-        // Post İçeriği
+        ), // Post İçeriği
         if (post.content.isNotEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -1389,8 +1424,7 @@ class PostWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              const Divider(),
-              // Comments List
+              const Divider(), // Comments List
               Expanded(
                 child: StreamBuilder<List<Comment>>(
                   stream:
@@ -1553,11 +1587,33 @@ class PostWidget extends StatelessWidget {
                 ],
               ),
             ),
-            if (comment.userId == currentUser.uid)
-              IconButton(
-                icon: Icon(Icons.more_vert, color: Colors.grey[400], size: 20),
-                onPressed: () => _deleteComment(context, comment),
-              ),
+            Row(
+              children: [
+                if (comment.userId == currentUser.uid)
+                  IconButton(
+                    icon: Icon(
+                      Icons.delete_outline,
+                      color: Colors.grey[400],
+                      size: 20,
+                    ),
+                    onPressed: () => _deleteComment(context, comment),
+                  ),
+                if (comment.userId != currentUser.uid)
+                  IconButton(
+                    icon: Icon(
+                      Icons.flag_outlined,
+                      color: Colors.grey[400],
+                      size: 20,
+                    ),
+                    onPressed: () => showReportDialog(
+                      context,
+                      "comment",
+                      comment.id,
+                      objectId: post.id,
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       ),
@@ -1638,9 +1694,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
     if (currentUser == null || content.isEmpty) return;
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      setState(() => _isSubmitting = true);
-    });
+    setState(() => _isSubmitting = true);
 
     try {
       final username = await _getUsername(currentUser.uid);
@@ -1667,9 +1721,9 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         projectSnackBar(context, "Failed to add comment: $e", "red");
       }
     } finally {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
         setState(() => _isSubmitting = false);
-      });
+      }
     }
   }
 
