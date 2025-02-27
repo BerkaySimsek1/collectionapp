@@ -1,4 +1,5 @@
 import "dart:io";
+import "package:collectionapp/common_ui_methods.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:google_fonts/google_fonts.dart";
@@ -46,24 +47,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
         forceMaterialTransparency: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
+        leading: const ProjectBackButton(),
         actions: [
           Container(
             margin: const EdgeInsets.all(8),
