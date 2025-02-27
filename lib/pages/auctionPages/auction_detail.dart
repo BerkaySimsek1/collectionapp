@@ -107,7 +107,7 @@ class AuctionDetail extends StatelessWidget {
                       icon: const Icon(Icons.flag_outlined, color: Colors.red),
                       onPressed: () => showReportDialog(
                           context, "auction", viewModel.creatorInfo!.uid,
-                          auctionId: auction.id),
+                          objectId: auction.id),
                       tooltip: "Report Auction",
                     ),
                   );

@@ -491,7 +491,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
       ),
       child: DropdownButtonFormField<int>(
         dropdownColor: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         value: viewModel.selectedDays,
         items: List.generate(10, (index) => index + 1)
             .map((day) => DropdownMenuItem(

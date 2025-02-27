@@ -167,7 +167,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
                             ],
                           ),
                           child: DropdownButtonFormField<String>(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(12),
                             dropdownColor: Colors.white,
                             value: _selectedCollection,
                             decoration: InputDecoration(

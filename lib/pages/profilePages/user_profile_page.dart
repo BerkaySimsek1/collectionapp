@@ -1626,7 +1626,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 color: Colors.red,
                               ),
                               onPressed: () => showReportDialog(
-                                  context, "user", userData!["uid"]),
+                                context,
+                                "user",
+                                userData!["uid"],
+                              ),
                               tooltip: "Report User",
                             ),
                           )
