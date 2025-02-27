@@ -17,6 +17,38 @@ class AuctionListScreen extends StatefulWidget {
 
 class _AuctionListScreenState extends State<AuctionListScreen> {
   final TextEditingController _searchController = TextEditingController();
+  String _selectedSort = "newest"; // Default sort option
+  String _selectedFilter = "all"; // Default filter option
+
+  // Sort options için helper method
+  String getSortLabel(String sortValue) {
+    switch (sortValue) {
+      case "newest":
+        return "Newest";
+      case "oldest":
+        return "Oldest";
+      case "name_az":
+        return "A-Z";
+      case "name_za":
+        return "Z-A";
+      default:
+        return "Newest";
+    }
+  }
+
+  // Filter options için helper method
+  String getFilterLabel(String filterValue) {
+    switch (filterValue) {
+      case "all":
+        return "All";
+      case "active":
+        return "Active";
+      case "ended":
+        return "Ended";
+      default:
+        return "All";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +88,10 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
         ),
         body: Consumer<AuctionViewModel>(
           builder: (context, auctionViewModel, child) {
+            // ViewModel'den güncel değerleri al
+            _selectedSort = auctionViewModel.sort;
+            _selectedFilter = auctionViewModel.filter;
+
             return Column(
               children: [
                 Container(
@@ -125,7 +161,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                           Expanded(
                             child: _buildActionButton(
                               icon: Icons.sort,
-                              label: "Sort",
+                              label: getSortLabel(_selectedSort),
                               onTap: () =>
                                   _showSortDialog(context, auctionViewModel),
                             ),
@@ -134,7 +170,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                           Expanded(
                             child: _buildActionButton(
                               icon: Icons.filter_list,
-                              label: "Filter",
+                              label: getFilterLabel(_selectedFilter),
                               onTap: () =>
                                   _showFilterDialog(context, auctionViewModel),
                             ),
@@ -143,9 +179,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                       ),
                     ],
                   ),
-                ),
-
-                // Auctions List
+                ), // Auctions List
                 Expanded(
                   child: StreamBuilder<QuerySnapshot>(
                     stream: auctionViewModel.getAuctionStream(),
@@ -206,7 +240,8 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
                             ],
                           ),
                         );
-                      } // Auction List Content
+                      }
+
                       final List<DocumentSnapshot> auctionDocs =
                           snapshot.data!.docs;
                       final filteredDocs =
@@ -295,11 +330,14 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
             children: [
               Icon(icon, color: Colors.deepPurple, size: 20),
               const SizedBox(width: 8),
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.w500,
+              Flexible(
+                child: Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -367,7 +405,6 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
               _buildSortOption(context, viewModel, "oldest", "Oldest First"),
               _buildSortOption(context, viewModel, "name_az", "Name (A-Z)"),
               _buildSortOption(context, viewModel, "name_za", "Name (Z-A)"),
-              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -389,7 +426,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
           Navigator.pop(context);
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.all(24),
           child: Row(
             children: [
               Icon(
@@ -521,7 +558,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: isSelected ? Colors.deepPurple : Colors.transparent,
             border: Border.all(
