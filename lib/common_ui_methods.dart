@@ -34,6 +34,18 @@ class SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
+String formatNumber(int number) {
+  if (number >= 0 && number < 1000) {
+    return "$number";
+  } else if (number >= 1000 && number < 1000000) {
+    return "${(number / 1000).toStringAsFixed(1)}k";
+  } else if (number >= 1000000) {
+    return "${(number / 1000000).toStringAsFixed(1)}m";
+  } else {
+    return "$number";
+  }
+}
+
 TextTheme projectTextTheme(BuildContext context) {
   return GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme).copyWith(
     labelSmall: GoogleFonts.poppins(

@@ -38,18 +38,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
     _loadUserData();
   }
 
-  String _formatNumber(int number) {
-    if (number >= 0 && number < 1000) {
-      return "$number";
-    } else if (number >= 1000 && number < 1000000) {
-      return "${(number / 1000).toStringAsFixed(1)}k";
-    } else if (number >= 1000000) {
-      return "${(number / 1000000).toStringAsFixed(1)}m";
-    } else {
-      return "$number";
-    }
-  }
-
   Future<void> _loadUserData() async {
     try {
       Map<String, dynamic>? data; // nullable tanımlandı
@@ -78,9 +66,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         }
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to load user data")),
-        );
+        projectSnackBar(context, "Failed to load user data", "red");
       }
     }
   }
@@ -798,7 +784,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           children: [
                             Text(
                               // takipçi sayısı burada gösteriliyor
-                              _formatNumber(
+                              formatNumber(
                                 (userData?["followers"] as List?)?.length ?? 0,
                               ),
                               style: GoogleFonts.poppins(
