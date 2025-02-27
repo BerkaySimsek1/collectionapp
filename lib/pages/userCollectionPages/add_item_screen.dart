@@ -33,7 +33,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final List<Map<String, dynamic>> _customFields = [];
   final Map<String, dynamic> _customFieldValues = {};
 
-  List<XFile> _selectedImages = [];
+  List<XFile> selectedImages = [];
   bool _isUploading = false;
 
   @override
@@ -52,12 +52,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
     final images = await picker.pickMultiImage();
     if (images.length <= 5) {
       setState(() {
-        _selectedImages = images;
+        selectedImages = images;
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("You can add up to 5 photos.")),
-      );
+      if (mounted) {
+        projectSnackBar(context, "You can add up to 5 photos.", "red");
+      }
     }
   }
 
@@ -83,7 +83,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       final List<String> photoPaths = [];
 
       // upload multiple photos at the same time
-      final List<Future> uploadTasks = _selectedImages.map((image) async {
+      final List<Future> uploadTasks = selectedImages.map((image) async {
         final compressedFile = await _compressImage(File(image.path));
         final storageRef = FirebaseStorage.instance.ref().child(
             "item_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}");
@@ -127,7 +127,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
       setState(() {
         _isUploading = false; // Yükleme bitti
       });
-
       Navigator.pop(context);
     }
   }
@@ -140,24 +139,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
+        leading: const ProjectBackButton(),
       ),
       body: Stack(
         // Stack eklendi
@@ -406,13 +388,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                         ),
                                       ),
                                     ),
-                                    if (_selectedImages.isNotEmpty) ...[
+                                    if (selectedImages.isNotEmpty) ...[
                                       const SizedBox(height: 16),
                                       SizedBox(
                                         height: 120,
                                         child: ListView.builder(
                                           scrollDirection: Axis.horizontal,
-                                          itemCount: _selectedImages.length,
+                                          itemCount: selectedImages.length,
                                           itemBuilder: (context, index) {
                                             return Padding(
                                               padding: const EdgeInsets.only(
@@ -424,9 +406,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                                         BorderRadius.circular(
                                                             12),
                                                     child: Image.file(
-                                                      File(
-                                                          _selectedImages[index]
-                                                              .path),
+                                                      File(selectedImages[index]
+                                                          .path),
                                                       width: 120,
                                                       height: 120,
                                                       fit: BoxFit.cover,
@@ -438,7 +419,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                                     child: GestureDetector(
                                                       onTap: () {
                                                         setState(() {
-                                                          _selectedImages
+                                                          selectedImages
                                                               .removeAt(index);
                                                         });
                                                       },
@@ -470,7 +451,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     ],
                                     const SizedBox(height: 8),
                                     Text(
-                                      "${_selectedImages.length}/5 images selected",
+                                      "${selectedImages.length}/5 images selected",
                                       style: GoogleFonts.poppins(
                                         color: Colors.grey[600],
                                         fontSize: 14,
@@ -510,7 +491,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     ),
                                   ),
                                   IconButton(
-                                    onPressed: _addCustomField,
+                                    onPressed: () => addCustomField(
+                                        context,
+                                        _customFields,
+                                        _customFieldValues,
+                                        setState),
                                     style: IconButton.styleFrom(
                                       backgroundColor:
                                           Colors.deepPurple.withOpacity(0.1),
@@ -538,301 +523,36 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ),
             ],
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                onPressed: _isUploading ? null : () => _saveItem(context),
-                child: _isUploading
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.save_outlined, color: Colors.white),
-                          const SizedBox(width: 8),
-                          Text(
-                            "Save Item",
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-              ),
-            ),
-          ),
         ],
       ),
-    );
-  }
-
-  void _addCustomField() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        String fieldName = "";
-        String fieldType = "TextField";
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _isUploading ? null : () => _saveItem(context),
+        backgroundColor: Colors.deepPurple,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        icon: const Icon(Icons.save_outlined, color: Colors.white),
+        label: _isUploading
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.add_circle_outline,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        "Add Custom Field",
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                    ],
-                  ),
+              )
+            : Text(
+                "Save Item",
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
-
-                // Content
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: "Field Name",
-                            labelStyle: GoogleFonts.poppins(
-                              color: Colors.grey[600],
-                            ),
-                            prefixIcon: Container(
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(right: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(0.1),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  bottomLeft: Radius.circular(12),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.label_outline,
-                                color: Colors.deepPurple,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          onChanged: (value) => fieldName = value,
-                          style: GoogleFonts.poppins(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: DropdownButtonFormField<String>(
-                          dropdownColor: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          value: fieldType,
-                          decoration: InputDecoration(
-                            labelText: "Field Type",
-                            labelStyle: GoogleFonts.poppins(
-                              color: Colors.grey[600],
-                            ),
-                            prefixIcon: Container(
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(right: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(0.1),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  bottomLeft: Radius.circular(12),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.category_outlined,
-                                color: Colors.deepPurple,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          items: [
-                            {"label": "Text", "value": "TextField"},
-                            {"label": "Number", "value": "NumberField"},
-                            {"label": "Date", "value": "DatePicker"},
-                          ].map((type) {
-                            return DropdownMenuItem<String>(
-                              value: type["value"],
-                              child: Text(
-                                type["label"]!,
-                                style: GoogleFonts.poppins(),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) fieldType = value;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Actions
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            "Cancel",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (fieldName.isNotEmpty) {
-                              setState(() {
-                                _customFields.add(
-                                    {"name": fieldName, "type": fieldType});
-                                _customFieldValues[fieldName] = null;
-                              });
-                              Navigator.pop(context);
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            "Add",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+      ),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 

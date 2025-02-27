@@ -1,3 +1,4 @@
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -135,6 +136,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        leading: const ProjectBackButton(),
+      ),
       backgroundColor: Colors.white,
       body: Stack(
         children: [
@@ -148,34 +154,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   Colors.deepPurple.shade200,
                   Colors.white,
                 ],
-              ),
-            ),
-          ),
-
-          // Back Button
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 8,
-            left: 8,
-            child: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.deepPurple,
-                ),
               ),
             ),
           ),
@@ -273,6 +251,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               fillColor: Colors.white,
                               errorStyle: const TextStyle(height: 0),
                             ),
+                            style: GoogleFonts.poppins(),
                           ),
                         ),
                         const SizedBox(height: 32),
@@ -299,13 +278,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text(
+                                : Text(
                                     "Reset Password",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
                                   ),
                           ),
                         ),
@@ -317,17 +295,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.arrow_back,
                                 size: 16,
-                                color: Colors.grey[600],
+                                color: Colors.deepPurple,
                               ),
                               const SizedBox(width: 8),
-                              const Text(
+                              Text(
                                 "Back to Login",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Colors.deepPurple,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],

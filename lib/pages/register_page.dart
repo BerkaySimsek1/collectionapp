@@ -194,6 +194,7 @@ class _RegisterPageState extends State<RegisterPage> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
+        style: GoogleFonts.poppins(),
       ),
     );
   }
@@ -408,13 +409,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text(
+                                : Text(
                                     "Sign Up",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
                                   ),
                           ),
                         ),
@@ -426,16 +426,16 @@ class _RegisterPageState extends State<RegisterPage> {
                           children: [
                             Text(
                               "Already have an account? ",
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             GestureDetector(
                               onTap: widget.showLoginPage,
-                              child: const Text(
+                              child: Text(
                                 "Sign In",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Colors.deepPurple,
                                   fontWeight: FontWeight.bold,
                                 ),

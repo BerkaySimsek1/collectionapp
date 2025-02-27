@@ -285,10 +285,10 @@ class CreatedAuctionsList extends StatelessWidget {
                                         gradient: LinearGradient(
                                           colors: [
                                             Colors.deepPurple.shade400,
-                                            Colors.deepPurple.shade700,
+                                            Colors.deepPurple.shade900,
                                           ],
                                         ),
-                                        borderRadius: BorderRadius.circular(25),
+                                        borderRadius: BorderRadius.circular(12),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.deepPurple

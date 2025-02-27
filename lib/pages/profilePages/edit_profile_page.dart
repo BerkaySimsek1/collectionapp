@@ -149,7 +149,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         (360 - kToolbarHeight)
                                 : 1.0;
                             final opacity =
-                                ((scrollPercent - 0.3) / 0.7).clamp(0.0, 1.0);
+                                ((scrollPercent - 0.1) / 0.6).clamp(0.0, 1.0);
 
                             return Container(
                               decoration: BoxDecoration(
@@ -187,32 +187,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         floating: false,
                         pinned: true,
                         expandedHeight: 360,
-                        leading: Container(
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: innerBoxIsScrolled
-                                ? Colors.white.withOpacity(0.2)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              if (!innerBoxIsScrolled)
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.arrow_back,
-                              color: innerBoxIsScrolled
-                                  ? Colors.white
-                                  : Colors.deepPurple,
-                            ),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ),
+                        leading: const ProjectBackButton(),
                       ),
                       SliverPersistentHeader(
                         pinned: true,

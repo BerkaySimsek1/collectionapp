@@ -108,26 +108,9 @@ class _EditItemScreenState extends State<EditItemScreen> {
         _selectedImages.addAll(images);
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
-              Text(
-                "You can add up to 5 photos",
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-            ],
-          ),
-        ),
-      );
+      if (mounted) {
+        projectSnackBar(context, "You can add up to 5 photos", "red");
+      }
     }
   }
 
@@ -231,240 +214,6 @@ class _EditItemScreenState extends State<EditItemScreen> {
     }
   }
 
-  void _addCustomField() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        String fieldName = "";
-        String fieldType = "TextField";
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.add_circle_outline,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        "Add Custom Field",
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: "Field Name",
-                            labelStyle: GoogleFonts.poppins(
-                              color: Colors.grey[600],
-                            ),
-                            prefixIcon: Container(
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(right: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(0.1),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  bottomLeft: Radius.circular(12),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.label_outline,
-                                color: Colors.deepPurple,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          onChanged: (value) => fieldName = value,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: DropdownButtonFormField<String>(
-                          dropdownColor: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          value: fieldType,
-                          decoration: InputDecoration(
-                            labelText: "Field Type",
-                            labelStyle: GoogleFonts.poppins(
-                              color: Colors.grey[600],
-                            ),
-                            prefixIcon: Container(
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(right: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(0.1),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  bottomLeft: Radius.circular(12),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.category_outlined,
-                                color: Colors.deepPurple,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          items: [
-                            {"label": "Text", "value": "TextField"},
-                            {"label": "Number", "value": "NumberField"},
-                            {"label": "Date", "value": "DatePicker"},
-                          ].map((type) {
-                            return DropdownMenuItem<String>(
-                              value: type["value"],
-                              child: Text(
-                                type["label"]!,
-                                style: GoogleFonts.poppins(),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) fieldType = value;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            "Cancel",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (fieldName.isNotEmpty) {
-                              setState(() {
-                                _customFields.add(
-                                    {"name": fieldName, "type": fieldType});
-                                _customFieldValues[fieldName] = null;
-                              });
-                              Navigator.pop(context);
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            "Add",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildPredefinedFieldInputs() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -541,6 +290,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                             : value;
                   });
                 },
+                style: GoogleFonts.poppins(),
               ),
             );
           } else if (fieldType == "DatePicker") {
@@ -843,27 +593,9 @@ class _EditItemScreenState extends State<EditItemScreen> {
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-      ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: const ProjectBackButton()),
       body: Stack(
         // Stack eklendi
         children: [
@@ -1013,6 +745,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                     }
                                     return null;
                                   },
+                                  style: GoogleFonts.poppins(),
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -1058,6 +791,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                     filled: true,
                                     fillColor: Colors.white,
                                   ),
+                                  style: GoogleFonts.poppins(),
                                 ),
                               ),
                               const SizedBox(height: 24),
@@ -1238,7 +972,11 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                     ),
                                   ),
                                   IconButton(
-                                    onPressed: _addCustomField,
+                                    onPressed: () => addCustomField(
+                                        context,
+                                        _customFields,
+                                        _customFieldValues,
+                                        setState),
                                     style: IconButton.styleFrom(
                                       backgroundColor:
                                           Colors.deepPurple.withOpacity(0.1),

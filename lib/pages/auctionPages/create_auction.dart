@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,24 +23,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
+          leading: const ProjectBackButton(),
         ),
         body: Consumer<AuctionCreateViewModel>(
           builder: (context, viewModel, child) {
@@ -53,7 +37,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                         gradient: LinearGradient(
                           colors: [
                             Colors.deepPurple.shade400,
-                            Colors.deepPurple.shade700,
+                            Colors.deepPurple.shade900,
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,

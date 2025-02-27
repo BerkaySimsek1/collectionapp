@@ -50,20 +50,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
         throw Exception("User data not found");
       }
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          setState(() {
-            userData = data;
-            isLoading = false;
-          });
-        }
+        setState(() {
+          userData = data;
+          isLoading = false;
+        });
       });
     } catch (e) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-          });
-        }
+        setState(() {
+          isLoading = false;
+        });
       });
       if (mounted) {
         projectSnackBar(context, "Failed to load user data", "red");
@@ -1608,56 +1604,26 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       expandedHeight: !isCurrentUser
                           ? MediaQuery.sizeOf(context).height * 0.48
                           : MediaQuery.sizeOf(context).height * 0.40,
-                      leading: Container(
-                        margin: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: innerBoxIsScrolled
-                              ? Colors.white.withOpacity(0.2)
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            if (!innerBoxIsScrolled)
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.arrow_back,
-                            color: innerBoxIsScrolled
-                                ? Colors.white
-                                : Colors.deepPurple,
-                          ),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                      ),
+                      leading: const ProjectBackButton(),
                       actions: [
                         if (!isCurrentUser) // Kullanıcı kendi profili değilse şikayet butonu göster
                           Container(
                             margin: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: innerBoxIsScrolled
-                                  ? Colors.white.withOpacity(0.2)
-                                  : Colors.white,
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
-                                if (!innerBoxIsScrolled)
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
                               ],
                             ),
                             child: IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.flag_outlined,
-                                color: innerBoxIsScrolled
-                                    ? Colors.white
-                                    : Colors.red,
+                                color: Colors.red,
                               ),
                               onPressed: () => showReportDialog(
                                   context, "user", userData!["uid"]),
@@ -1668,25 +1634,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           Container(
                             margin: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: innerBoxIsScrolled
-                                  ? Colors.white.withOpacity(0.2)
-                                  : Colors.white,
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
-                                if (!innerBoxIsScrolled)
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
                               ],
                             ),
                             child: IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.edit_rounded,
-                                color: innerBoxIsScrolled
-                                    ? Colors.white
-                                    : Colors.deepPurple,
+                                color: Colors.deepPurple,
                               ),
                               onPressed: () {
                                 Navigator.push(
