@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class WonAuctionsList extends StatelessWidget {
   final String userUid;
-  const WonAuctionsList({Key? key, required this.userUid}) : super(key: key);
+  const WonAuctionsList({super.key, required this.userUid});
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +189,7 @@ class WonAuctionsList extends StatelessWidget {
                                         Colors.amber.shade700,
                                       ],
                                     ),
-                                    borderRadius: BorderRadius.circular(25),
+                                    borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.amber.withOpacity(0.3),

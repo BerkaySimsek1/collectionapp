@@ -10,10 +10,10 @@ class AddCollectionScreen extends StatefulWidget {
   const AddCollectionScreen({super.key, required this.userId});
 
   @override
-  _AddCollectionScreenState createState() => _AddCollectionScreenState();
+  AddCollectionScreenState createState() => AddCollectionScreenState();
 }
 
-class _AddCollectionScreenState extends State<AddCollectionScreen> {
+class AddCollectionScreenState extends State<AddCollectionScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedCollection;
   final TextEditingController _customCollectionController =
@@ -72,7 +72,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
               gradient: LinearGradient(
                 colors: [
                   Colors.deepPurple.shade400,
-                  Colors.deepPurple.shade700,
+                  Colors.deepPurple.shade900,
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -284,39 +284,54 @@ class _AddCollectionScreenState extends State<AddCollectionScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _isLoading ? null : () => _saveCollection(context),
-        backgroundColor: Colors.deepPurple,
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
         ),
-        label: _isLoading
-            ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : Row(
-                children: [
-                  const Icon(Icons.save_outlined, color: Colors.white),
-                  const SizedBox(width: 8),
-                  Text(
-                    "Create Collection",
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurple,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 0,
+          ),
+          onPressed: _isLoading ? null : () => _saveCollection(context),
+          child: _isLoading
+              ? const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
                   ),
-                ],
-              ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.save_outlined, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Create Collection",
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 }
