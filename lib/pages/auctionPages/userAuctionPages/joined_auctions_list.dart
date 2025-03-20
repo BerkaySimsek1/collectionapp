@@ -216,7 +216,7 @@ class JoinedAuctionsList extends StatelessWidget {
                                             Colors.deepPurple.shade700,
                                           ],
                                         ),
-                                        borderRadius: BorderRadius.circular(25),
+                                        borderRadius: BorderRadius.circular(12),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.deepPurple

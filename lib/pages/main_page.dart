@@ -1,5 +1,6 @@
 import "package:collectionapp/common_ui_methods.dart";
 import "package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart";
+import "package:collectionapp/pages/address_page.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
@@ -243,56 +244,12 @@ class MainPage extends StatelessWidget {
                         icon: Icons.location_pin,
                         title: "My Adresses",
                         onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  backgroundColor: Colors.white,
-                                  child: Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.2,
-                                    padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 20,
-                                          offset: const Offset(0, 10),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "My Adresses",
-                                          style: GoogleFonts.poppins(
-                                              color: Colors.black,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                            "This feature is not available yet.",
-                                            style: GoogleFonts.poppins(
-                                                color: Colors.black,
-                                                fontSize: 16)),
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text("Close",
-                                                style: GoogleFonts.poppins(
-                                                  color: Colors.deepPurple,
-                                                  fontSize: 16,
-                                                )))
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AddressPage(),
+                            ),
+                          );
                         },
                       ),
                       _buildDrawerItem(
