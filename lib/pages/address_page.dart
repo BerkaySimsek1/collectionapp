@@ -44,23 +44,11 @@ class _AddressPageState extends State<AddressPage> {
 
         if (mounted) {
           Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Address saved successfully',
-                  style: GoogleFonts.poppins()),
-              backgroundColor: Colors.green,
-            ),
-          );
+          projectSnackBar(context, "Address saved successfully", "green");
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content:
-                  Text('Error saving address', style: GoogleFonts.poppins()),
-              backgroundColor: Colors.red,
-            ),
-          );
+          projectSnackBar(context, "Error saving address", "red");
         }
       } finally {
         setState(() => _isLoading = false);
@@ -71,6 +59,7 @@ class _AddressPageState extends State<AddressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false, // Add this line
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -78,209 +67,181 @@ class _AddressPageState extends State<AddressPage> {
         elevation: 0,
         leading: const ProjectBackButton(),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Column(
-            children: [
-              // Gradient Header
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.deepPurple.shade400,
-                      Colors.deepPurple.shade900,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 80),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.location_on_outlined,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Add New Address",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                "Fill in your address details",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  color: Colors.white.withOpacity(0.8),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+          // Gradient Header
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.deepPurple.shade400,
+                  Colors.deepPurple.shade900,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              Expanded(
-                child: Transform.translate(
-                  offset: const Offset(0, -60),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 80),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.location_on_outlined,
+                        color: Colors.white,
+                        size: 24,
                       ),
                     ),
-                    child: ListView(
-                      padding: const EdgeInsets.all(1),
-                      children: [
-                        Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Add New Address",
+                            style: GoogleFonts.poppins(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            "Fill in your address details",
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Transform.translate(
+              offset: const Offset(0, -60),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: ListView(
+                  padding: const EdgeInsets.all(24),
+                  children: [
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(1),
+                            child: Column(
+                              children: [
+                                _buildTextField(
+                                  controller: _addressTitleController,
+                                  label: "Address Title",
+                                  icon: Icons.label_outline,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter an address title';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Column(
-                                    children: [
-                                      _buildTextField(
-                                        controller: _addressTitleController,
-                                        label: "Address Title",
-                                        icon: Icons.label_outline,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter an address title';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 20),
-                                      CSCPicker(
-                                        showStates: true,
-                                        showCities: true,
-                                        flagState: CountryFlag.DISABLE,
-                                        dropdownDecoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border: Border.all(
-                                              color: Colors.grey[300]!),
-                                          color: Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black
-                                                  .withOpacity(0.05),
-                                              blurRadius: 10,
-                                              offset: const Offset(0, 4),
-                                            ),
-                                          ],
-                                        ),
-                                        disabledDropdownDecoration:
-                                            BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border: Border.all(
-                                              color: Colors.grey[300]!),
-                                          color: Colors.grey[100],
-                                        ),
-                                        selectedItemStyle: GoogleFonts.poppins(
-                                          color: Colors.deepPurple,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        dropdownHeadingStyle:
-                                            GoogleFonts.poppins(
-                                          color: Colors.deepPurple,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        dropdownItemStyle: GoogleFonts.poppins(
-                                          color: Colors.grey[800],
-                                          fontSize: 14,
-                                        ),
-                                        dropdownDialogRadius: 16,
-                                        searchBarRadius: 16,
-                                        onCountryChanged: (country) {
-                                          setState(
-                                              () => countryValue = country);
-                                        },
-                                        onStateChanged: (state) {
-                                          setState(() => stateValue = state);
-                                        },
-                                        onCityChanged: (city) {
-                                          setState(() => cityValue = city);
-                                        },
-                                        layout: Layout.vertical,
-                                        countrySearchPlaceholder:
-                                            "Search country",
-                                        stateSearchPlaceholder: "Search state",
-                                        citySearchPlaceholder: "Search city",
-                                      ),
-                                      const SizedBox(height: 20),
-                                      _buildTextField(
-                                        controller: _addressController,
-                                        label: "Detailed Address",
-                                        icon: Icons.location_on_outlined,
-                                        maxLines: 3,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter detailed address';
-                                          }
-                                          return null;
-                                        },
+                                const SizedBox(height: 20),
+                                CSCPicker(
+                                  showStates: true,
+                                  showCities: true,
+                                  flagState: CountryFlag.DISABLE,
+                                  dropdownDecoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    border:
+                                        Border.all(color: Colors.grey[300]!),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
                                   ),
+                                  disabledDropdownDecoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    border:
+                                        Border.all(color: Colors.grey[300]!),
+                                    color: Colors.grey[200],
+                                  ),
+                                  selectedItemStyle: GoogleFonts.poppins(
+                                    color: Colors.deepPurple,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  dropdownHeadingStyle: GoogleFonts.poppins(
+                                    color: Colors.deepPurple,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  dropdownItemStyle: GoogleFonts.poppins(
+                                    color: Colors.grey[800],
+                                    fontSize: 14,
+                                  ),
+                                  dropdownDialogRadius: 16,
+                                  searchBarRadius: 16,
+                                  onCountryChanged: (country) {
+                                    setState(() => countryValue = country);
+                                  },
+                                  onStateChanged: (state) {
+                                    setState(() => stateValue = state);
+                                  },
+                                  onCityChanged: (city) {
+                                    setState(() => cityValue = city);
+                                  },
+                                  layout: Layout.vertical,
+                                  countrySearchPlaceholder: "Search country",
+                                  stateSearchPlaceholder: "Search state",
+                                  citySearchPlaceholder: "Search city",
                                 ),
-                              ),
-                              const SizedBox(
-                                  height: 100), // Space for bottom button
-                            ],
+                                const SizedBox(height: 20),
+                                _buildTextField(
+                                  controller: _addressController,
+                                  label: "Detailed Address",
+                                  icon: Icons.location_on_outlined,
+                                  maxLines: 3,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter detailed address';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
+        ],
+      ),
+      bottomNavigationBar: MediaQuery.of(context).viewInsets.bottom == 0
+          ? Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -328,10 +289,8 @@ class _AddressPageState extends State<AddressPage> {
                         ],
                       ),
               ),
-            ),
-          ),
-        ],
-      ),
+            )
+          : null,
     );
   }
 

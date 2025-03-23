@@ -2,6 +2,7 @@ import "package:collectionapp/common_ui_methods.dart";
 import "package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart";
 import "package:collectionapp/pages/address_page.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
+import "package:collectionapp/pages/payment/payment_methods_page.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/firebase_methods/auth/auth_page.dart";
@@ -148,7 +149,7 @@ class MainPage extends StatelessWidget {
                           ],
                         ),
                         child: const Icon(
-                          Icons.person_outline,
+                          Icons.person,
                           color: Colors.deepPurple,
                         ),
                       ),
@@ -217,7 +218,7 @@ class MainPage extends StatelessWidget {
                         ),
                       ),
                       _buildDrawerItem(
-                        icon: Icons.person_outline,
+                        icon: Icons.person,
                         title: "Profile",
                         onTap: () {
                           Navigator.push(
@@ -248,6 +249,18 @@ class MainPage extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => const AddressPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.payments,
+                        title: "Payment Methods",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PaymentMethodsPage(),
                             ),
                           );
                         },

@@ -1,7 +1,7 @@
 import 'dart:io';
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,10 +24,8 @@ class AuctionCreateViewModel with ChangeNotifier {
     if (images.length <= 7) {
       selectedImages = images;
       notifyListeners();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("En fazla 7 resim seçebilirsiniz.")),
-      );
+    } else if (context.mounted) {
+      projectSnackBar(context, "You can select 7 images at most", "red");
     }
   }
 
@@ -38,10 +36,8 @@ class AuctionCreateViewModel with ChangeNotifier {
       if (selectedImages.length < 7) {
         selectedImages.add(image);
         notifyListeners();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("En fazla 7 resim seçebilirsiniz.")),
-        );
+      } else if (context.mounted) {
+        projectSnackBar(context, "You can select 7 images at most", "red");
       }
     }
   }
@@ -50,29 +46,7 @@ class AuctionCreateViewModel with ChangeNotifier {
     if (!formKey.currentState!.validate() ||
         selectedImages.isEmpty ||
         selectedDays < 1) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.red,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        content: Row(
-          children: [
-            const Icon(
-              Icons.error_outline,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              "All the fields must be filled.",
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ));
+      projectSnackBar(context, "All the fields must be filled.", "red");
 
       return;
     }
@@ -108,58 +82,12 @@ class AuctionCreateViewModel with ChangeNotifier {
         "createdAuctions": FieldValue.arrayUnion([auction.id]),
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.green,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: [
-              const Icon(
-                Icons.check_circle_outline,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                "Auction created successfully!",
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-      Navigator.pop(context);
+      if (context.mounted) {
+        projectSnackBar(context, "Auction created successfully!", "green");
+        Navigator.pop(context);
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: [
-              const Icon(
-                Icons.error_outline,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                "Error: $e",
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      projectSnackBar(context, "Error: $e", "red");
     } finally {
       isUploading = false;
       notifyListeners();

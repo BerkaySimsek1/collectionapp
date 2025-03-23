@@ -189,28 +189,9 @@ class _EditItemScreenState extends State<EditItemScreen> {
       });
 
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.green,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: [
-              const Icon(Icons.check_circle_outline, color: Colors.white),
-              const SizedBox(width: 12),
-              Text(
-                "Item updated successfully!",
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-            ],
-          ),
-        ),
-      );
+      projectSnackBar(context, "Item updated successfully!", "green");
 
-      Navigator.pop(context, true);
+      Navigator.pop(context);
     }
   }
 
