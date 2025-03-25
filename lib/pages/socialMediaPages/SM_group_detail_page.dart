@@ -1,5 +1,5 @@
 import "package:collectionapp/common_ui_methods.dart";
-import "package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart";
+import "package:collectionapp/firebase_methods/SM_firestore_methods.dart";
 import "package:collectionapp/models/GroupModel.dart";
 import "package:collectionapp/models/PostModel.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_group_admin.dart";

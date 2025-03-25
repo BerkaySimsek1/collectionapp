@@ -1,19 +1,19 @@
 import "package:collectionapp/common_ui_methods.dart";
-import "package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart";
+import "package:collectionapp/firebase_methods/user_firestore_methods.dart";
 import "package:collectionapp/pages/address_page.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
-import "package:collectionapp/pages/payment/payment_methods_page.dart";
+import "package:collectionapp/pages/paymentPages/payment_methods_page.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
-import "package:collectionapp/firebase_methods/auth/auth_page.dart";
+import "package:collectionapp/pages/loginPages/auth_page.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_main_page.dart";
 import "package:collectionapp/pages/profilePages/user_profile_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
 import "package:collectionapp/pages/userCollectionPages/user_collection_screen.dart";
 import "package:google_fonts/google_fonts.dart";
-import "package:collectionapp/pages/payment/add_funds_page.dart";
-import "package:collectionapp/pages/payment/withdraw_funds_page.dart";
+import "package:collectionapp/pages/paymentPages/add_funds_page.dart";
+import "package:collectionapp/pages/paymentPages/withdraw_funds_page.dart";
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});

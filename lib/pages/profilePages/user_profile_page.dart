@@ -1,5 +1,5 @@
 import 'package:collectionapp/common_ui_methods.dart';
-import 'package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart';
+import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 import 'package:collectionapp/models/GroupModel.dart';
 import 'package:collectionapp/pages/profilePages/edit_profile_page.dart';

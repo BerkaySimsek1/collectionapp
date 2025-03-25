@@ -1,5 +1,5 @@
 import 'package:collectionapp/common_ui_methods.dart';
-import 'package:collectionapp/pages/auctionPages/userAuctionPages/created_auction.dart';
+import 'package:collectionapp/pages/auctionPages/userAuctionPages/created_auctions_list.dart';
 import 'package:collectionapp/pages/auctionPages/userAuctionPages/joined_auctions_list.dart';
 import 'package:collectionapp/pages/auctionPages/userAuctionPages/won_auctions_list.dart';
 import 'package:flutter/material.dart';

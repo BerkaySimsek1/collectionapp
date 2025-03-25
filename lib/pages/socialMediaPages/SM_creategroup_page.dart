@@ -3,7 +3,7 @@ import 'package:collectionapp/common_ui_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:collectionapp/firebase_methods/firestore_methods/SM_firestore_methods.dart';
+import 'package:collectionapp/firebase_methods/SM_firestore_methods.dart';
 import 'package:collectionapp/models/predefined_collections.dart';
 import 'package:google_fonts/google_fonts.dart';
 

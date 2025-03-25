@@ -87,7 +87,9 @@ class AuctionCreateViewModel with ChangeNotifier {
         Navigator.pop(context);
       }
     } catch (e) {
-      projectSnackBar(context, "Error: $e", "red");
+      if (context.mounted) {
+        projectSnackBar(context, "Error: $e", "red");
+      }
     } finally {
       isUploading = false;
       notifyListeners();
