@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class JoinedAuctionsList extends StatelessWidget {
   final String userUid;
-  const JoinedAuctionsList({Key? key, required this.userUid}) : super(key: key);
+  const JoinedAuctionsList({super.key, required this.userUid});
 
   @override
   Widget build(BuildContext context) {

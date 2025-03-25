@@ -100,9 +100,7 @@ class _RegisterPageState extends State<RegisterPage> {
       } catch (e) {
         _showErrorDialog(e.toString());
       } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -190,7 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           filled: true,
           fillColor: Colors.white,
-          errorStyle: const TextStyle(height: 0),
+          errorStyle: GoogleFonts.poppins(),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),

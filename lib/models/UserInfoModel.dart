@@ -29,8 +29,8 @@ class UserInfoModel {
     required this.profileImageUrl,
     DateTime? createdAt, // Opsiyonel parametre
     DateTime? lastActive, // Opsiyonel parametre
-  })  : this.createdAt = createdAt ?? DateTime.now(),
-        this.lastActive = lastActive ?? DateTime.now();
+  })  : createdAt = createdAt ?? DateTime.now(),
+        lastActive = lastActive ?? DateTime.now();
 
   factory UserInfoModel.fromJson(Map<String, dynamic> json) {
     // Timestamp veya milliseconds kontrolü
@@ -86,19 +86,19 @@ class UserInfoModel {
   // Kullanıcı etkinliğini güncelleyen yardımcı metot
   UserInfoModel updateLastActive() {
     return UserInfoModel(
-      age: this.age,
-      email: this.email,
-      firstName: this.firstName,
-      lastName: this.lastName,
-      uid: this.uid,
-      username: this.username,
-      groups: this.groups,
-      createdAuctions: this.createdAuctions,
-      joinedAuctions: this.joinedAuctions,
-      followers: this.followers,
-      following: this.following,
-      profileImageUrl: this.profileImageUrl,
-      createdAt: this.createdAt,
+      age: age,
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      uid: uid,
+      username: username,
+      groups: groups,
+      createdAuctions: createdAuctions,
+      joinedAuctions: joinedAuctions,
+      followers: followers,
+      following: following,
+      profileImageUrl: profileImageUrl,
+      createdAt: createdAt,
       lastActive: DateTime.now(),
     );
   }

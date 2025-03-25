@@ -21,7 +21,7 @@ class AuctionModel {
     required this.imageUrls,
     required this.isAuctionEnd,
     List<Bid>? bidHistory,
-  }) : this.bidHistory = bidHistory ?? [];
+  }) : bidHistory = bidHistory ?? [];
 
   // Firestore"a eklemek için veriyi Map"e dönüştürme
   Map<String, dynamic> toMap() {

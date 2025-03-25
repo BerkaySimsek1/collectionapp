@@ -1,5 +1,5 @@
-import "package:collectionapp/firebase_methods/firestore_methods/user_firestore_methods.dart";
-import "package:collectionapp/pages/forgot_password_page.dart";
+import "package:collectionapp/firebase_methods/user_firestore_methods.dart";
+import "package:collectionapp/pages/loginPages/forgot_password_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
@@ -34,22 +34,70 @@ class _LoginPageState extends State<LoginPage> {
         debugPrint("Kullanıcı son giriş tarihi güncellenemedi");
       }
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          title: const Text("Error"),
-          content: Text(e.toString()),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("OK"),
-            ),
-          ],
-        ),
-      );
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.error_outline_outlined,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      "Error",
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              content: Text(
+                e.toString(),
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    "OK",
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.deepPurple,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
     setState(() => _isLoading = false);
   }
@@ -146,10 +194,17 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ],
                         ),
-                        child: TextField(
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'This field is required';
+                            }
+                            return null;
+                          },
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
+                            errorStyle: GoogleFonts.poppins(),
                             hintText: "Email",
                             prefixIcon: Icon(
                               Icons.email_outlined,
@@ -181,10 +236,17 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ],
                         ),
-                        child: TextField(
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'This field is required';
+                            }
+                            return null;
+                          },
                           controller: _passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
+                            errorStyle: GoogleFonts.poppins(),
                             hintText: "Password",
                             prefixIcon: Icon(
                               Icons.lock_outline,

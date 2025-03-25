@@ -39,7 +39,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.deepPurple.shade500,
+                          Colors.deepPurple.shade400,
                           Colors.deepPurple.shade900,
                         ],
                         begin: Alignment.topLeft,
@@ -48,48 +48,47 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                     ),
                     child: SafeArea(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 80),
-                        child: Column(
+                        padding: const EdgeInsets.fromLTRB(24, 5, 24, 80),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    shape: BoxShape.circle,
+                            Container(
+                              margin: const EdgeInsets.only(top: 8),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.gavel,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    "Create New Auction",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                  child: const Icon(
-                                    Icons.gavel,
-                                    color: Colors.white,
-                                    size: 24,
+                                  Text(
+                                    "Fill in the details below",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      color: Colors.white.withOpacity(0.8),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Create New Auction",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Fill in the details below",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 16,
-                                          color: Colors.white.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
