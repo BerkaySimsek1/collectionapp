@@ -1601,9 +1601,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       elevation: 0,
                       floating: false,
                       pinned: true,
-                      expandedHeight: !isCurrentUser
-                          ? MediaQuery.sizeOf(context).height * 0.48
-                          : MediaQuery.sizeOf(context).height * 0.40,
+                      expandedHeight: !isCurrentUser ? 400 : 360,
                       leading: const ProjectBackButton(),
                       actions: [
                         if (!isCurrentUser) // Kullanıcı kendi profili değilse şikayet butonu göster

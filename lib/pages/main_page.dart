@@ -12,6 +12,8 @@ import "package:firebase_auth/firebase_auth.dart";
 import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
 import "package:collectionapp/pages/userCollectionPages/user_collection_screen.dart";
 import "package:google_fonts/google_fonts.dart";
+import "package:collectionapp/pages/payment/add_funds_page.dart";
+import "package:collectionapp/pages/payment/withdraw_funds_page.dart";
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -335,6 +337,11 @@ class MainPage extends StatelessWidget {
                               ],
                             ),
                           ),
+                          const SizedBox(height: 24),
+
+                          // Balance Section
+                          _buildBalanceCard(
+                              context, userData['balance'] ?? 0.0),
                           const SizedBox(height: 32),
 
                           // Features Section
@@ -531,6 +538,94 @@ class MainPage extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBalanceCard(BuildContext context, double balance) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          title: Text(
+            "Balance",
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              color: Colors.grey[600],
+            ),
+          ),
+          subtitle: Text(
+            "\$${balance.toStringAsFixed(2)}",
+            style: GoogleFonts.poppins(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.deepPurple,
+            ),
+          ),
+          leading: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.deepPurple.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.account_balance_wallet,
+              color: Colors.deepPurple,
+            ),
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.add, color: Colors.green),
+                    title: Text(
+                      'Add Balance',
+                      style: GoogleFonts.poppins(),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddFundsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.money_off, color: Colors.red),
+                    title: Text(
+                      'Withdraw Balance',
+                      style: GoogleFonts.poppins(),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WithdrawFundsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
