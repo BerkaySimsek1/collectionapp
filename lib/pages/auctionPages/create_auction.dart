@@ -176,55 +176,11 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
           },
         ),
         bottomNavigationBar: Consumer<AuctionCreateViewModel>(
-          builder: (context, viewModel, child) => Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
-              ),
-              onPressed: viewModel.isUploading
-                  ? null
-                  : () => viewModel.uploadAuction(context),
-              child: viewModel.isUploading
-                  ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.gavel_outlined, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Create Auction",
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
+          builder: (context, viewModel, child) => buildBottomButton(
+            isLoading: viewModel.isUploading,
+            onPressed: () => viewModel.uploadAuction(context),
+            buttonText: "Create Auction",
+            icon: Icons.gavel_outlined,
           ),
         ),
       ),

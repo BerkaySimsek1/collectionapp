@@ -104,64 +104,62 @@ class PaymentMethodsPage extends StatelessWidget {
                   top: 250,
                   left: 0,
                   right: 0,
-                  child: Expanded(
-                    child: Transform.translate(
-                      offset: const Offset(0, -60),
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            topRight: Radius.circular(30),
-                          ),
+                  child: Transform.translate(
+                    offset: const Offset(0, -60),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
                         ),
-                        child: StreamBuilder<List<PaymentMethod>>(
-                          stream: viewModel.getPaymentMethods(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.deepPurple,
-                                ),
-                              );
-                            }
-
-                            final paymentMethods = snapshot.data ?? [];
-
-                            if (paymentMethods.isEmpty) {
-                              return Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.credit_card_outlined,
-                                      size: 64,
-                                      color: Colors.grey[400],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      "No payment methods added yet",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-
-                            return ListView.builder(
-                              padding: const EdgeInsets.all(16),
-                              itemCount: paymentMethods.length,
-                              itemBuilder: (context, index) {
-                                final method = paymentMethods[index];
-                                return _buildPaymentMethodCard(method);
-                              },
+                      ),
+                      child: StreamBuilder<List<PaymentMethod>>(
+                        stream: viewModel.getPaymentMethods(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.deepPurple,
+                              ),
                             );
-                          },
-                        ),
+                          }
+
+                          final paymentMethods = snapshot.data ?? [];
+
+                          if (paymentMethods.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.credit_card_outlined,
+                                    size: 64,
+                                    color: Colors.grey[400],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    "No payment methods added yet",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          return ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: paymentMethods.length,
+                            itemBuilder: (context, index) {
+                              final method = paymentMethods[index];
+                              return _buildPaymentMethodCard(method);
+                            },
+                          );
+                        },
                       ),
                     ),
                   ),

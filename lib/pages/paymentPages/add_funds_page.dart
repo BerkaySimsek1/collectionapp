@@ -91,45 +91,42 @@ class AddFundsPage extends StatelessWidget {
             top: 250,
             left: 0,
             right: 0,
-            child: Expanded(
-              child: Transform.translate(
-                offset: const Offset(0, -60),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(30),
-                    ),
+            child: Transform.translate(
+              offset: const Offset(0, -60),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(30),
                   ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Select Amount",
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple,
-                          ),
+                ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Select Amount",
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple,
                         ),
-                        const SizedBox(height: 16),
-                        GridView.count(
-                          padding: const EdgeInsets.all(12),
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                          childAspectRatio: 1.5,
-                          children: [10, 20, 50, 100, 200, 500]
-                              .map(
-                                  (amount) => _buildAmountCard(context, amount))
-                              .toList(),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 16),
+                      GridView.count(
+                        padding: const EdgeInsets.all(12),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 1.5,
+                        children: [10, 20, 50, 100, 200, 500]
+                            .map((amount) => _buildAmountCard(context, amount))
+                            .toList(),
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -100,58 +100,56 @@ class _WithdrawFundsPageState extends State<WithdrawFundsPage> {
             top: 250,
             left: 0,
             right: 0,
-            child: Expanded(
-              child: Transform.translate(
-                offset: const Offset(0, -60),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(30),
-                    ),
+            child: Transform.translate(
+              offset: const Offset(0, -60),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(30),
                   ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Withdrawal Details",
-                            style: GoogleFonts.poppins(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple,
-                            ),
+                ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Withdrawal Details",
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple,
                           ),
-                          const SizedBox(height: 24),
-                          _buildTextField(
-                            controller: _amountController,
-                            label: "Amount (USD)",
-                            icon: Icons.attach_money,
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter an amount';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          _buildTextField(
-                            controller: _accountController,
-                            label: "Bank Account / IBAN",
-                            icon: Icons.account_balance,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter account details';
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 24),
+                        _buildTextField(
+                          controller: _amountController,
+                          label: "Amount (USD)",
+                          icon: Icons.attach_money,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter an amount';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _accountController,
+                          label: "Bank Account / IBAN",
+                          icon: Icons.account_balance,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter account details';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ),
