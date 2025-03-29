@@ -451,6 +451,56 @@ Future<void> showWarningDialog(
   );
 }
 
+Widget buildBottomButton({
+  required bool isLoading,
+  required VoidCallback? onPressed,
+  required String buttonText,
+  required IconData icon,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 20,
+          offset: const Offset(0, -5),
+        ),
+      ],
+    ),
+    child: ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.deepPurple,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 4,
+      ),
+      onPressed: isLoading ? null : onPressed,
+      icon: isLoading ? null : Icon(icon, color: Colors.white),
+      label: isLoading
+          ? const SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                color: Colors.deepPurple,
+                strokeWidth: 2,
+              ),
+            )
+          : Text(
+              buttonText,
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+    ),
+  );
+}
+
 void projectSnackBar(BuildContext context, String message, String status) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(

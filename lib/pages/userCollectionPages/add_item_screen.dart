@@ -142,417 +142,387 @@ class _AddItemScreenState extends State<AddItemScreen> {
         leading: const ProjectBackButton(),
       ),
       body: Stack(
-        // Stack eklendi
         children: [
-          Column(
-            children: [
-              // Header Section
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.deepPurple.shade400,
-                      Colors.deepPurple.shade700,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+          Positioned(
+            top: 0,
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.deepPurple.shade400,
+                    Colors.deepPurple.shade700,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                        24, 0, 24, 80), // bottom padding 80'e çıkarıldı
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 5, 24, 80),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.add_box_outlined,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.add_box_outlined,
+                            Text(
+                              "Add New Item",
+                              style: GoogleFonts.poppins(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
                                 color: Colors.white,
-                                size: 24,
                               ),
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Add New Item",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    "to ${widget.collectionName}",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      color: Colors.white.withOpacity(0.8),
-                                    ),
-                                  ),
-                                ],
+                            Text(
+                              "to ${widget.collectionName}",
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                color: Colors.white.withOpacity(0.8),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+            ),
+          ),
 
-              // Form Content
-              Expanded(
-                child: Transform.translate(
-                  offset: const Offset(0, -60), // -20'den -60'a değiştirildi
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      ),
-                    ),
-                    child: ListView(
-                      // SingleChildScrollView yerine ListView
-                      padding: const EdgeInsets.all(24),
-                      children: [
-                        Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Basic Information Section
-                              Text(
-                                "Basic Information",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.deepPurple,
+          // Form Content
+          Positioned(
+            bottom: -60,
+            top: 250,
+            left: 0,
+            right: 0,
+            child: Transform.translate(
+              offset: const Offset(0, -60),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: ListView(
+                  padding: const EdgeInsets.all(24),
+                  children: [
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Basic Information Section
+                          Text(
+                            "Basic Information",
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
                                 ),
-                              ),
-                              const SizedBox(height: 16),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
+                              ],
+                            ),
+                            child: TextFormField(
+                              controller: _nameController,
+                              decoration: InputDecoration(
+                                labelText: "Item Name",
+                                labelStyle: GoogleFonts.poppins(
+                                  color: Colors.grey[600],
                                 ),
-                                child: TextFormField(
-                                  controller: _nameController,
-                                  decoration: InputDecoration(
-                                    labelText: "Item Name",
-                                    labelStyle: GoogleFonts.poppins(
-                                      color: Colors.grey[600],
+                                prefixIcon: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  margin: const EdgeInsets.only(right: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepPurple.withOpacity(0.1),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(16),
+                                      bottomLeft: Radius.circular(16),
                                     ),
-                                    prefixIcon: Container(
-                                      padding: const EdgeInsets.all(12),
-                                      margin: const EdgeInsets.only(right: 8),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Colors.deepPurple.withOpacity(0.1),
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(16),
-                                          bottomLeft: Radius.circular(16),
-                                        ),
-                                      ),
-                                      child: const Icon(
-                                        Icons.label_outline,
-                                        color: Colors.deepPurple,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.white,
                                   ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please enter a name";
-                                    }
-                                    return null;
-                                  },
-                                  style: GoogleFonts.poppins(),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: TextFormField(
-                                  controller: _rarityController,
-                                  decoration: InputDecoration(
-                                    labelText: "Rarity",
-                                    labelStyle: GoogleFonts.poppins(
-                                      color: Colors.grey[600],
-                                    ),
-                                    prefixIcon: Container(
-                                      padding: const EdgeInsets.all(12),
-                                      margin: const EdgeInsets.only(right: 8),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Colors.deepPurple.withOpacity(0.1),
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(16),
-                                          bottomLeft: Radius.circular(16),
-                                        ),
-                                      ),
-                                      child: const Icon(
-                                        Icons.stars_outlined,
-                                        color: Colors.deepPurple,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                  ),
-                                  style: GoogleFonts.poppins(),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-
-                              // Images Section
-                              Text(
-                                "Item Images",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.deepPurple,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[50],
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: Colors.deepPurple.withOpacity(0.3),
-                                    width: 2,
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    ElevatedButton.icon(
-                                      onPressed: _pickImage,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.deepPurple,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 24,
-                                          vertical: 12,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                      ),
-                                      icon: const Icon(
-                                        Icons.add_photo_alternate_outlined,
-                                        color: Colors.white,
-                                      ),
-                                      label: Text(
-                                        "Select Images",
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    if (selectedImages.isNotEmpty) ...[
-                                      const SizedBox(height: 16),
-                                      SizedBox(
-                                        height: 120,
-                                        child: ListView.builder(
-                                          scrollDirection: Axis.horizontal,
-                                          itemCount: selectedImages.length,
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 12),
-                                              child: Stack(
-                                                children: [
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                    child: Image.file(
-                                                      File(selectedImages[index]
-                                                          .path),
-                                                      width: 120,
-                                                      height: 120,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                  Positioned(
-                                                    top: 4,
-                                                    right: 4,
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          selectedImages
-                                                              .removeAt(index);
-                                                        });
-                                                      },
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(4),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.black
-                                                              .withOpacity(0.5),
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
-                                                        child: const Icon(
-                                                          Icons.close,
-                                                          color: Colors.white,
-                                                          size: 16,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      "${selectedImages.length}/5 images selected",
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.grey[600],
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-
-                              // Predefined Fields Section
-                              if (_predefinedFields.isNotEmpty) ...[
-                                Text(
-                                  "Collection Fields",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                                  child: const Icon(
+                                    Icons.label_outline,
                                     color: Colors.deepPurple,
                                   ),
                                 ),
-                                const SizedBox(height: 16),
-                                _buildPredefinedFieldInputs(),
-                                const SizedBox(height: 24),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please enter a name";
+                                }
+                                return null;
+                              },
+                              style: GoogleFonts.poppins(),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
                               ],
-
-                              // Custom Fields Section
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Custom Fields",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.deepPurple,
+                            ),
+                            child: TextFormField(
+                              controller: _rarityController,
+                              decoration: InputDecoration(
+                                labelText: "Rarity",
+                                labelStyle: GoogleFonts.poppins(
+                                  color: Colors.grey[600],
+                                ),
+                                prefixIcon: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  margin: const EdgeInsets.only(right: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepPurple.withOpacity(0.1),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(16),
+                                      bottomLeft: Radius.circular(16),
                                     ),
                                   ),
-                                  IconButton(
-                                    onPressed: () => addCustomField(
-                                        context,
-                                        _customFields,
-                                        _customFieldValues,
-                                        setState),
-                                    style: IconButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.deepPurple.withOpacity(0.1),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
+                                  child: const Icon(
+                                    Icons.stars_outlined,
+                                    color: Colors.deepPurple,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              style: GoogleFonts.poppins(),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Images Section
+                          Text(
+                            "Item Images",
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.deepPurple.withOpacity(0.3),
+                                width: 2,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                ElevatedButton.icon(
+                                  onPressed: _pickImage,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.deepPurple,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 12,
                                     ),
-                                    icon: const Icon(
-                                      Icons.add,
-                                      color: Colors.deepPurple,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.add_photo_alternate_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  label: Text(
+                                    "Select Images",
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                if (selectedImages.isNotEmpty) ...[
+                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    height: 120,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: selectedImages.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 12),
+                                          child: Stack(
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: Image.file(
+                                                  File(selectedImages[index]
+                                                      .path),
+                                                  width: 120,
+                                                  height: 120,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                              Positioned(
+                                                top: 4,
+                                                right: 4,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      selectedImages
+                                                          .removeAt(index);
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(4),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black
+                                                          .withOpacity(0.5),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.close,
+                                                      color: Colors.white,
+                                                      size: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ],
+                                const SizedBox(height: 8),
+                                Text(
+                                  "${selectedImages.length}/5 images selected",
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.grey[600],
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Predefined Fields Section
+                          if (_predefinedFields.isNotEmpty) ...[
+                            Text(
+                              "Collection Fields",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepPurple,
                               ),
-                              const SizedBox(height: 16),
-                              _buildCustomFieldInputs(),
-                              const SizedBox(height: 16),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildPredefinedFieldInputs(),
+                            const SizedBox(height: 24),
+                          ],
+
+                          // Custom Fields Section
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Custom Fields",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.deepPurple,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () => addCustomField(
+                                    context,
+                                    _customFields,
+                                    _customFieldValues,
+                                    setState),
+                                style: IconButton.styleFrom(
+                                  backgroundColor:
+                                      Colors.deepPurple.withOpacity(0.1),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: Colors.deepPurple,
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          _buildCustomFieldInputs(),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _isUploading ? null : () => _saveItem(context),
-        backgroundColor: Colors.deepPurple,
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        icon: const Icon(Icons.save_outlined, color: Colors.white),
-        label: _isUploading
-            ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : Text(
-                "Save Item",
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
+      bottomNavigationBar: buildBottomButton(
+        isLoading: _isUploading,
+        onPressed: () => _saveItem(context),
+        buttonText: "Save Item",
+        icon: Icons.save_outlined,
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 
