@@ -50,7 +50,7 @@ class AddPaymentMethodPage extends StatelessWidget {
                                 margin: const EdgeInsets.only(top: 8),
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -76,7 +76,8 @@ class AddPaymentMethodPage extends StatelessWidget {
                                       "Enter your card details",
                                       style: GoogleFonts.poppins(
                                         fontSize: 16,
-                                        color: Colors.white.withOpacity(0.8),
+                                        color:
+                                            Colors.white.withValues(alpha: 0.7),
                                       ),
                                     ),
                                   ],
@@ -233,7 +234,7 @@ class AddPaymentMethodPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -253,7 +254,7 @@ class AddPaymentMethodPage extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: Colors.deepPurple.withValues(alpha: 0.15),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 bottomLeft: Radius.circular(12),

@@ -55,7 +55,7 @@ class _WithdrawFundsPageState extends State<WithdrawFundsPage> {
                         margin: const EdgeInsets.only(top: 8),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -81,7 +81,7 @@ class _WithdrawFundsPageState extends State<WithdrawFundsPage> {
                               "Enter withdrawal details",
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                             ),
                           ],
@@ -164,7 +164,7 @@ class _WithdrawFundsPageState extends State<WithdrawFundsPage> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, -5),
             ),
@@ -217,7 +217,7 @@ class _WithdrawFundsPageState extends State<WithdrawFundsPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -235,7 +235,7 @@ class _WithdrawFundsPageState extends State<WithdrawFundsPage> {
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: Colors.deepPurple.withValues(alpha: 0.15),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),

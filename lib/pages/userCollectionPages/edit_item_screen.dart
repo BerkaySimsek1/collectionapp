@@ -223,7 +223,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -240,7 +240,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                     padding: const EdgeInsets.all(12),
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.1),
+                      color: Colors.deepPurple.withValues(alpha: 0.15),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(16),
                         bottomLeft: Radius.circular(16),
@@ -282,7 +282,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -307,11 +307,6 @@ class _EditItemScreenState extends State<EditItemScreen> {
                               onSurface: Colors.deepPurple.shade900,
                             ),
                             textTheme: projectTextTheme(context),
-                            dialogTheme: DialogTheme(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
                           ),
                           child: child!,
                         );
@@ -331,7 +326,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.deepPurple.withOpacity(0.1),
+                            color: Colors.deepPurple.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -404,7 +399,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.1),
+                  color: Colors.deepPurple.withValues(alpha: 0.15),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     bottomLeft: Radius.circular(16),
@@ -452,11 +447,6 @@ class _EditItemScreenState extends State<EditItemScreen> {
                         onSurface: Colors.deepPurple.shade900,
                       ),
                       textTheme: projectTextTheme(context),
-                      dialogTheme: DialogTheme(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
                     ),
                     child: child!,
                   );
@@ -475,7 +465,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.1),
+                      color: Colors.deepPurple.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -528,7 +518,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -550,7 +540,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
+                      color: Colors.red[50],
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -607,7 +597,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.15),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -633,7 +623,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                     "to ${widget.collectionName}",
                                     style: GoogleFonts.poppins(
                                       fontSize: 16,
-                                      color: Colors.white.withOpacity(0.8),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.7),
                                     ),
                                   ),
                                 ],
@@ -684,7 +675,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.1),
                                       blurRadius: 10,
                                       offset: const Offset(0, 4),
                                     ),
@@ -701,8 +693,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                       padding: const EdgeInsets.all(12),
                                       margin: const EdgeInsets.only(right: 8),
                                       decoration: BoxDecoration(
-                                        color:
-                                            Colors.deepPurple.withOpacity(0.1),
+                                        color: Colors.deepPurple
+                                            .withValues(alpha: 0.15),
                                         borderRadius: const BorderRadius.only(
                                           topLeft: Radius.circular(16),
                                           bottomLeft: Radius.circular(16),
@@ -736,7 +728,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.1),
                                       blurRadius: 10,
                                       offset: const Offset(0, 4),
                                     ),
@@ -753,8 +746,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                       padding: const EdgeInsets.all(12),
                                       margin: const EdgeInsets.only(right: 8),
                                       decoration: BoxDecoration(
-                                        color:
-                                            Colors.deepPurple.withOpacity(0.1),
+                                        color: Colors.deepPurple
+                                            .withValues(alpha: 0.15),
                                         borderRadius: const BorderRadius.only(
                                           topLeft: Radius.circular(16),
                                           bottomLeft: Radius.circular(16),
@@ -793,7 +786,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                   color: Colors.grey[50],
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: Colors.deepPurple.withOpacity(0.3),
+                                    color: Colors.deepPurple
+                                        .withValues(alpha: 0.3),
                                     width: 2,
                                   ),
                                 ),
@@ -902,7 +896,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                                         decoration:
                                                             BoxDecoration(
                                                           color: Colors.black
-                                                              .withOpacity(0.5),
+                                                              .withValues(
+                                                                  alpha: 0.5),
                                                           shape:
                                                               BoxShape.circle,
                                                         ),
@@ -959,8 +954,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                         _customFieldValues,
                                         setState),
                                     style: IconButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.deepPurple.withOpacity(0.1),
+                                      backgroundColor: Colors.deepPurple
+                                          .withValues(alpha: 0.15),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -995,7 +990,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 20,
                     offset: const Offset(0, -5),
                   ),

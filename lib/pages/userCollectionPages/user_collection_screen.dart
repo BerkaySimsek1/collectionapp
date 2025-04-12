@@ -40,7 +40,7 @@ class UserCollectionsScreen extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -94,13 +94,13 @@ class UserCollectionsScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.deepPurple.withOpacity(0.1),
+                            color: Colors.deepPurple.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.collections_outlined,
                             size: 64,
-                            color: Colors.deepPurple.withOpacity(0.5),
+                            color: Colors.deepPurple.withValues(alpha: 0.75),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -164,7 +164,7 @@ class UserCollectionsScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: color.withOpacity(0.15),
+                                color: color.withValues(alpha: 0.15),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -176,7 +176,7 @@ class UserCollectionsScreen extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
-                                  color: color.withOpacity(0.1),
+                                  color: color.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -208,7 +208,7 @@ class UserCollectionsScreen extends StatelessWidget {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: color.withOpacity(0.1),
+                                  color: color.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Row(

@@ -254,7 +254,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -266,7 +266,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -390,7 +390,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -402,7 +402,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -521,7 +521,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             offset: const Offset(0, -4),
             blurRadius: 16,
           ),
@@ -636,7 +636,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.15),
               ),
             ),
           ),
@@ -648,7 +648,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.15),
               ),
             ),
           ),
@@ -667,7 +667,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         border: Border.all(color: Colors.white, width: 4),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),
@@ -719,7 +719,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -748,7 +748,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -768,7 +768,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   margin: const EdgeInsets.symmetric(horizontal: 32),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -798,7 +798,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                   : "Followers",
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                             ),
                           ],
@@ -807,7 +807,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       Container(
                         height: 40,
                         width: 1,
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                       ),
                       GestureDetector(
                         onTap: () => _showFollowingDialog(),
@@ -828,7 +828,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               "Following",
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                             ),
                           ],
@@ -852,7 +852,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.deepPurple,
                         elevation: 5,
-                        shadowColor: Colors.black.withOpacity(0.3),
+                        shadowColor: Colors.black.withValues(alpha: 0.1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
@@ -902,13 +902,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.group_off_outlined,
                     size: 64,
-                    color: Colors.deepPurple.withOpacity(0.5),
+                    color: Colors.deepPurple.withValues(alpha: 0.75),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -951,7 +951,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -983,7 +983,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -1020,8 +1020,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       errorBuilder:
                                           (context, error, stackTrace) =>
                                               Container(
-                                        color:
-                                            Colors.deepPurple.withOpacity(0.1),
+                                        color: Colors.deepPurple
+                                            .withValues(alpha: 0.15),
                                         child: const Icon(
                                           Icons.group_outlined,
                                           color: Colors.deepPurple,
@@ -1030,7 +1030,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       ),
                                     )
                                   : Container(
-                                      color: Colors.deepPurple.withOpacity(0.1),
+                                      color: Colors.deepPurple
+                                          .withValues(alpha: 0.15),
                                       child: const Icon(
                                         Icons.group_outlined,
                                         color: Colors.deepPurple,
@@ -1070,7 +1071,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.deepPurple.withOpacity(0.1),
+                                  color:
+                                      Colors.deepPurple.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Row(
@@ -1100,7 +1102,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.deepPurple.withOpacity(0.1),
+                            color: Colors.deepPurple.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -1144,13 +1146,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.gavel_outlined,
                     size: 64,
-                    color: Colors.deepPurple.withOpacity(0.5),
+                    color: Colors.deepPurple.withValues(alpha: 0.75),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -1191,7 +1193,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -1280,8 +1282,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: auction.isAuctionEnd
-                                        ? Colors.red.withOpacity(0.1)
-                                        : Colors.green.withOpacity(0.1),
+                                        ? Colors.red[50]
+                                        : Colors.green[50],
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
@@ -1327,7 +1329,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     boxShadow: [
                                       BoxShadow(
                                         color:
-                                            Colors.deepPurple.withOpacity(0.3),
+                                            Colors.black.withValues(alpha: 0.1),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),
@@ -1401,13 +1403,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.collections_outlined,
                     size: 64,
-                    color: Colors.deepPurple.withOpacity(0.5),
+                    color: Colors.deepPurple.withValues(alpha: 0.75),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -1467,7 +1469,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(0.15),
+                      color: color.withValues(alpha: 0.15),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -1479,7 +1481,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
+                        color: color.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -1505,7 +1507,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
+                        color: color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -1612,7 +1614,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -1639,7 +1641,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),

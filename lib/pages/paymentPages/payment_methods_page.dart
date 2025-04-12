@@ -56,7 +56,7 @@ class PaymentMethodsPage extends StatelessWidget {
                                   margin: const EdgeInsets.only(top: 8),
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
+                                    color: Colors.white.withValues(alpha: 0.15),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -83,7 +83,8 @@ class PaymentMethodsPage extends StatelessWidget {
                                         "Manage your payment options",
                                         style: GoogleFonts.poppins(
                                           fontSize: 16,
-                                          color: Colors.white.withOpacity(0.8),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.7),
                                         ),
                                       ),
                                     ],
@@ -210,7 +211,7 @@ class PaymentMethodsPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.deepPurple.withOpacity(0.2),
+            color: Colors.deepPurple.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -221,7 +222,7 @@ class PaymentMethodsPage extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.15),
             shape: BoxShape.circle,
           ),
           child: const Icon(
@@ -239,7 +240,7 @@ class PaymentMethodsPage extends StatelessWidget {
         subtitle: Text(
           "**** **** **** ${method.cardNumber.substring(method.cardNumber.length - 4)}",
           style: GoogleFonts.poppins(
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.7),
           ),
         ),
         trailing: method.isDefault
@@ -249,7 +250,7 @@ class PaymentMethodsPage extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(

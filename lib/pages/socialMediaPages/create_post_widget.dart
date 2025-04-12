@@ -51,7 +51,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
 
       await _postService.createPost(
         groupId: widget.groupId,
-        userId: _currentUser.uid,
+        userId: _currentUser!.uid,
         content: _postController.text,
         imageFile: _imageFile,
         username: userData["username"] ?? "Kullanıcı",
@@ -101,7 +101,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -169,7 +169,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -191,7 +191,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
                             right: 8,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.5),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
@@ -217,7 +217,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, -5),
                 ),
@@ -227,7 +227,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: IconButton(
@@ -252,7 +252,7 @@ class _CreatePostWidgetState extends State<CreatePostWidget> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.deepPurple.withOpacity(0.3),
+                          color: Colors.deepPurple.withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),

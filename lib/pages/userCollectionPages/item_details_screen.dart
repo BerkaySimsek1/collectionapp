@@ -56,7 +56,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -151,13 +151,13 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.1),
+                      color: Colors.deepPurple.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: Colors.deepPurple.withOpacity(0.5),
+                      color: Colors.deepPurple.withValues(alpha: 0.75),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -255,7 +255,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                   shape: BoxShape.circle,
                                   color: _currentPage == index
                                       ? Colors.deepPurple
-                                      : Colors.white.withOpacity(0.5),
+                                      : Colors.white.withValues(alpha: 0.5),
                                 ),
                               ),
                             ),
@@ -308,7 +308,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
+                                    color: Colors.black.withValues(alpha: 0.1),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -319,7 +319,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: Colors.deepPurple.withOpacity(0.1),
+                                      color: Colors.deepPurple
+                                          .withValues(alpha: 0.15),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Icon(
@@ -435,7 +436,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               right: 16,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
@@ -461,7 +462,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -474,7 +475,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 margin: const EdgeInsets.only(top: 20),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red[50],
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(

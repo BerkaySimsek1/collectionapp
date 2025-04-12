@@ -112,7 +112,7 @@ class MainPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -144,7 +144,7 @@ class MainPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -188,7 +188,8 @@ class MainPage extends StatelessWidget {
                               ),
                               child: CircleAvatar(
                                 radius: 35,
-                                backgroundColor: Colors.white24,
+                                backgroundColor:
+                                    Colors.white.withValues(alpha: 0.2),
                                 backgroundImage: photoUrl.isNotEmpty
                                     ? NetworkImage(photoUrl)
                                     : null,
@@ -212,7 +213,7 @@ class MainPage extends StatelessWidget {
                             Text(
                               user.email ?? "",
                               style: GoogleFonts.poppins(
-                                color: Colors.white70,
+                                color: Colors.white.withValues(alpha: 0.7),
                                 fontSize: 14,
                               ),
                             ),
@@ -302,7 +303,8 @@ class MainPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.deepPurple.withOpacity(0.3),
+                                  color:
+                                      Colors.deepPurple.withValues(alpha: 0.1),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
                                 ),
@@ -315,7 +317,7 @@ class MainPage extends StatelessWidget {
                                   "Welcome back,",
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
-                                    color: Colors.white70,
+                                    color: Colors.white.withValues(alpha: 0.7),
                                   ),
                                 ),
                                 Text(
@@ -331,7 +333,7 @@ class MainPage extends StatelessWidget {
                                   "Explore your collections and connect with others",
                                   style: GoogleFonts.poppins(
                                     fontSize: 14,
-                                    color: Colors.white70,
+                                    color: Colors.white.withValues(alpha: 0.7),
                                   ),
                                 ),
                               ],
@@ -439,7 +441,7 @@ class MainPage extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.deepPurple.withOpacity(0.1),
+          color: Colors.deepPurple.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -472,7 +474,7 @@ class MainPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: gradient[0].withOpacity(0.2),
+            color: gradient[0].withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -498,7 +500,7 @@ class MainPage extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -524,7 +526,7 @@ class MainPage extends StatelessWidget {
                         subtitle,
                         style: GoogleFonts.poppins(
                           fontSize: 14,
-                          color: Colors.white70,
+                          color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -532,7 +534,7 @@ class MainPage extends StatelessWidget {
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   size: 20,
                 ),
               ],
@@ -550,7 +552,7 @@ class MainPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -579,7 +581,7 @@ class MainPage extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: Colors.deepPurple.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(

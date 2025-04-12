@@ -57,7 +57,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                               margin: const EdgeInsets.only(top: 8),
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.15),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -84,7 +84,8 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                                     "Fill in the details below",
                                     style: GoogleFonts.poppins(
                                       fontSize: 16,
-                                      color: Colors.white.withOpacity(0.8),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.7),
                                     ),
                                   ),
                                 ],
@@ -203,7 +204,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -219,7 +220,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -257,7 +258,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Colors.deepPurple.withOpacity(0.3),
+                          color: Colors.deepPurple.withValues(alpha: 0.3),
                           width: 2,
                           style: BorderStyle.solid,
                         ),
@@ -268,7 +269,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                           Icon(
                             Icons.add_photo_alternate_outlined,
                             size: 48,
-                            color: Colors.deepPurple.withOpacity(0.5),
+                            color: Colors.deepPurple.withValues(alpha: 0.75),
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -304,15 +305,16 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
-                                        color:
-                                            Colors.deepPurple.withOpacity(0.3),
+                                        color: Colors.deepPurple
+                                            .withValues(alpha: 0.3),
                                         width: 2,
                                         style: BorderStyle.solid,
                                       ),
                                     ),
                                     child: Icon(
                                       Icons.add,
-                                      color: Colors.deepPurple.withOpacity(0.5),
+                                      color: Colors.deepPurple
+                                          .withValues(alpha: 0.75),
                                       size: 32,
                                     ),
                                   ),
@@ -346,7 +348,8 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                                       child: Container(
                                         padding: const EdgeInsets.all(4),
                                         decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.5),
+                                          color: Colors.black
+                                              .withValues(alpha: 0.1),
                                           shape: BoxShape.circle,
                                         ),
                                         child: const Icon(
@@ -388,7 +391,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -407,7 +410,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: Colors.deepPurple.withValues(alpha: 0.15),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
@@ -437,7 +440,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -465,7 +468,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: Colors.deepPurple.withValues(alpha: 0.15),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
@@ -557,7 +560,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.deepPurple.withOpacity(0.1),
+                color: Colors.deepPurple.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: Colors.deepPurple),

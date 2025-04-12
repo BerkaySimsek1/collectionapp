@@ -79,7 +79,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   count: 3,
                   effect: ExpandingDotsEffect(
                     activeDotColor: Colors.white,
-                    dotColor: Colors.white.withOpacity(0.5),
+                    dotColor: Colors.white.withValues(alpha: 0.5),
                     dotHeight: 8,
                     dotWidth: 8,
                     spacing: 12,
@@ -169,13 +169,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -201,7 +201,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Text(
                 subtitle,
                 style: GoogleFonts.poppins(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 18,
                   height: 1.5,
                 ),

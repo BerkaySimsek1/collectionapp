@@ -69,7 +69,7 @@ class CollectionItemsScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -97,7 +97,7 @@ class CollectionItemsScreen extends StatelessWidget {
                                 "Collection Items",
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
-                                  color: Colors.white.withOpacity(0.8),
+                                  color: Colors.white.withValues(alpha: 0.7),
                                 ),
                               ),
                             ],
@@ -196,13 +196,15 @@ class CollectionItemsScreen extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(24),
                                 decoration: BoxDecoration(
-                                  color: Colors.deepPurple.withOpacity(0.1),
+                                  color:
+                                      Colors.deepPurple.withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   Icons.grid_off,
                                   size: 64,
-                                  color: Colors.deepPurple.withOpacity(0.5),
+                                  color:
+                                      Colors.deepPurple.withValues(alpha: 0.75),
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -260,7 +262,8 @@ class CollectionItemsScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(16),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
+                                        color:
+                                            Colors.black.withValues(alpha: 0.1),
                                         blurRadius: 10,
                                         offset: const Offset(0, 4),
                                       ),
@@ -298,7 +301,7 @@ class CollectionItemsScreen extends StatelessWidget {
                                                 boxShadow: [
                                                   BoxShadow(
                                                     color: Colors.black
-                                                        .withOpacity(0.1),
+                                                        .withValues(alpha: 0.1),
                                                     blurRadius: 8,
                                                     offset: const Offset(0, 2),
                                                   ),
@@ -405,7 +408,7 @@ class CollectionItemsScreen extends StatelessWidget {
                                               padding: const EdgeInsets.all(8),
                                               decoration: BoxDecoration(
                                                 color: Colors.deepPurple
-                                                    .withOpacity(0.1),
+                                                    .withValues(alpha: 0.1),
                                                 shape: BoxShape.circle,
                                               ),
                                               child: const Icon(

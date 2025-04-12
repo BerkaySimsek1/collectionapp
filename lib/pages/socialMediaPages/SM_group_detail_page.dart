@@ -39,7 +39,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     final isMember = await _groupDetailService.isUserMember(
         widget.group.id, _currentUser!.uid);
     final hasUserRequest = await _groupDetailService.getJoinRequest(
-        widget.group.id, _currentUser.uid);
+        widget.group.id, _currentUser!.uid);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -160,7 +160,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                     child: Icon(
                                       Icons.group_outlined,
                                       size: 64,
-                                      color: Colors.white.withOpacity(0.3),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.3),
                                     ),
                                   ),
                                 )
@@ -178,7 +179,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                   child: Icon(
                                     Icons.group_outlined,
                                     size: 64,
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Colors.white.withValues(alpha: 0.3),
                                   ),
                                 ),
                           // Gradient Overlay
@@ -189,7 +190,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.transparent,
-                                  Colors.black.withOpacity(0.7),
+                                  Colors.black.withValues(alpha: 0.1),
                                 ],
                               ),
                             ),
@@ -221,7 +222,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                           vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.2),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.15),
                                           borderRadius:
                                               BorderRadius.circular(20),
                                         ),
@@ -230,15 +232,15 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                             Icon(
                                               Icons.people_outline,
                                               size: 16,
-                                              color:
-                                                  Colors.white.withOpacity(0.9),
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.9),
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
                                               "${widget.group.members.length} $memberCount",
                                               style: GoogleFonts.poppins(
                                                 color: Colors.white
-                                                    .withOpacity(0.9),
+                                                    .withValues(alpha: 0.9),
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,
                                               ),
@@ -253,7 +255,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                           vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.2),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.15),
                                           borderRadius:
                                               BorderRadius.circular(20),
                                         ),
@@ -262,15 +265,15 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                             Icon(
                                               Icons.category_outlined,
                                               size: 16,
-                                              color:
-                                                  Colors.white.withOpacity(0.9),
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.9),
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
                                               widget.group.category,
                                               style: GoogleFonts.poppins(
                                                 color: Colors.white
-                                                    .withOpacity(0.9),
+                                                    .withValues(alpha: 0.9),
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,
                                               ),
@@ -325,7 +328,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -342,7 +345,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                         height: 1.5,
                       ),
                     ),
-                    if (widget.group.adminIds.contains(_currentUser.uid)) ...[
+                    if (widget.group.adminIds.contains(_currentUser!.uid)) ...[
                       const SizedBox(height: 20),
                       Container(
                         width: double.infinity,
@@ -356,7 +359,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                           borderRadius: BorderRadius.circular(15),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.deepPurple.withOpacity(0.3),
+                              color: Colors.deepPurple.withValues(alpha: 0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),
@@ -441,7 +444,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -452,7 +455,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: Colors.deepPurple.withValues(alpha: 0.15),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -545,13 +548,15 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                               Container(
                                 padding: const EdgeInsets.all(24),
                                 decoration: BoxDecoration(
-                                  color: Colors.deepPurple.withOpacity(0.1),
+                                  color:
+                                      Colors.deepPurple.withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   Icons.post_add_outlined,
                                   size: 64,
-                                  color: Colors.deepPurple.withOpacity(0.5),
+                                  color:
+                                      Colors.deepPurple.withValues(alpha: 0.75),
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -587,7 +592,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
+                                    color: Colors.black.withValues(alpha: 0.1),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -659,7 +664,7 @@ class PostWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -671,7 +676,7 @@ class PostWidget extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.red[50],
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
@@ -682,7 +687,7 @@ class PostWidget extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
+                          color: Colors.red[50],
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -794,7 +799,7 @@ class PostWidget extends StatelessWidget {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, -10),
             ),
@@ -824,7 +829,7 @@ class PostWidget extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.1),
+                      color: Colors.deepPurple.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -953,7 +958,7 @@ class PostWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -965,7 +970,7 @@ class PostWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red[50],
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
@@ -976,7 +981,7 @@ class PostWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.red[50],
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -1097,7 +1102,7 @@ class PostWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -1399,7 +1404,7 @@ class PostWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.1),
+                        color: Colors.deepPurple.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -1446,13 +1451,15 @@ class PostWidget extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(24),
                               decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(0.1),
+                                color:
+                                    Colors.deepPurple.withValues(alpha: 0.15),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.chat_bubble_outline,
                                 size: 48,
-                                color: Colors.deepPurple.withOpacity(0.5),
+                                color:
+                                    Colors.deepPurple.withValues(alpha: 0.75),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -1735,7 +1742,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -1785,7 +1792,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.deepPurple.withOpacity(0.3),
+                    color: Colors.deepPurple.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
