@@ -143,7 +143,7 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -169,7 +169,7 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
                                 "Manage join requests",
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
-                                  color: Colors.white.withOpacity(0.8),
+                                  color: Colors.white.withValues(alpha: 0.7),
                                 ),
                               ),
                             ],
@@ -225,13 +225,13 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
                             Container(
                               padding: const EdgeInsets.all(24),
                               decoration: BoxDecoration(
-                                color: Colors.red.withOpacity(0.1),
+                                color: Colors.red[50],
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.error_outline,
                                 size: 64,
-                                color: Colors.red.withOpacity(0.5),
+                                color: Colors.red.withValues(alpha: 0.5),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -265,13 +265,15 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
                             Container(
                               padding: const EdgeInsets.all(24),
                               decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(0.1),
+                                color:
+                                    Colors.deepPurple.withValues(alpha: 0.15),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.group_off_outlined,
                                 size: 64,
-                                color: Colors.deepPurple.withOpacity(0.5),
+                                color:
+                                    Colors.deepPurple.withValues(alpha: 0.75),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -308,7 +310,7 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -376,7 +378,7 @@ class _SmGroupAdminState extends State<SmGroupAdmin> {
                                             decoration: BoxDecoration(
                                               color: _getStatusColor(
                                                       request["status"])
-                                                  .withOpacity(0.1),
+                                                  .withValues(alpha: 0.1),
                                               borderRadius:
                                                   BorderRadius.circular(20),
                                             ),

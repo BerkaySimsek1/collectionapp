@@ -171,7 +171,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                         margin: const EdgeInsets.only(top: 8),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -197,7 +197,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                               "to ${widget.collectionName}",
                               style: GoogleFonts.poppins(
                                 fontSize: 16,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                             ),
                           ],
@@ -250,7 +250,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -267,7 +267,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   padding: const EdgeInsets.all(12),
                                   margin: const EdgeInsets.only(right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.deepPurple.withOpacity(0.1),
+                                    color: Colors.deepPurple
+                                        .withValues(alpha: 0.15),
                                     borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(16),
                                       bottomLeft: Radius.circular(16),
@@ -301,7 +302,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -318,7 +319,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   padding: const EdgeInsets.all(12),
                                   margin: const EdgeInsets.only(right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.deepPurple.withOpacity(0.1),
+                                    color: Colors.deepPurple
+                                        .withValues(alpha: 0.15),
                                     borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(16),
                                       bottomLeft: Radius.circular(16),
@@ -357,7 +359,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                               color: Colors.grey[50],
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: Colors.deepPurple.withOpacity(0.3),
+                                color: Colors.deepPurple.withValues(alpha: 0.3),
                                 width: 2,
                               ),
                             ),
@@ -426,7 +428,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                                         const EdgeInsets.all(4),
                                                     decoration: BoxDecoration(
                                                       color: Colors.black
-                                                          .withOpacity(0.5),
+                                                          .withValues(
+                                                              alpha: 0.5),
                                                       shape: BoxShape.circle,
                                                     ),
                                                     child: const Icon(
@@ -492,7 +495,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     setState),
                                 style: IconButton.styleFrom(
                                   backgroundColor:
-                                      Colors.deepPurple.withOpacity(0.1),
+                                      Colors.deepPurple.withValues(alpha: 0.15),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -540,7 +543,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -556,7 +559,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   padding: const EdgeInsets.all(12),
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       bottomLeft: Radius.circular(16),
@@ -596,7 +599,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -621,11 +624,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             onSurface: Colors.deepPurple.shade900,
                           ),
                           textTheme: projectTextTheme(context),
-                          dialogTheme: DialogTheme(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
                         ),
                         child: child!,
                       );
@@ -645,7 +643,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(0.1),
+                          color: Colors.deepPurple.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -708,7 +706,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   padding: const EdgeInsets.all(12),
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       bottomLeft: Radius.circular(16),
@@ -765,7 +763,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.1),
+                  color: Colors.deepPurple.withValues(alpha: 0.15),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     bottomLeft: Radius.circular(16),
@@ -813,11 +811,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                         onSurface: Colors.deepPurple.shade900,
                       ),
                       textTheme: projectTextTheme(context),
-                      dialogTheme: DialogTheme(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
                     ),
                     child: child!,
                   );
@@ -836,7 +829,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.1),
+                      color: Colors.deepPurple.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -889,7 +882,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -911,7 +904,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
+                      color: Colors.red[50],
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

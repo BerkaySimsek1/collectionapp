@@ -32,13 +32,13 @@ class CreatedAuctionsList extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.person_off_outlined,
                     size: 64,
-                    color: Colors.deepPurple.withOpacity(0.5),
+                    color: Colors.deepPurple.withValues(alpha: 0.75),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -66,13 +66,13 @@ class CreatedAuctionsList extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.gavel_outlined,
                     size: 64,
-                    color: Colors.deepPurple.withOpacity(0.5),
+                    color: Colors.deepPurple.withValues(alpha: 0.75),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -120,13 +120,13 @@ class CreatedAuctionsList extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.1),
+                        color: Colors.deepPurple.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.error_outline,
                         size: 64,
-                        color: Colors.deepPurple.withOpacity(0.5),
+                        color: Colors.deepPurple.withValues(alpha: 0.75),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -158,7 +158,7 @@ class CreatedAuctionsList extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -242,8 +242,9 @@ class CreatedAuctionsList extends StatelessWidget {
                                       ),
                                       decoration: BoxDecoration(
                                         color: auction.isAuctionEnd
-                                            ? Colors.red.withOpacity(0.1)
-                                            : Colors.green.withOpacity(0.1),
+                                            ? Colors.red.withValues(alpha: 0.15)
+                                            : Colors.green
+                                                .withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Text(
@@ -292,7 +293,7 @@ class CreatedAuctionsList extends StatelessWidget {
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.deepPurple
-                                                .withOpacity(0.3),
+                                                .withValues(alpha: 0.3),
                                             blurRadius: 8,
                                             offset: const Offset(0, 2),
                                           ),

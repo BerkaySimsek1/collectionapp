@@ -50,7 +50,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await _uploadProfileImage(_pickedImage!);
       }
     } catch (e) {
-      projectSnackBar(context, "Failed to pick image: $e", "red");
+      if (mounted) {
+        projectSnackBar(context, "Failed to pick image: $e", "red");
+      }
     }
   }
 
@@ -80,9 +82,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         userData?["profileImageUrl"] = downloadUrl;
       });
 
-      projectSnackBar(context, "Profile photo updated successfully!", "green");
+      if (mounted) {
+        projectSnackBar(
+            context, "Profile photo updated successfully!", "green");
+      }
     } catch (e) {
-      projectSnackBar(context, "Failed to upload photo: $e", "red");
+      if (mounted) {
+        projectSnackBar(context, "Failed to upload photo: $e", "red");
+      }
     } finally {
       setState(() => _isUpdatingPhoto = false);
     }
@@ -229,7 +236,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -242,7 +249,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.1),
+                  color: Colors.deepPurple.withValues(alpha: 0.15),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
@@ -253,7 +260,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.1),
+                        color: Colors.deepPurple.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -403,7 +410,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             offset: const Offset(0, -4),
             blurRadius: 16,
           ),
@@ -472,7 +479,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.1),
+                  color: Colors.deepPurple.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
@@ -499,8 +506,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onSave: (value) async {
               await _firestoreService.updateUserData({'firstName': value});
               setState(() => userData?['firstName'] = value);
-              projectSnackBar(
-                  context, "First name updated successfully!", "green");
+              if (mounted) {
+                projectSnackBar(
+                    context, "First name updated successfully!", "green");
+              }
             },
           ),
           const SizedBox(height: 16),
@@ -511,8 +520,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onSave: (value) async {
               await _firestoreService.updateUserData({'lastName': value});
               setState(() => userData?['lastName'] = value);
-              projectSnackBar(
-                  context, "Last name updated successfully!", "green");
+              if (mounted) {
+                projectSnackBar(
+                    context, "Last name updated successfully!", "green");
+              }
             },
           ),
           const SizedBox(height: 16),
@@ -523,7 +534,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onSave: (value) async {
               await _firestoreService.updateUserData({'age': int.parse(value)});
               setState(() => userData?['age'] = int.parse(value));
-              projectSnackBar(context, "Age updated successfully!", "green");
+              if (mounted) {
+                projectSnackBar(context, "Age updated successfully!", "green");
+              }
             },
           ),
         ],
@@ -542,7 +555,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.1),
+                  color: Colors.deepPurple.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
@@ -568,7 +581,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -606,7 +619,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -638,7 +651,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -651,7 +664,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.1),
+                  color: Colors.deepPurple.withValues(alpha: 0.15),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
@@ -662,7 +675,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.1),
+                        color: Colors.deepPurple.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -765,8 +778,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 setState(() {
                                   userData?["email"] = newEmail;
                                 });
-
-                                if (!mounted) return;
                                 Navigator.pop(context);
                                 projectSnackBar(context,
                                     "Email updated successfully!", "green");
@@ -823,7 +834,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -836,7 +847,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withOpacity(0.1),
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
@@ -847,7 +858,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(0.1),
+                          color: Colors.deepPurple.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -1027,7 +1038,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -1041,7 +1052,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 margin: const EdgeInsets.only(top: 20),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red[50],
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -1167,7 +1178,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.15),
               ),
             ),
           ),
@@ -1179,7 +1190,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.15),
               ),
             ),
           ),
@@ -1200,7 +1211,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           border: Border.all(color: Colors.white, width: 4),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 15,
                               offset: const Offset(0, 5),
                             ),
@@ -1236,7 +1247,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 5,
                                   offset: const Offset(0, 2),
                                 ),
@@ -1289,7 +1300,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -1323,7 +1334,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -1352,7 +1363,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -1389,7 +1400,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1400,7 +1411,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: Colors.deepPurple.withValues(alpha: 0.15),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 bottomLeft: Radius.circular(12),
@@ -1466,7 +1477,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: color, size: 24),
