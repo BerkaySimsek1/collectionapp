@@ -1,3 +1,4 @@
+import "dart:ui";
 import "package:collectionapp/common_ui_methods.dart";
 import "package:collectionapp/firebase_methods/SM_firestore_methods.dart";
 import "package:collectionapp/models/GroupModel.dart";
@@ -8,7 +9,6 @@ import "package:collectionapp/pages/profilePages/user_profile_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
-import "package:flutter/scheduler.dart";
 import 'package:google_fonts/google_fonts.dart';
 
 class GroupDetailPage extends StatefulWidget {
@@ -23,6 +23,8 @@ class GroupDetailPage extends StatefulWidget {
 class _GroupDetailPageState extends State<GroupDetailPage> {
   final _groupDetailService = GroupDetailService();
   final _currentUser = FirebaseAuth.instance.currentUser;
+  final ScrollController _mainScrollController = ScrollController();
+  final ScrollController _commentsScrollController = ScrollController();
 
   bool? _isMember;
   bool? hasJoinRequest;
@@ -35,40 +37,53 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     memberCount = widget.group.members.length <= 1 ? "member" : "members";
   }
 
-  Future<void> _initializeStatus() async {
-    final isMember = await _groupDetailService.isUserMember(
-        widget.group.id, _currentUser!.uid);
-    final hasUserRequest = await _groupDetailService.getJoinRequest(
-        widget.group.id, _currentUser!.uid);
+  @override
+  void dispose() {
+    _mainScrollController.dispose();
+    _commentsScrollController.dispose();
+    super.dispose();
+  }
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _isMember = isMember;
-        hasJoinRequest = hasUserRequest;
-      });
+  Future<void> _initializeStatus() async {
+    if (!mounted) return;
+
+    final isMember = await _groupDetailService.isUserMember(
+      widget.group.id,
+      _currentUser!.uid,
+    );
+    final hasUserRequest = await _groupDetailService.getJoinRequest(
+      widget.group.id,
+      _currentUser!.uid,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isMember = isMember;
+      hasJoinRequest = hasUserRequest;
     });
   }
 
   void _sendJoinRequest() async {
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        hasJoinRequest = true;
-      });
+    if (!mounted) return;
+
+    setState(() {
+      hasJoinRequest = true;
     });
 
     try {
       await _groupDetailService.sendJoinRequest(
-          widget.group.id, _currentUser!.uid);
+        widget.group.id,
+        _currentUser!.uid,
+      );
     } catch (e) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          hasJoinRequest = false;
-        });
+      if (!mounted) return;
+
+      setState(() {
+        hasJoinRequest = false;
       });
 
-      if (mounted) {
-        projectSnackBar(context, "Failed to send request: $e", "red");
-      }
+      projectSnackBar(context, "Failed to send request: $e", "red");
     }
   }
 
@@ -94,9 +109,19 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
+      body: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          physics: const BouncingScrollPhysics(
+              decelerationRate: ScrollDecelerationRate.fast),
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        child: CustomScrollView(
+          controller: _mainScrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
             SliverAppBar(
               backgroundColor: Colors.transparent,
               flexibleSpace: LayoutBuilder(
@@ -181,8 +206,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                     size: 64,
                                     color: Colors.white.withValues(alpha: 0.3),
                                   ),
-                                ),
-                          // Gradient Overlay
+                                ), // Gradient Overlay
                           Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -318,7 +342,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     ),
                   ),
               ],
-            ), // Grup Açıklaması ve Admin Panel
+            ),
             SliverToBoxAdapter(
               child: Container(
                 margin: const EdgeInsets.all(16),
@@ -347,72 +371,12 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     ),
                     if (widget.group.adminIds.contains(_currentUser!.uid)) ...[
                       const SizedBox(height: 20),
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.deepPurple.shade400,
-                              Colors.deepPurple.shade700,
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.deepPurple.withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(15),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SmGroupAdmin(
-                                    groupId: widget.group.id,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.admin_panel_settings,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    "Admin Panel",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      AdminPanelButton(groupId: widget.group.id),
                     ],
                   ],
                 ),
               ),
             ),
-          ];
-        },
-        // Body kısmı - Post listesi
-        body: CustomScrollView(
-          slivers: [
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -580,7 +544,6 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                           ),
                         );
                       }
-
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Column(
@@ -636,6 +599,75 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               ),
             )
           : null,
+    );
+  }
+}
+
+class AdminPanelButton extends StatelessWidget {
+  final String groupId;
+
+  const AdminPanelButton({
+    super.key,
+    required this.groupId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.deepPurple.shade400,
+            Colors.deepPurple.shade700,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.deepPurple.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(15),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SmGroupAdmin(
+                  groupId: groupId,
+                ),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.admin_panel_settings,
+                  color: Colors.white,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Admin Panel",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -811,7 +843,6 @@ class PostWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
               margin: const EdgeInsets.symmetric(vertical: 12),
               height: 4,
@@ -821,7 +852,6 @@ class PostWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            // Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -850,7 +880,6 @@ class PostWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            // Edit field
             Padding(
               padding: const EdgeInsets.all(20),
               child: Container(
@@ -877,7 +906,6 @@ class PostWidget extends StatelessWidget {
                 ),
               ),
             ),
-            // Buttons
             Padding(
               padding: const EdgeInsets.all(20),
               child: Row(
@@ -1083,7 +1111,6 @@ class PostWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Kullanıcı Bilgileri ve Başlık
         Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -1160,7 +1187,6 @@ class PostWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              // Post Actions Menu
               FutureBuilder<bool>(
                 future: groupDetailService.isUserAdmin(
                   post.groupId,
@@ -1273,7 +1299,7 @@ class PostWidget extends StatelessWidget {
               ),
             ],
           ),
-        ), // Post İçeriği
+        ),
         if (post.content.isNotEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -1286,8 +1312,6 @@ class PostWidget extends StatelessWidget {
               ),
             ),
           ),
-
-        // Post Görseli
         if (post.imageUrl != null)
           Container(
             margin: const EdgeInsets.symmetric(vertical: 12),
@@ -1340,8 +1364,6 @@ class PostWidget extends StatelessWidget {
               ),
             ),
           ),
-
-        // Etkileşim Butonları
         Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -1368,6 +1390,44 @@ class PostWidget extends StatelessWidget {
     );
   }
 
+  Widget _buildInteractionButton({
+    required IconData icon,
+    bool isActive = false,
+    Color? activeColor,
+    required int count,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: isActive ? activeColor : Colors.grey[600],
+                size: 22,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                "$count $label",
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: isActive ? activeColor : Colors.grey[600],
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showComments(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -1385,7 +1445,6 @@ class PostWidget extends StatelessWidget {
           expand: false,
           builder: (context, scrollController) => Column(
             children: [
-              // Handle bar
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 12),
                 height: 4,
@@ -1395,7 +1454,6 @@ class PostWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              // Header
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -1429,7 +1487,7 @@ class PostWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              const Divider(), // Comments List
+              const Divider(),
               Expanded(
                 child: StreamBuilder<List<Comment>>(
                   stream:
@@ -1496,7 +1554,6 @@ class PostWidget extends StatelessWidget {
                   },
                 ),
               ),
-              // Comment Input
               CommentBottomSheet(
                 post: post,
                 groupDetailService: groupDetailService,
@@ -1622,44 +1679,6 @@ class PostWidget extends StatelessWidget {
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInteractionButton({
-    required IconData icon,
-    bool isActive = false,
-    Color? activeColor,
-    required int count,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: isActive ? activeColor : Colors.grey[600],
-                size: 22,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                "$count $label",
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: isActive ? activeColor : Colors.grey[600],
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
