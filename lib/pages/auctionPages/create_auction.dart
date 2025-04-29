@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:collectionapp/common_ui_methods.dart';
+import 'package:collectionapp/widgets/common/project_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,173 +18,73 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => AuctionCreateViewModel(),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: const ProjectBackButton(),
-        ),
-        body: Consumer<AuctionCreateViewModel>(
-          builder: (context, viewModel, child) {
-            return Stack(
+      child: Consumer<AuctionCreateViewModel>(
+        builder: (context, viewModel, child) {
+          return ProjectLayout(
+            title: "Create New Auction",
+            subtitle: "Fill in the details below",
+            headerIcon: Icons.gavel,
+            headerHeight: 250,
+            bottomNavigationBar: buildBottomButton(
+              isLoading: viewModel.isUploading,
+              onPressed: () => viewModel.uploadAuction(context),
+              buttonText: "Create Auction",
+              icon: Icons.gavel_outlined,
+            ),
+            body: ListView(
+              padding: const EdgeInsets.all(24),
               children: [
-                // Gradient Header
-                Positioned(
-                  top: 0,
-                  bottom: 40,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.deepPurple.shade400,
-                          Colors.deepPurple.shade900,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 5, 24, 80),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(top: 8),
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.15),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.gavel,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "Create New Auction",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Fill in the details below",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      color:
-                                          Colors.white.withValues(alpha: 0.7),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                Form(
+                  key: viewModel.formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildImageSection(context, viewModel),
+                      const SizedBox(height: 24),
+                      // Auction Details Section
+                      Text(
+                        "Auction Details",
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple,
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: -60,
-                  top: 250,
-                  left: 0,
-                  right: 0,
-                  child: Transform.translate(
-                    offset: const Offset(0, -60),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        controller: viewModel.nameController,
+                        label: "Auction Name",
+                        icon: Icons.title,
+                        validator: (value) =>
+                            value!.isEmpty ? "This field is required" : null,
                       ),
-                      child: ListView(
-                        padding: const EdgeInsets.all(24),
-                        children: [
-                          Form(
-                            key: viewModel.formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Images Section
-                                _buildImageSection(context, viewModel),
-                                const SizedBox(height: 24),
-
-                                // Auction Details Section
-                                Text(
-                                  "Auction Details",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.deepPurple,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: viewModel.nameController,
-                                  label: "Auction Name",
-                                  icon: Icons.title,
-                                  validator: (value) => value!.isEmpty
-                                      ? "This field is required"
-                                      : null,
-                                ),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: viewModel.priceController,
-                                  label: "Starting Price",
-                                  icon: Icons.attach_money,
-                                  keyboardType: TextInputType.number,
-                                  validator: (value) => value!.isEmpty
-                                      ? "This field is required"
-                                      : null,
-                                ),
-                                const SizedBox(height: 16),
-                                _buildDurationDropdown(viewModel),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: viewModel.descriptionController,
-                                  label: "Description",
-                                  icon: Icons.description,
-                                  maxLines: 3,
-                                  validator: (value) => value!.isEmpty
-                                      ? "This field is required"
-                                      : null,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        controller: viewModel.priceController,
+                        label: "Starting Price",
+                        icon: Icons.attach_money,
+                        keyboardType: TextInputType.number,
+                        validator: (value) =>
+                            value!.isEmpty ? "This field is required" : null,
                       ),
-                    ),
+                      const SizedBox(height: 16),
+                      _buildDurationDropdown(viewModel),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        controller: viewModel.descriptionController,
+                        label: "Description",
+                        icon: Icons.description,
+                        maxLines: 3,
+                        validator: (value) =>
+                            value!.isEmpty ? "This field is required" : null,
+                      ),
+                    ],
                   ),
                 ),
               ],
-            );
-          },
-        ),
-        bottomNavigationBar: Consumer<AuctionCreateViewModel>(
-          builder: (context, viewModel, child) => buildBottomButton(
-            isLoading: viewModel.isUploading,
-            onPressed: () => viewModel.uploadAuction(context),
-            buttonText: "Create Auction",
-            icon: Icons.gavel_outlined,
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -204,7 +105,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withAlpha(25),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -220,7 +121,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.withValues(alpha: 0.15),
+                    color: Colors.deepPurple.withAlpha(38),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -258,7 +159,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Colors.deepPurple.withValues(alpha: 0.3),
+                          color: Colors.deepPurple.withAlpha(76),
                           width: 2,
                           style: BorderStyle.solid,
                         ),
@@ -269,7 +170,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                           Icon(
                             Icons.add_photo_alternate_outlined,
                             size: 48,
-                            color: Colors.deepPurple.withValues(alpha: 0.75),
+                            color: Colors.deepPurple.withAlpha(191),
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -305,16 +206,14 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
-                                        color: Colors.deepPurple
-                                            .withValues(alpha: 0.3),
+                                        color: Colors.deepPurple.withAlpha(76),
                                         width: 2,
                                         style: BorderStyle.solid,
                                       ),
                                     ),
                                     child: Icon(
                                       Icons.add,
-                                      color: Colors.deepPurple
-                                          .withValues(alpha: 0.75),
+                                      color: Colors.deepPurple.withAlpha(191),
                                       size: 32,
                                     ),
                                   ),
@@ -348,8 +247,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
                                       child: Container(
                                         padding: const EdgeInsets.all(4),
                                         decoration: BoxDecoration(
-                                          color: Colors.black
-                                              .withValues(alpha: 0.1),
+                                          color: Colors.black.withAlpha(25),
                                           shape: BoxShape.circle,
                                         ),
                                         child: const Icon(
@@ -391,7 +289,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withAlpha(25),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -410,7 +308,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.15),
+              color: Colors.deepPurple.withAlpha(38),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
@@ -440,7 +338,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withAlpha(25),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -468,7 +366,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.15),
+              color: Colors.deepPurple.withAlpha(38),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
@@ -560,7 +458,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.deepPurple.withValues(alpha: 0.15),
+                color: Colors.deepPurple.withAlpha(38),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: Colors.deepPurple),
