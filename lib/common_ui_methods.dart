@@ -452,7 +452,7 @@ Future<void> showWarningDialog(
 }
 
 Widget buildBottomButton({
-  required bool isLoading,
+  bool? isLoading = false,
   required VoidCallback? onPressed,
   required String buttonText,
   required IconData icon,
@@ -478,7 +478,7 @@ Widget buildBottomButton({
         ),
         elevation: 4,
       ),
-      onPressed: isLoading ? null : onPressed,
+      onPressed: isLoading! ? null : onPressed,
       icon: isLoading ? null : Icon(icon, color: Colors.white),
       label: isLoading
           ? const SizedBox(
