@@ -1,3 +1,4 @@
+import 'package:collectionapp/widgets/common/project_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,210 +13,111 @@ class AddPaymentMethodPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => PaymentMethodViewModel(),
-      child: Scaffold(
-        backgroundColor: Colors.grey[100],
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: const ProjectBackButton(),
-        ),
-        body: Consumer<PaymentMethodViewModel>(
-          builder: (context, viewModel, child) {
-            return Stack(
-              children: [
-                // Header Section
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.deepPurple.shade400,
-                        Colors.deepPurple.shade900,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: SafeArea(
-                    bottom: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 80),
-                      child: Column(
+      child: Consumer<PaymentMethodViewModel>(
+        builder: (context, viewModel, child) {
+          return ProjectLayout(
+            title: "Add Payment Method",
+            subtitle: "Enter your card details",
+            headerIcon: Icons.add_card,
+            headerHeight: 250,
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Form(
+                  key: viewModel.formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTextField(
+                        controller: viewModel.nicknameController,
+                        label: "Card Nickname",
+                        icon: Icons.label_outline,
+                        validator: (value) =>
+                            value!.isEmpty ? "Required" : null,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        controller: viewModel.cardHolderController,
+                        label: "Card Holder Name",
+                        icon: Icons.person_outline,
+                        validator: (value) =>
+                            value!.isEmpty ? "Required" : null,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        controller: viewModel.cardNumberController,
+                        label: "Card Number",
+                        icon: Icons.credit_card,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(16),
+                          _CardNumberFormatter(),
+                        ],
+                        validator: (value) => value!.length < 19
+                            ? "Enter valid card number"
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(top: 8),
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.15),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.add_card,
-                                  color: Colors.white,
-                                  size: 24,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Add Payment Method",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Text(
-                                      "Enter your card details",
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        color:
-                                            Colors.white.withValues(alpha: 0.7),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          Expanded(
+                            child: _buildTextField(
+                              controller: viewModel.expiryController,
+                              label: "MM/YY",
+                              icon: Icons.date_range,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(4),
+                                _CardDateFormatter(),
+                              ],
+                              validator: (value) =>
+                                  value!.length < 5 ? "Enter valid date" : null,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildTextField(
+                              controller: viewModel.cvvController,
+                              label: "CVV",
+                              icon: Icons.lock_outline,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(3),
+                              ],
+                              validator: (value) =>
+                                  value!.length < 3 ? "Enter valid CVV" : null,
+                            ),
                           ),
                         ],
                       ),
-                    ),
+                      const SizedBox(height: 24),
+                      SwitchListTile(
+                        value: viewModel.isDefault,
+                        onChanged: (value) {
+                          viewModel.setIsDefault(value);
+                        },
+                        title: Text(
+                          "Set as default payment method",
+                          style: GoogleFonts.poppins(),
+                        ),
+                        activeColor: Colors.deepPurple,
+                      ),
+                    ],
                   ),
                 ),
-
-                // Content Section
-                Positioned(
-                  bottom: -60,
-                  top: 250,
-                  left: 0,
-                  right: 0,
-                  child: Transform.translate(
-                    offset: const Offset(0, -60),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Form(
-                            key: viewModel.formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildTextField(
-                                  controller: viewModel.nicknameController,
-                                  label: "Card Nickname",
-                                  icon: Icons.label_outline,
-                                  validator: (value) =>
-                                      value!.isEmpty ? "Required" : null,
-                                ),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: viewModel.cardHolderController,
-                                  label: "Card Holder Name",
-                                  icon: Icons.person_outline,
-                                  validator: (value) =>
-                                      value!.isEmpty ? "Required" : null,
-                                ),
-                                const SizedBox(height: 16),
-                                _buildTextField(
-                                  controller: viewModel.cardNumberController,
-                                  label: "Card Number",
-                                  icon: Icons.credit_card,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    LengthLimitingTextInputFormatter(16),
-                                    _CardNumberFormatter(),
-                                  ],
-                                  validator: (value) => value!.length < 19
-                                      ? "Enter valid card number"
-                                      : null,
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: _buildTextField(
-                                        controller: viewModel.expiryController,
-                                        label: "MM/YY",
-                                        icon: Icons.date_range,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter
-                                              .digitsOnly,
-                                          LengthLimitingTextInputFormatter(4),
-                                          _CardDateFormatter(),
-                                        ],
-                                        validator: (value) => value!.length < 5
-                                            ? "Enter valid date"
-                                            : null,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: _buildTextField(
-                                        controller: viewModel.cvvController,
-                                        label: "CVV",
-                                        icon: Icons.lock_outline,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter
-                                              .digitsOnly,
-                                          LengthLimitingTextInputFormatter(3),
-                                        ],
-                                        validator: (value) => value!.length < 3
-                                            ? "Enter valid CVV"
-                                            : null,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 24),
-                                SwitchListTile(
-                                  value: viewModel.isDefault,
-                                  onChanged: (value) {
-                                    viewModel.setIsDefault(value);
-                                  },
-                                  title: Text(
-                                    "Set as default payment method",
-                                    style: GoogleFonts.poppins(),
-                                  ),
-                                  activeColor: Colors.deepPurple,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-        bottomNavigationBar: Consumer<PaymentMethodViewModel>(
-          builder: (context, viewModel, child) => buildBottomButton(
-            isLoading: viewModel.isLoading,
-            onPressed: () => viewModel.savePaymentMethod(context),
-            buttonText: "Save Card",
-            icon: Icons.payment_outlined,
-          ),
-        ),
+              ),
+            ),
+            bottomNavigationBar: buildBottomButton(
+              isLoading: viewModel.isLoading,
+              onPressed: () => viewModel.savePaymentMethod(context),
+              buttonText: "Save Card",
+              icon: Icons.payment_outlined,
+            ),
+          );
+        },
       ),
     );
   }
