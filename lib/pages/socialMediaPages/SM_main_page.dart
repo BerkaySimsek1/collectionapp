@@ -36,7 +36,7 @@ class _GroupsListPageState extends State<GroupsListPage> {
             fontSize: 24,
           ),
         ),
-        leading: const ProjectBackButton(),
+        leading: const ProjectIconButton(),
       ),
       body: Column(
         children: [

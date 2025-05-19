@@ -1,7 +1,10 @@
 import "package:collectionapp/common_ui_methods.dart";
+import "package:collectionapp/firebase_methods/notification_methods.dart";
 import "package:collectionapp/firebase_methods/user_firestore_methods.dart";
+import "package:collectionapp/models/notification_model.dart";
 import "package:collectionapp/pages/address_page.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
+import "package:collectionapp/pages/notificationPages/notifications_page.dart";
 import "package:collectionapp/pages/paymentPages/payment_methods_page.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
@@ -104,31 +107,37 @@ class MainPage extends StatelessWidget {
                   elevation: 0,
                   toolbarHeight: 70,
                   leading: Builder(
-                    builder: (context) => IconButton(
-                      icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.menu,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                    ),
+                    builder: (context) => ProjectIconButton(
+                        icon: Icons.menu,
+                        onPressed: () => Scaffold.of(context).openDrawer()),
                   ),
                   actions: [
-                    GestureDetector(
-                      onTap: () {
+                    StreamBuilder<List<NotificationModel>>(
+                      stream: NotificationMethods().getNotifications(user.uid),
+                      builder: (context, snapshot) {
+                        int unreadCount = 0;
+                        if (snapshot.hasData) {
+                          unreadCount =
+                              snapshot.data!.where((n) => !n.isRead).length;
+                        }
+
+                        return ProjectIconButton(
+                          icon: Icons.notifications,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NotificationsPage(),
+                              ),
+                            );
+                          },
+                          unreadCount: unreadCount,
+                        );
+                      },
+                    ),
+                    ProjectIconButton(
+                      icon: Icons.person,
+                      onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -136,25 +145,6 @@ class MainPage extends StatelessWidget {
                           ),
                         );
                       },
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 16),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
                     ),
                   ],
                 ),

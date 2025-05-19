@@ -68,7 +68,7 @@ class _AuctionListScreenState extends State<AuctionListScreen> {
               fontSize: 24,
             ),
           ),
-          leading: const ProjectBackButton(),
+          leading: const ProjectIconButton(),
         ),
         body: Consumer<AuctionViewModel>(
           builder: (context, auctionViewModel, child) {

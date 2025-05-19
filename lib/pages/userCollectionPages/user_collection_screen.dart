@@ -24,7 +24,7 @@ class UserCollectionsScreen extends StatelessWidget {
             fontSize: 24,
           ),
         ),
-        leading: const ProjectBackButton(),
+        leading: const ProjectIconButton(),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
