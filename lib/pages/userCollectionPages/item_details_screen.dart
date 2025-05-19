@@ -47,7 +47,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
         forceMaterialTransparency: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const ProjectBackButton(),
+        leading: const ProjectIconButton(),
         actions: [
           Container(
             margin: const EdgeInsets.all(8),

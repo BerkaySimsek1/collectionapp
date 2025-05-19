@@ -194,7 +194,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         floating: false,
                         pinned: true,
                         expandedHeight: 360,
-                        leading: const ProjectBackButton(),
+                        leading: const ProjectIconButton(),
                       ),
                       SliverPersistentHeader(
                         pinned: true,

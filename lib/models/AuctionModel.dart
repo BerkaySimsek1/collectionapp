@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+
 class AuctionModel {
   String id;
   String name;
@@ -73,6 +76,20 @@ class AuctionModel {
     ));
     bidderId = userId;
     startingPrice = amount;
+  }
+
+  static Future<AuctionModel?> fromId(String id) async {
+    try {
+      final doc =
+          await FirebaseFirestore.instance.collection('auctions').doc(id).get();
+      if (doc.exists) {
+        return AuctionModel.fromMap(doc.data() as Map<String, dynamic>);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching auction: $e');
+      return null;
+    }
   }
 }
 

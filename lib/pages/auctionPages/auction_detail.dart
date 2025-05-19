@@ -23,7 +23,7 @@ class AuctionDetail extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: const ProjectBackButton(),
+          leading: const ProjectIconButton(),
           actions: [
             Consumer<AuctionDetailViewModel>(
               builder: (context, viewModel, child) {

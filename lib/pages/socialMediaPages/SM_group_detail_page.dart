@@ -321,7 +321,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               floating: false,
               pinned: true,
               expandedHeight: 300,
-              leading: const ProjectBackButton(),
+              leading: const ProjectIconButton(),
               actions: [
                 if (!widget.group.adminIds.contains(_currentUser!.uid))
                   Container(

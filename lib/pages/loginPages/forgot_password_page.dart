@@ -139,7 +139,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        leading: const ProjectBackButton(),
+        leading: const ProjectIconButton(),
       ),
       backgroundColor: Colors.white,
       body: Stack(

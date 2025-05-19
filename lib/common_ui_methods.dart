@@ -3,30 +3,67 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ProjectBackButton extends StatelessWidget {
-  const ProjectBackButton({
+class ProjectIconButton extends StatelessWidget {
+  final IconData? icon;
+  final VoidCallback? onPressed;
+  final int? unreadCount; // Yeni parametre
+
+  const ProjectIconButton({
     super.key,
+    this.icon,
+    this.onPressed,
+    this.unreadCount, // Opsiyonel parametre
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return IconButton(
+      icon: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(
+              icon ?? Icons.arrow_back,
+              color: Colors.deepPurple,
+            ),
           ),
+          if (unreadCount != null && unreadCount! > 0)
+            Positioned(
+              right: 0,
+              top: 0,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  unreadCount.toString(),
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
-      child: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.deepPurple),
-        onPressed: () => Navigator.pop(context),
-      ),
+      onPressed: onPressed ??
+          () {
+            Navigator.pop(context);
+          },
     );
   }
 }

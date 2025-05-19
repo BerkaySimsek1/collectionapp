@@ -1604,7 +1604,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       floating: false,
                       pinned: true,
                       expandedHeight: !isCurrentUser ? 400 : 360,
-                      leading: const ProjectBackButton(),
+                      leading: const ProjectIconButton(),
                       actions: [
                         if (!isCurrentUser) // Kullanıcı kendi profili değilse şikayet butonu göster
                           Container(

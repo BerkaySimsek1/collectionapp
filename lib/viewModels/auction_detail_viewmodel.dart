@@ -111,6 +111,19 @@ class AuctionDetailViewModel with ChangeNotifier {
         });
       }
 
+      // Bildirim oluştur
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'userId': auction
+            .creatorId, // Bildirimin gideceği kullanıcı (açık artırma sahibi)
+        'auctionId': auction.id,
+        'title': 'New Bid',
+        'message':
+            'Someone placed a bid of \$${bidAmount.toStringAsFixed(2)} on your auction "${auction.name}"',
+        'isRead': false,
+        'createdAt': DateTime.now().millisecondsSinceEpoch,
+        'type': 'bid'
+      });
+
       await _loadUserInfo(); // Bidder bilgilerini güncelle
       notifyListeners();
       return true;

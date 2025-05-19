@@ -72,7 +72,7 @@ class _UserAuctionsPageState extends State<UserAuctionsPage>
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const ProjectBackButton(),
+        leading: const ProjectIconButton(),
       ),
       body: Column(
         children: [
