@@ -103,34 +103,20 @@ class _NotificationsPageState extends State<NotificationsPage> {
       ),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) async {
-        return await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Delete Notification', style: GoogleFonts.poppins()),
-              content: Text(
-                  'Are you sure you want to delete this notification?',
-                  style: GoogleFonts.poppins()),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: Text('Cancel', style: GoogleFonts.poppins()),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: Text('Delete',
-                      style: GoogleFonts.poppins(color: Colors.red)),
-                ),
-              ],
-            );
+        return await showWarningDialog(
+          context,
+          () async {
+            await _notificationMethods.deleteNotification(notification.id);
+            if (mounted) {
+              projectSnackBar(
+                  context, '${notification.title} dismissed', "green");
+            }
           },
+          title: "Delete Notification",
+          message: "Are you sure you want to delete this notification?",
+          buttonText: "Delete",
+          icon: Icons.delete_outline,
         );
-      },
-      onDismissed: (direction) async {
-        await _notificationMethods.deleteNotification(notification.id);
-        if (mounted) {
-          projectSnackBar(context, '${notification.title} dismissed', "green");
-        }
       },
       child: GestureDetector(
         onTap: () async {

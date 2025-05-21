@@ -371,11 +371,17 @@ TextTheme projectTextTheme(BuildContext context) {
   );
 }
 
-Future<void> showWarningDialog(
+Future<bool> showWarningDialog(
   BuildContext context,
-  VoidCallback onPressed,
-) async {
-  showDialog(
+  VoidCallback onPressed, {
+  String title = "Log Out",
+  String message = "Are you sure you want to log out?",
+  String buttonText = "Log Out",
+  IconData icon = Icons.logout_rounded,
+  Color color = Colors.deepPurple,
+}) async {
+  bool result = false;
+  await showDialog(
     context: context,
     builder: (context) => Dialog(
       backgroundColor: Colors.transparent,
@@ -394,36 +400,33 @@ Future<void> showWarningDialog(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Warning Icon
             Container(
               margin: const EdgeInsets.only(top: 20),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.deepPurple.withValues(alpha: 0.15),
+                color: color.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.logout_rounded,
-                color: Colors.deepPurple,
+              child: Icon(
+                icon,
+                color: color,
                 size: 32,
               ),
             ),
             const SizedBox(height: 16),
-            // Title
             Text(
-              "Log Out",
+              title,
               style: GoogleFonts.poppins(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
+                color: color,
               ),
             ),
             const SizedBox(height: 12),
-            // Message
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                "Are you sure you want to log out?",
+                message,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   fontSize: 14,
@@ -432,14 +435,16 @@ Future<void> showWarningDialog(
               ),
             ),
             const SizedBox(height: 24),
-            // Buttons
             Padding(
               padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
                   Expanded(
                     child: TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        result = false;
+                        Navigator.pop(context);
+                      },
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -459,9 +464,13 @@ Future<void> showWarningDialog(
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: onPressed,
+                      onPressed: () {
+                        result = true;
+                        onPressed();
+                        Navigator.pop(context);
+                      },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: color,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -469,7 +478,7 @@ Future<void> showWarningDialog(
                         elevation: 0,
                       ),
                       child: Text(
-                        "Log Out",
+                        buttonText,
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -486,6 +495,7 @@ Future<void> showWarningDialog(
       ),
     ),
   );
+  return result;
 }
 
 Widget buildBottomButton({
