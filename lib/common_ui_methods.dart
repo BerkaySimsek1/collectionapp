@@ -700,12 +700,15 @@ Future<void> showReportDialog(
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () async {
+                            // ElevatedButton onPressed içindeki çağrı:
                             await UserFirestoreMethods().reportUserOrAuction(
-                              object,
+                              object, // Bu, "user", "auction" veya "group" olabilir
                               currentUserId,
                               reportReason,
-                              reportedId: reportedId,
-                              auctionId: objectId,
+                              reportedId:
+                                  reportedId, // showReportDialog'un parametrelerinden gelen 'reportedId'
+                              auctionId:
+                                  objectId, // showReportDialog'un parametrelerinden gelen 'objectId' (sadece müzayede için kullanılır)
                             );
                             if (context.mounted) {
                               Navigator.pop(context);

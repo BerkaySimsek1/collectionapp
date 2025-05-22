@@ -1,12 +1,14 @@
 import "package:collectionapp/common_ui_methods.dart";
 import "package:collectionapp/firebase_methods/notification_methods.dart";
 import "package:collectionapp/firebase_methods/user_firestore_methods.dart";
+import "package:collectionapp/models/UserInfoModel.dart";
 import "package:collectionapp/models/notification_model.dart";
 import "package:collectionapp/pages/address_page.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
 import "package:collectionapp/pages/notificationPages/notifications_page.dart";
 import "package:collectionapp/pages/paymentPages/payment_methods_page.dart";
 import "package:flutter/material.dart";
+import 'package:flutter/widgets.dart';
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/pages/loginPages/auth_page.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_main_page.dart";
@@ -18,8 +20,33 @@ import "package:google_fonts/google_fonts.dart";
 import "package:collectionapp/pages/paymentPages/add_funds_page.dart";
 import "package:collectionapp/pages/paymentPages/withdraw_funds_page.dart";
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // İlk yüklemede de son aktiflik güncellemesi
+    UserFirestoreMethods().updateLastActive();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      UserFirestoreMethods().updateLastActive();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,24 +55,6 @@ class MainPage extends StatelessWidget {
       builder: (context, authSnapshot) {
         if (authSnapshot.hasData) {
           final user = authSnapshot.data;
-
-          // Kullanıcı aktif olduğunda lastActive alanını güncelle
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            try {
-              // UserFirestoreMethods sınıfını kullanarak son aktif olma tarihini güncelle
-              final userFirestoreMethods = UserFirestoreMethods();
-              final success = await userFirestoreMethods.updateLastActive();
-
-              if (success) {
-                debugPrint(
-                    "Kullanıcı son aktivite tarihi başarıyla güncellendi");
-              } else {
-                debugPrint("Kullanıcı son aktivite tarihi güncellenemedi");
-              }
-            } catch (e) {
-              debugPrint("Son aktivite tarihi güncellenirken hata oluştu: $e");
-            }
-          });
 
           return StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
@@ -64,6 +73,7 @@ class MainPage extends StatelessWidget {
                 );
               }
               if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                // This case handles when user data is not found in Firestore
                 return Container(
                   color: Colors.grey[100],
                   child: Center(
@@ -81,7 +91,7 @@ class MainPage extends StatelessWidget {
                             FirebaseAuth.instance.signOut();
                           },
                           child: Text(
-                            "User data not found.",
+                            "User data not found. Please log in again.",
                             style: GoogleFonts.poppins(
                               fontSize: 18,
                               color: Colors.grey[600],
@@ -96,9 +106,69 @@ class MainPage extends StatelessWidget {
 
               final userData =
                   userSnapshot.data!.data() as Map<String, dynamic>;
-              final firstName = userData["firstName"] ?? "Unknown";
-              final lastName = userData["lastName"] ?? "User";
-              var photoUrl = userData["profileImageUrl"] ?? "";
+              // Use UserInfoModel to parse the data
+              final currentUserInfo = UserInfoModel.fromJson(userData);
+
+              // Check if the user is active
+              if (currentUserInfo.isActive == false) {
+                return Scaffold(
+                  backgroundColor: Colors.grey[100],
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.lock_outline,
+                          size: 80,
+                          color: Colors.red[300],
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          "This user profile is deactivated.",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red[700],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          "Please contact support for more information.",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut();
+                          },
+                          icon: const Icon(Icons.exit_to_app),
+                          label: const Text("Log Out"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepPurple,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 25, vertical: 12),
+                            textStyle: GoogleFonts.poppins(fontSize: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
+              // If active, proceed with the main application UI
+              final firstName = currentUserInfo.firstName;
+              final lastName = currentUserInfo.lastName;
+              var photoUrl = currentUserInfo.profileImageUrl;
 
               return Scaffold(
                 backgroundColor: Colors.grey[100],
@@ -178,8 +248,7 @@ class MainPage extends StatelessWidget {
                               ),
                               child: CircleAvatar(
                                 radius: 35,
-                                backgroundColor:
-                                    Colors.white.withValues(alpha: 0.2),
+                                backgroundColor: Colors.white.withOpacity(0.2),
                                 backgroundImage: photoUrl.isNotEmpty
                                     ? NetworkImage(photoUrl)
                                     : null,
@@ -203,7 +272,7 @@ class MainPage extends StatelessWidget {
                             Text(
                               user.email ?? "",
                               style: GoogleFonts.poppins(
-                                color: Colors.white.withValues(alpha: 0.7),
+                                color: Colors.white.withOpacity(0.7),
                                 fontSize: 14,
                               ),
                             ),
@@ -293,8 +362,7 @@ class MainPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color:
-                                      Colors.deepPurple.withValues(alpha: 0.1),
+                                  color: Colors.deepPurple.withOpacity(0.1),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
                                 ),
@@ -307,7 +375,7 @@ class MainPage extends StatelessWidget {
                                   "Welcome back,",
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
-                                    color: Colors.white.withValues(alpha: 0.7),
+                                    color: Colors.white.withOpacity(0.7),
                                   ),
                                 ),
                                 Text(
@@ -323,7 +391,7 @@ class MainPage extends StatelessWidget {
                                   "Explore your collections and connect with others",
                                   style: GoogleFonts.poppins(
                                     fontSize: 14,
-                                    color: Colors.white.withValues(alpha: 0.7),
+                                    color: Colors.white.withOpacity(0.7),
                                   ),
                                 ),
                               ],
@@ -333,7 +401,9 @@ class MainPage extends StatelessWidget {
 
                           // Balance Section
                           _buildBalanceCard(
-                              context, userData['balance'] ?? 0.0),
+                              context,
+                              currentUserInfo.balance ??
+                                  0.0), // Assuming balance is part of UserInfoModel or accessible
                           const SizedBox(height: 32),
 
                           // Features Section
@@ -421,7 +491,10 @@ class MainPage extends StatelessWidget {
       },
     );
   }
+  // end of StreamBuilder authSnapshot.hasData case
+  // ... (rest of the _buildDrawerItem, _buildFeatureCard, _buildBalanceCard methods remain the same)
 
+  // ... (rest of the _buildDrawerItem, _buildFeatureCard, _buildBalanceCard methods remain the same)
   Widget _buildDrawerItem({
     required IconData icon,
     required String title,
@@ -431,7 +504,7 @@ class MainPage extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.deepPurple.withValues(alpha: 0.15),
+          color: Colors.deepPurple.withOpacity(0.15),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -464,7 +537,7 @@ class MainPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: gradient[0].withValues(alpha: 0.2),
+            color: gradient[0].withOpacity(0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -490,7 +563,7 @@ class MainPage extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: Colors.white.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -516,7 +589,7 @@ class MainPage extends StatelessWidget {
                         subtitle,
                         style: GoogleFonts.poppins(
                           fontSize: 14,
-                          color: Colors.white.withValues(alpha: 0.7),
+                          color: Colors.white.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -524,7 +597,7 @@ class MainPage extends StatelessWidget {
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: Colors.white.withOpacity(0.7),
                   size: 20,
                 ),
               ],
@@ -542,7 +615,7 @@ class MainPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -571,7 +644,7 @@ class MainPage extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.15),
+              color: Colors.deepPurple.withOpacity(0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(

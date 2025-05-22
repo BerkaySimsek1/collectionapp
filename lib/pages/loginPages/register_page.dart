@@ -88,8 +88,6 @@ class _RegisterPageState extends State<RegisterPage> {
             followers: [],
             following: [],
             profileImageUrl: downloadUrl, // Seçilen resmin URL'si
-            createdAt: DateTime.now(), // Oluşturma tarihini ekle
-            lastActive: DateTime.now(), // Son aktivite tarihini ekle
           );
 
           // Firestore'a kaydet
@@ -124,10 +122,11 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future addUserDetails(UserInfoModel user) async {
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(user.uid)
-        .set(user.toJson());
+    await FirebaseFirestore.instance.collection("users").doc(user.uid).set({
+      ...user.toJson(),
+      'createdAt': FieldValue.serverTimestamp(),
+      'lastActive': FieldValue.serverTimestamp(),
+    });
   }
 
   bool passwordConfirmed() {
