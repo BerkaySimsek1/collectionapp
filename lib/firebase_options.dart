@@ -30,49 +30,73 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const projectId = String.fromEnvironment('PROJECT_ID');
+  static const messagingSenderId =
+      String.fromEnvironment('MESSAGING_SENDER_ID');
+  static const authDomain = String.fromEnvironment('AUTH_DOMAIN');
+  static const storageBucket = String.fromEnvironment('STORAGE_BUCKET');
+
+  static const webApiKey = String.fromEnvironment('WEB_API_KEY');
+  static const webAppId = String.fromEnvironment('WEB_APP_ID');
+  static const measurementId = String.fromEnvironment('WEB_APP_ID');
+
+  static const androidApiKey = String.fromEnvironment('ANDROID_API_KEY');
+  static const androidAppId = String.fromEnvironment('ANDROID_APP_ID');
+
+  static const iosApiKey = String.fromEnvironment('IOS_API_KEY');
+  static const iosAppId = String.fromEnvironment('IOS_APP_ID');
+  static const iosBundleId = String.fromEnvironment('IOS_BUNDLE_ID');
+
+  static const windowsApiKey = String.fromEnvironment('WINDOWS_API_KEY');
+  static const windowsAppId = String.fromEnvironment('WINDOWS_APP_ID');
+  static const windowsBundleId = String.fromEnvironment('WINDOWS_BUNDLE_ID');
+
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCmV7qovbpWHBKKYM1XqrQoNdDWoMVzu1c',
-    appId: '1:651794069374:web:5f65f3cd62b34a0060652f',
-    messagingSenderId: '651794069374',
-    projectId: 'collectionapp-d4e51',
-    authDomain: 'collectionapp-d4e51.firebaseapp.com',
-    storageBucket: 'collectionapp-d4e51.appspot.com',
-    measurementId: 'G-0RHR9H9Q3H',
+    apiKey: webApiKey,
+    appId: webAppId,
+    messagingSenderId: messagingSenderId,
+    projectId: projectId,
+    authDomain: authDomain,
+    storageBucket: storageBucket,
+    measurementId: measurementId,
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBVrbWaMlKEaUe6QKNhL_LtOtUN5EdDSfo',
-    appId: '1:651794069374:android:df3023d4c037072f60652f',
-    messagingSenderId: '651794069374',
-    projectId: 'collectionapp-d4e51',
-    storageBucket: 'collectionapp-d4e51.appspot.com',
+    apiKey: androidApiKey,
+    appId: androidAppId,
+    messagingSenderId: messagingSenderId,
+    projectId: projectId,
+    storageBucket: storageBucket,
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDdzPtNBKFsqyX_44zl2Xu5Dbn1oKERo2E',
-    appId: '1:651794069374:ios:eef557b8ae5c2a9e60652f',
-    messagingSenderId: '651794069374',
-    projectId: 'collectionapp-d4e51',
-    storageBucket: 'collectionapp-d4e51.appspot.com',
-    iosBundleId: 'com.example.collectionapp',
+    apiKey: iosApiKey,
+    appId: iosAppId,
+    messagingSenderId: messagingSenderId,
+    projectId: projectId,
+    storageBucket: storageBucket,
+    iosBundleId: iosBundleId,
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDdzPtNBKFsqyX_44zl2Xu5Dbn1oKERo2E',
-    appId: '1:651794069374:ios:eef557b8ae5c2a9e60652f',
-    messagingSenderId: '651794069374',
-    projectId: 'collectionapp-d4e51',
-    storageBucket: 'collectionapp-d4e51.appspot.com',
-    iosBundleId: 'com.example.collectionapp',
+    apiKey: iosApiKey,
+    appId: iosAppId,
+    messagingSenderId: messagingSenderId,
+    projectId: projectId,
+    storageBucket: storageBucket,
+    iosBundleId: iosBundleId,
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCmV7qovbpWHBKKYM1XqrQoNdDWoMVzu1c',
-    appId: '1:651794069374:web:8b8cf398d239602160652f',
-    messagingSenderId: '651794069374',
-    projectId: 'collectionapp-d4e51',
-    authDomain: 'collectionapp-d4e51.firebaseapp.com',
-    storageBucket: 'collectionapp-d4e51.appspot.com',
-    measurementId: 'G-8R51Q364QR',
+    apiKey: windowsApiKey,
+    appId: windowsAppId,
+    messagingSenderId: messagingSenderId,
+    projectId: projectId,
+    authDomain: authDomain,
+    storageBucket: storageBucket,
+    measurementId: windowsBundleId,
   );
+
+  // Add other API keys here
+  // static String get googleMapsApiKey => dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 }
