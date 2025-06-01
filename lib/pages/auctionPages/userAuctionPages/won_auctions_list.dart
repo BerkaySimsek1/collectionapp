@@ -12,7 +12,7 @@ class WonAuctionsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final wonAuctionsQuery = FirebaseFirestore.instance
         .collection("auctions")
-        .where("highestBidderId", isEqualTo: userUid)
+        .where("bidder_id", isEqualTo: userUid)
         .where("isAuctionEnd", isEqualTo: true);
 
     return StreamBuilder<QuerySnapshot>(

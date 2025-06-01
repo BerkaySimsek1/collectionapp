@@ -100,7 +100,7 @@ class CreatedAuctionsList extends StatelessWidget {
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection("auctions")
-              .where(FieldPath.documentId, whereIn: createdAuctions)
+              .where("creator_id", isEqualTo: userUid)
               .snapshots(),
           builder: (context, auctionsSnapshot) {
             if (auctionsSnapshot.connectionState == ConnectionState.waiting) {

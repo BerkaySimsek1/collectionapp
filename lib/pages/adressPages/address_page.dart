@@ -31,10 +31,9 @@ class _AddressPageState extends State<AddressPage> {
       try {
         final user = FirebaseAuth.instance.currentUser;
         await FirebaseFirestore.instance
-            .collection('users')
+            .collection('adresses')
             .doc(user!.uid)
-            .collection('addresses')
-            .add({
+            .set({
           'title': _addressTitleController.text,
           'country': countryValue,
           'state': stateValue,

@@ -3,7 +3,8 @@ import "package:collectionapp/firebase_methods/notification_methods.dart";
 import "package:collectionapp/firebase_methods/user_firestore_methods.dart";
 import "package:collectionapp/models/user_info_model.dart";
 import "package:collectionapp/models/notification_model.dart";
-import "package:collectionapp/pages/address_page.dart";
+import "package:collectionapp/pages/adressPages/adress_mainpage.dart";
+import "package:collectionapp/pages/auctionPages/auctionPurchasePages/orderMainPage.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
 import "package:collectionapp/pages/notificationPages/notifications_page.dart";
 import "package:collectionapp/pages/paymentPages/payment_methods_page.dart";
@@ -310,7 +311,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const AddressPage(),
+                              builder: (context) => const AddressMainPage(),
                             ),
                           );
                         },
@@ -323,6 +324,19 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                             context,
                             MaterialPageRoute(
                               builder: (context) => const PaymentMethodsPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.shopping_basket,
+                        title: "Orders",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const OrderMainPage(), // Replace Placeholder with OrdersPage when available
                             ),
                           );
                         },
