@@ -1,9 +1,9 @@
 import "package:collectionapp/common_ui_methods.dart";
 import "package:flutter/material.dart";
-import "package:collectionapp/firebase_methods/SM_firestore_methods.dart";
-import "package:collectionapp/models/GroupModel.dart";
+import "package:collectionapp/firebase_methods/sm_firestore_methods.dart";
+import "package:collectionapp/models/group_model.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_creategroup_page.dart";
-import "package:collectionapp/pages/socialMediaPages/SM_group_detail_page.dart";
+import "package:collectionapp/pages/socialMediaPages/sm_group_detail_page.dart";
 import 'package:collectionapp/models/predefined_collections.dart';
 import 'package:google_fonts/google_fonts.dart';
 

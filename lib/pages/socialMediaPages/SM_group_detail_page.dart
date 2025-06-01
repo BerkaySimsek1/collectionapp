@@ -1,8 +1,8 @@
 import "dart:ui";
 import "package:collectionapp/common_ui_methods.dart";
-import "package:collectionapp/firebase_methods/SM_firestore_methods.dart";
-import "package:collectionapp/models/GroupModel.dart";
-import "package:collectionapp/models/PostModel.dart";
+import "package:collectionapp/firebase_methods/sm_firestore_methods.dart";
+import "package:collectionapp/models/group_model.dart";
+import "package:collectionapp/models/post_model.dart";
 import "package:collectionapp/pages/socialMediaPages/SM_group_admin.dart";
 import "package:collectionapp/pages/socialMediaPages/create_post_widget.dart";
 import "package:collectionapp/pages/profilePages/user_profile_page.dart";

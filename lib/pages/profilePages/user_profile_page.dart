@@ -1,12 +1,12 @@
 import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
-import 'package:collectionapp/models/GroupModel.dart';
+import 'package:collectionapp/models/group_model.dart';
 import 'package:collectionapp/pages/profilePages/edit_profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collectionapp/pages/socialMediaPages/SM_group_detail_page.dart';
+import 'package:collectionapp/pages/socialMediaPages/sm_group_detail_page.dart';
 import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
 import 'package:collectionapp/pages/userCollectionPages/collection_items_screen.dart';
 import 'package:flutter/scheduler.dart';

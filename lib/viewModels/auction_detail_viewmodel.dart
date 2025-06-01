@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:collectionapp/models/UserInfoModel.dart';
+import 'package:collectionapp/models/user_info_model.dart';
 import 'package:collectionapp/models/AuctionModel.dart';
 
 class AuctionDetailViewModel with ChangeNotifier {

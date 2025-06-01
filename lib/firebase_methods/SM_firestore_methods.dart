@@ -2,8 +2,8 @@ import "dart:io";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_storage/firebase_storage.dart";
 import "package:flutter/material.dart";
-import "package:collectionapp/models/GroupModel.dart";
-import "package:collectionapp/models/PostModel.dart";
+import "package:collectionapp/models/group_model.dart";
+import "package:collectionapp/models/post_model.dart";
 
 class GroupService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

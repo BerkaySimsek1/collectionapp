@@ -1,7 +1,7 @@
 import "dart:io";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/common_ui_methods.dart";
-import "package:collectionapp/firebase_methods/SM_firestore_methods.dart";
+import "package:collectionapp/firebase_methods/sm_firestore_methods.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";

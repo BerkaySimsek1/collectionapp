@@ -1,17 +1,16 @@
 import "package:collectionapp/common_ui_methods.dart";
 import "package:collectionapp/firebase_methods/notification_methods.dart";
 import "package:collectionapp/firebase_methods/user_firestore_methods.dart";
-import "package:collectionapp/models/UserInfoModel.dart";
+import "package:collectionapp/models/user_info_model.dart";
 import "package:collectionapp/models/notification_model.dart";
 import "package:collectionapp/pages/address_page.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
 import "package:collectionapp/pages/notificationPages/notifications_page.dart";
 import "package:collectionapp/pages/paymentPages/payment_methods_page.dart";
 import "package:flutter/material.dart";
-import 'package:flutter/widgets.dart';
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/pages/loginPages/auth_page.dart";
-import "package:collectionapp/pages/socialMediaPages/SM_main_page.dart";
+import "package:collectionapp/pages/socialMediaPages/sm_main_page.dart";
 import "package:collectionapp/pages/profilePages/user_profile_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
@@ -248,7 +247,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                               ),
                               child: CircleAvatar(
                                 radius: 35,
-                                backgroundColor: Colors.white.withOpacity(0.2),
+                                backgroundColor:
+                                    Colors.white.withValues(alpha: 0.2),
                                 backgroundImage: photoUrl.isNotEmpty
                                     ? NetworkImage(photoUrl)
                                     : null,
@@ -272,7 +272,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                             Text(
                               user.email ?? "",
                               style: GoogleFonts.poppins(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                                 fontSize: 14,
                               ),
                             ),
@@ -362,7 +362,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.deepPurple.withOpacity(0.1),
+                                  color:
+                                      Colors.deepPurple.withValues(alpha: 0.1),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
                                 ),
@@ -375,7 +376,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                                   "Welcome back,",
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
-                                    color: Colors.white.withOpacity(0.7),
+                                    color: Colors.white.withValues(alpha: 0.7),
                                   ),
                                 ),
                                 Text(
@@ -391,7 +392,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                                   "Explore your collections and connect with others",
                                   style: GoogleFonts.poppins(
                                     fontSize: 14,
-                                    color: Colors.white.withOpacity(0.7),
+                                    color: Colors.white.withValues(alpha: 0.7),
                                   ),
                                 ),
                               ],
@@ -504,7 +505,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.deepPurple.withOpacity(0.15),
+          color: Colors.deepPurple.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -537,7 +538,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: gradient[0].withOpacity(0.2),
+            color: gradient[0].withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -563,7 +564,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -589,7 +590,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                         subtitle,
                         style: GoogleFonts.poppins(
                           fontSize: 14,
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -597,7 +598,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   size: 20,
                 ),
               ],
@@ -615,7 +616,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -644,7 +645,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           leading: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.15),
+              color: Colors.deepPurple.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
