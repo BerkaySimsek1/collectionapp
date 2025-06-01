@@ -50,6 +50,7 @@ dependencies:
   flutter_image_compress: ^2.3.0
   uuid: ^4.5.1
   timeago: ^3.7.1
+  flutter_dotenv: ^5.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -75,6 +76,7 @@ flutter:
   assets:
     - assets/loading.json
     - assets/transparent.png
+    - .env
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
