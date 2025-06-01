@@ -59,3 +59,15 @@ ios/Runner/GoogleService-Info.plist
 **/api_keys.dart
 **/secrets.dart
 **/config/secrets.json
+
+# CMake and build cache
+android/app/.cxx/
+**/CMakeCache.txt
+**/CMakeFiles/
+**/.ninja_deps
+**/.ninja_log
+**/build_file_index.txt
+**/symbol_folder_index.txt
+**/metadata_generation_command.txt
+**/TargetDirectories.txt
+**/hash_key.txt

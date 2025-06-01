@@ -20,3 +20,17 @@ app/google-services.json
 .env
 .env.*
 local.properties
+
+# CMake build cache and native build artifacts
+app/.cxx/
+.cxx/
+**/CMakeCache.txt
+**/CMakeFiles/
+**/.ninja_deps
+**/.ninja_log
+**/build_file_index.txt
+**/symbol_folder_index.txt
+**/metadata_generation_command.txt
+**/TargetDirectories.txt
+**/hash_key.txt
+**/compile_commands.json
