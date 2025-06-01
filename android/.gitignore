@@ -22,8 +22,8 @@ app/google-services.json
 local.properties
 
 # CMake build cache and native build artifacts
-app/.cxx/
-.cxx/
+android/app/.cxx/
+android/google-services.json
 **/CMakeCache.txt
 **/CMakeFiles/
 **/.ninja_deps
