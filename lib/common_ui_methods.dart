@@ -714,6 +714,7 @@ Future<void> showReportDialog(
                               Navigator.pop(context);
                             }
                           },
+                          // ElevatedButton onPressed içindeki çağrı:
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             padding: const EdgeInsets.symmetric(vertical: 12),
