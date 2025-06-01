@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'env_config.dart';
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
@@ -30,71 +31,50 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const projectId = String.fromEnvironment('PROJECT_ID');
-  static const messagingSenderId =
-      String.fromEnvironment('MESSAGING_SENDER_ID');
-  static const authDomain = String.fromEnvironment('AUTH_DOMAIN');
-  static const storageBucket = String.fromEnvironment('STORAGE_BUCKET');
-
-  static const webApiKey = String.fromEnvironment('WEB_API_KEY');
-  static const webAppId = String.fromEnvironment('WEB_APP_ID');
-  static const measurementId = String.fromEnvironment('WEB_APP_ID');
-
-  static const androidApiKey = String.fromEnvironment('ANDROID_API_KEY');
-  static const androidAppId = String.fromEnvironment('ANDROID_APP_ID');
-
-  static const iosApiKey = String.fromEnvironment('IOS_API_KEY');
-  static const iosAppId = String.fromEnvironment('IOS_APP_ID');
-  static const iosBundleId = String.fromEnvironment('IOS_BUNDLE_ID');
-
-  static const windowsApiKey = String.fromEnvironment('WINDOWS_API_KEY');
-  static const windowsAppId = String.fromEnvironment('WINDOWS_APP_ID');
-  static const windowsBundleId = String.fromEnvironment('WINDOWS_BUNDLE_ID');
-
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: webApiKey,
-    appId: webAppId,
-    messagingSenderId: messagingSenderId,
-    projectId: projectId,
-    authDomain: authDomain,
-    storageBucket: storageBucket,
-    measurementId: measurementId,
+  static FirebaseOptions web = FirebaseOptions(
+    apiKey: EnvConfig.webApiKey,
+    appId: EnvConfig.webAppId,
+    messagingSenderId: EnvConfig.messagingSenderId,
+    projectId: EnvConfig.projectId,
+    authDomain: EnvConfig.authDomain,
+    storageBucket: EnvConfig.storageBucket,
+    measurementId: EnvConfig.measurementId,
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: androidApiKey,
-    appId: androidAppId,
-    messagingSenderId: messagingSenderId,
-    projectId: projectId,
-    storageBucket: storageBucket,
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: EnvConfig.androidApiKey,
+    appId: EnvConfig.androidAppId,
+    messagingSenderId: EnvConfig.messagingSenderId,
+    projectId: EnvConfig.projectId,
+    storageBucket: EnvConfig.storageBucket,
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: iosApiKey,
-    appId: iosAppId,
-    messagingSenderId: messagingSenderId,
-    projectId: projectId,
-    storageBucket: storageBucket,
-    iosBundleId: iosBundleId,
+  static FirebaseOptions ios = FirebaseOptions(
+    apiKey: EnvConfig.iosApiKey,
+    appId: EnvConfig.iosAppId,
+    messagingSenderId: EnvConfig.messagingSenderId,
+    projectId: EnvConfig.projectId,
+    storageBucket: EnvConfig.storageBucket,
+    iosBundleId: EnvConfig.iosBundleId,
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: iosApiKey,
-    appId: iosAppId,
-    messagingSenderId: messagingSenderId,
-    projectId: projectId,
-    storageBucket: storageBucket,
-    iosBundleId: iosBundleId,
+  static FirebaseOptions macos = FirebaseOptions(
+    apiKey: EnvConfig.iosApiKey,
+    appId: EnvConfig.iosAppId,
+    messagingSenderId: EnvConfig.messagingSenderId,
+    projectId: EnvConfig.projectId,
+    storageBucket: EnvConfig.storageBucket,
+    iosBundleId: EnvConfig.iosBundleId,
   );
 
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: windowsApiKey,
-    appId: windowsAppId,
-    messagingSenderId: messagingSenderId,
-    projectId: projectId,
-    authDomain: authDomain,
-    storageBucket: storageBucket,
-    measurementId: windowsBundleId,
+  static FirebaseOptions windows = FirebaseOptions(
+    apiKey: EnvConfig.windowsApiKey,
+    appId: EnvConfig.windowsAppId,
+    messagingSenderId: EnvConfig.messagingSenderId,
+    projectId: EnvConfig.projectId,
+    authDomain: EnvConfig.authDomain,
+    storageBucket: EnvConfig.storageBucket,
+    measurementId: EnvConfig.windowsBundleId,
   );
 
   // Add other API keys here
