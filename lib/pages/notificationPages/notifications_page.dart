@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:collectionapp/models/notification_model.dart';
 import 'package:collectionapp/firebase_methods/notification_methods.dart';
 import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
-import 'package:collectionapp/models/AuctionModel.dart';
+import 'package:collectionapp/models/auction_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;

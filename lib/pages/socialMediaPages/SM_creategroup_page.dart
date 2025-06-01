@@ -11,10 +11,10 @@ class CreateGroupPage extends StatefulWidget {
   const CreateGroupPage({super.key});
 
   @override
-  _CreateGroupPageState createState() => _CreateGroupPageState();
+  CreateGroupPageState createState() => CreateGroupPageState();
 }
 
-class _CreateGroupPageState extends State<CreateGroupPage> {
+class CreateGroupPageState extends State<CreateGroupPage> {
   final _formKey = GlobalKey<FormState>();
   final _groupService = GroupService();
   final _currentUser = FirebaseAuth.instance.currentUser;

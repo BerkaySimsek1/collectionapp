@@ -12,10 +12,10 @@ class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key, required this.userData});
 
   @override
-  _EditProfilePageState createState() => _EditProfilePageState();
+  EditProfilePageState createState() => EditProfilePageState();
 }
 
-class _EditProfilePageState extends State<EditProfilePage> {
+class EditProfilePageState extends State<EditProfilePage> {
   final UserFirestoreMethods _firestoreService = UserFirestoreMethods();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 

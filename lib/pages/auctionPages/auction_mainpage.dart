@@ -2,7 +2,7 @@ import "package:collectionapp/common_ui_methods.dart";
 import 'package:collectionapp/viewModels/auction_viewmodel.dart';
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
-import "package:collectionapp/models/AuctionModel.dart";
+import "package:collectionapp/models/auction_model.dart";
 import "package:collectionapp/pages/auctionPages/auction_detail.dart";
 import "package:collectionapp/pages/auctionPages/create_auction.dart";
 import "package:collectionapp/countdown_timer.dart";

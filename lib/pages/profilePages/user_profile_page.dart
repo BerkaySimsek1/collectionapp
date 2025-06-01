@@ -1,6 +1,6 @@
 import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
-import 'package:collectionapp/models/AuctionModel.dart';
+import 'package:collectionapp/models/auction_model.dart';
 import 'package:collectionapp/models/group_model.dart';
 import 'package:collectionapp/pages/profilePages/edit_profile_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,10 +17,10 @@ class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key, this.userId});
 
   @override
-  _UserProfilePageState createState() => _UserProfilePageState();
+  UserProfilePageState createState() => UserProfilePageState();
 }
 
-class _UserProfilePageState extends State<UserProfilePage> {
+class UserProfilePageState extends State<UserProfilePage> {
   final UserFirestoreMethods _firestoreService = UserFirestoreMethods();
 
   Map<String, dynamic>? userData;

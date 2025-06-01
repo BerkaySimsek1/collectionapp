@@ -2,7 +2,7 @@ import "package:collectionapp/common_ui_methods.dart";
 import "package:flutter/material.dart";
 import "package:collectionapp/firebase_methods/sm_firestore_methods.dart";
 import "package:collectionapp/models/group_model.dart";
-import "package:collectionapp/pages/socialMediaPages/SM_creategroup_page.dart";
+import "package:collectionapp/pages/socialMediaPages/sm_creategroup_page.dart";
 import "package:collectionapp/pages/socialMediaPages/sm_group_detail_page.dart";
 import 'package:collectionapp/models/predefined_collections.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,10 +11,10 @@ class GroupsListPage extends StatefulWidget {
   const GroupsListPage({super.key});
 
   @override
-  _GroupsListPageState createState() => _GroupsListPageState();
+  GroupsListPageState createState() => GroupsListPageState();
 }
 
-class _GroupsListPageState extends State<GroupsListPage> {
+class GroupsListPageState extends State<GroupsListPage> {
   final _groupService = GroupService();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";

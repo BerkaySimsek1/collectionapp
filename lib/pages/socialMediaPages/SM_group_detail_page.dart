@@ -3,7 +3,7 @@ import "package:collectionapp/common_ui_methods.dart";
 import "package:collectionapp/firebase_methods/sm_firestore_methods.dart";
 import "package:collectionapp/models/group_model.dart";
 import "package:collectionapp/models/post_model.dart";
-import "package:collectionapp/pages/socialMediaPages/SM_group_admin.dart";
+import "package:collectionapp/pages/socialMediaPages/sm_group_admin.dart";
 import "package:collectionapp/pages/socialMediaPages/create_post_widget.dart";
 import "package:collectionapp/pages/profilePages/user_profile_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
@@ -17,10 +17,10 @@ class GroupDetailPage extends StatefulWidget {
   const GroupDetailPage({super.key, required this.group});
 
   @override
-  _GroupDetailPageState createState() => _GroupDetailPageState();
+  GroupDetailPageState createState() => GroupDetailPageState();
 }
 
-class _GroupDetailPageState extends State<GroupDetailPage> {
+class GroupDetailPageState extends State<GroupDetailPage> {
   final _groupDetailService = GroupDetailService();
   final _currentUser = FirebaseAuth.instance.currentUser;
   final ScrollController _mainScrollController = ScrollController();
@@ -1696,10 +1696,10 @@ class CommentBottomSheet extends StatefulWidget {
   });
 
   @override
-  _CommentBottomSheetState createState() => _CommentBottomSheetState();
+  CommentBottomSheetState createState() => CommentBottomSheetState();
 }
 
-class _CommentBottomSheetState extends State<CommentBottomSheet> {
+class CommentBottomSheetState extends State<CommentBottomSheet> {
   final TextEditingController _commentController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isSubmitting = false;

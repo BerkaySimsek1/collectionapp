@@ -3,7 +3,7 @@ import 'package:collectionapp/pages/profilePages/user_profile_page.dart';
 import 'package:collectionapp/viewModels/auction_detail_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:collectionapp/models/AuctionModel.dart';
+import 'package:collectionapp/models/auction_model.dart';
 import 'package:collectionapp/countdown_timer.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:google_fonts/google_fonts.dart';

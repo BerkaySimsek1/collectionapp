@@ -23,10 +23,10 @@ class EditItemScreen extends StatefulWidget {
   });
 
   @override
-  _EditItemScreenState createState() => _EditItemScreenState();
+  EditItemScreenState createState() => EditItemScreenState();
 }
 
-class _EditItemScreenState extends State<EditItemScreen> {
+class EditItemScreenState extends State<EditItemScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _rarityController = TextEditingController();

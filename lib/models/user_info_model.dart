@@ -43,14 +43,14 @@ class UserInfoModel {
   factory UserInfoModel.fromJson(Map<String, dynamic> json) {
     // Firestore'dan Timestamp objesini DateTime'a dönüştürür.
     // Eğer null gelirse veya farklı bir tipteyse DateTime.now() döner.
-    DateTime _parseTimestamp(dynamic v) {
+    DateTime parseTimestamp(dynamic v) {
       if (v is Timestamp) return v.toDate();
       if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
       return DateTime.now();
     }
 
     // Balance'ı doğru bir şekilde Double'a dönüştürür.
-    double? _parseBalance(dynamic value) {
+    double? parseBalance(dynamic value) {
       if (value == null) return null;
       if (value is num) return value.toDouble(); // int veya double olabilir
       return null;
@@ -71,11 +71,11 @@ class UserInfoModel {
       following: List<String>.from(json["following"] ?? []),
       profileImageUrl: json["profileImageUrl"] as String? ?? "",
       // createdAt ve lastActive için özel ayrıştırıcı kullan
-      createdAt: _parseTimestamp(json['createdAt']),
-      lastActive: _parseTimestamp(json['lastActive']),
+      createdAt: parseTimestamp(json['createdAt']),
+      lastActive: parseTimestamp(json['lastActive']),
       isActive:
           json["isActive"] as bool? ?? true, // Null ise varsayılan olarak true
-      balance: _parseBalance(json["balance"]),
+      balance: parseBalance(json["balance"]),
     );
   }
 

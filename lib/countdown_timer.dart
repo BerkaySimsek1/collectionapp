@@ -1,6 +1,6 @@
 import "dart:async";
 import "package:cloud_firestore/cloud_firestore.dart";
-import "package:collectionapp/models/AuctionModel.dart";
+import "package:collectionapp/models/auction_model.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
 
@@ -12,10 +12,10 @@ class CountdownTimer extends StatefulWidget {
       {super.key, required this.endTime, required this.auctionId});
 
   @override
-  _CountdownTimerState createState() => _CountdownTimerState();
+  CountdownTimerState createState() => CountdownTimerState();
 }
 
-class _CountdownTimerState extends State<CountdownTimer> {
+class CountdownTimerState extends State<CountdownTimer> {
   Timer? _timer;
   Duration _remainingDuration = const Duration();
   bool _isAuctionEnded = false;

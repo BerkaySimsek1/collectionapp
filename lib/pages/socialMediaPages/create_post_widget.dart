@@ -13,10 +13,10 @@ class CreatePostWidget extends StatefulWidget {
   const CreatePostWidget({super.key, required this.groupId});
 
   @override
-  _CreatePostWidgetState createState() => _CreatePostWidgetState();
+  CreatePostWidgetState createState() => CreatePostWidgetState();
 }
 
-class _CreatePostWidgetState extends State<CreatePostWidget> {
+class CreatePostWidgetState extends State<CreatePostWidget> {
   final _postService = GroupDetailService();
   final _currentUser = FirebaseAuth.instance.currentUser;
   final TextEditingController _postController = TextEditingController();

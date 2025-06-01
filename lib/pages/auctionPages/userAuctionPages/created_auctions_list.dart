@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
-import 'package:collectionapp/models/AuctionModel.dart';
+import 'package:collectionapp/models/auction_model.dart';
 
 class CreatedAuctionsList extends StatelessWidget {
   final String userUid;

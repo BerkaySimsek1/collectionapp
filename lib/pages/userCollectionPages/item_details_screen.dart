@@ -19,10 +19,10 @@ class ItemDetailsScreen extends StatefulWidget {
   });
 
   @override
-  _ItemDetailsScreenState createState() => _ItemDetailsScreenState();
+  ItemDetailsScreenState createState() => ItemDetailsScreenState();
 }
 
-class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
+class ItemDetailsScreenState extends State<ItemDetailsScreen> {
   late PageController _pageController;
   int _currentPage = 0;
 

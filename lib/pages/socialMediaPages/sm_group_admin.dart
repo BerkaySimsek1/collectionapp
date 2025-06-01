@@ -9,10 +9,10 @@ class SmGroupAdmin extends StatefulWidget {
   const SmGroupAdmin({super.key, required this.groupId});
 
   @override
-  _SmGroupAdminState createState() => _SmGroupAdminState();
+  SmGroupAdminState createState() => SmGroupAdminState();
 }
 
-class _SmGroupAdminState extends State<SmGroupAdmin> {
+class SmGroupAdminState extends State<SmGroupAdmin> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Firebase metodları aynı kalıyor
