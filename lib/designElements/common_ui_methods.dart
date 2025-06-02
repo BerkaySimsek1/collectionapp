@@ -792,7 +792,7 @@ Color getColorForCollectionType(String type) {
 Widget buildEmptyState({
   required IconData icon,
   required String title,
-  required String subtitle,
+  String? subtitle,
 }) {
   return Center(
     child: Column(
@@ -819,9 +819,9 @@ Widget buildEmptyState({
             color: Colors.grey[800],
           ),
         ),
-        const SizedBox(height: 8),
+        subtitle != null ? const SizedBox(height: 8) : const SizedBox.shrink(),
         Text(
-          subtitle,
+          subtitle ?? "",
           style: GoogleFonts.poppins(
             fontSize: 14,
             color: Colors.grey[600],

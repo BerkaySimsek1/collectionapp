@@ -87,41 +87,10 @@ class CollectionMainScreen extends StatelessWidget {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: Colors.deepPurple.withValues(alpha: 0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.collections_outlined,
-                            size: 64,
-                            color: Colors.deepPurple.withValues(alpha: 0.75),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "No collections yet",
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Add your first collection",
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      ],
-                    ),
+                  return buildEmptyState(
+                    title: "No collections yet",
+                    subtitle: "Add your first collection",
+                    icon: Icons.collections_outlined,
                   );
                 }
 

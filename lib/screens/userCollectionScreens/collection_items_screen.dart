@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -121,42 +122,10 @@ class CollectionItemsScreen extends StatelessWidget {
                       }
 
                       if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                  color:
-                                      Colors.deepPurple.withValues(alpha: 0.15),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.grid_off,
-                                  size: 64,
-                                  color:
-                                      Colors.deepPurple.withValues(alpha: 0.75),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                "No items yet",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                "Add your first item to this collection",
-                                style: GoogleFonts.poppins(
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                            ],
-                          ),
+                        return buildEmptyState(
+                          icon: Icons.grid_off,
+                          title: "No items yet",
+                          subtitle: "Add your first item to this collection",
                         );
                       }
                       final items = snapshot.data!.docs;

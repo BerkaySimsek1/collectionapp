@@ -178,42 +178,10 @@ class SmGroupAdminScreenState extends State<SmGroupAdminScreen> {
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.deepPurple.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.group_off_outlined,
-                      size: 64,
-                      color: Colors.deepPurple.withValues(alpha: 0.75),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "No Join Requests",
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "There are no pending requests at the moment",
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return buildEmptyState(
+                icon: Icons.group_off_outlined,
+                title: "No join requests",
+                subtitle: "There are no pending requests at the moment");
           }
           return ListView.builder(
             padding: const EdgeInsets.all(20),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:collectionapp/screens/auctionScreens/auction_detail_screen.dart';
@@ -59,41 +60,10 @@ class CreatedAuctionsList extends StatelessWidget {
             userSnapshot.data!["createdAuctions"] ?? [];
 
         if (createdAuctions.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.gavel_outlined,
-                    size: 64,
-                    color: Colors.deepPurple.withValues(alpha: 0.75),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "No auctions created yet",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Create your first auction",
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[500],
-                  ),
-                ),
-              ],
-            ),
+          return buildEmptyState(
+            icon: Icons.gavel_outlined,
+            title: "No auctions created yet",
+            subtitle: "Create the first auction",
           );
         }
 
@@ -113,33 +83,10 @@ class CreatedAuctionsList extends StatelessWidget {
 
             if (!auctionsSnapshot.hasData ||
                 auctionsSnapshot.data!.docs.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.deepPurple.withValues(alpha: 0.75),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      "No auctions found",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
+              return buildEmptyState(
+                icon: Icons.error_outline,
+                title: "No auctions found",
+                subtitle: "Create the first auction",
               );
             }
 

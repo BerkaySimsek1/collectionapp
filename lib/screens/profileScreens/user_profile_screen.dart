@@ -83,9 +83,10 @@ class UserProfileScreenState extends State<UserProfileScreen> {
           content: SizedBox(
             width: double.maxFinite,
             child: following.isEmpty
-                ? Center(
-                    child:
-                        Text("No following yet", style: GoogleFonts.poppins()),
+                ? buildEmptyState(
+                    icon: Icons.group_off_outlined,
+                    title: "No following yet",
+                    subtitle: "Follow users to see their updates",
                   )
                 : ListView.builder(
                     shrinkWrap: true,
@@ -170,9 +171,10 @@ class UserProfileScreenState extends State<UserProfileScreen> {
           content: SizedBox(
             width: double.maxFinite,
             child: followers.isEmpty
-                ? Center(
-                    child:
-                        Text("No followers yet", style: GoogleFonts.poppins()),
+                ? buildEmptyState(
+                    icon: Icons.group_off_outlined,
+                    title: "No followers yet",
+                    subtitle: "You have no followers",
                   )
                 : ListView.builder(
                     shrinkWrap: true,
@@ -895,41 +897,10 @@ class UserProfileScreenState extends State<UserProfileScreen> {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.group_off_outlined,
-                    size: 64,
-                    color: Colors.deepPurple.withValues(alpha: 0.75),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "No groups joined yet",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Join groups to connect with others",
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[500],
-                  ),
-                ),
-              ],
-            ),
+          return buildEmptyState(
+            icon: Icons.group_off_outlined,
+            title: "No groups joined yet",
+            subtitle: "Join groups to connect with others",
           );
         }
 
@@ -1139,41 +1110,10 @@ class UserProfileScreenState extends State<UserProfileScreen> {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.gavel_outlined,
-                    size: 64,
-                    color: Colors.deepPurple.withValues(alpha: 0.75),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "No auctions yet",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Create your first auction",
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[500],
-                  ),
-                ),
-              ],
-            ),
+          return buildEmptyState(
+            icon: Icons.gavel_outlined,
+            title: "No auctions yet",
+            subtitle: "Create your first auction",
           );
         }
 
@@ -1397,41 +1337,10 @@ class UserProfileScreenState extends State<UserProfileScreen> {
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.collections_outlined,
-                    size: 64,
-                    color: Colors.deepPurple.withValues(alpha: 0.75),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  "No collections yet",
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "Start building your collection",
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[500],
-                  ),
-                ),
-              ],
-            ),
+          return buildEmptyState(
+            icon: Icons.collections_outlined,
+            title: "No collections yet",
+            subtitle: "Start building your collection",
           );
         }
 

@@ -505,43 +505,11 @@ class SmGroupScreenState extends State<SmGroupScreen> {
                       }
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                  color:
-                                      Colors.deepPurple.withValues(alpha: 0.15),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.post_add_outlined,
-                                  size: 64,
-                                  color:
-                                      Colors.deepPurple.withValues(alpha: 0.75),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                "No posts yet",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[800],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                "Be the first to share something!",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
+                        return buildEmptyState(
+                          title: "No posts yet",
+                          subtitle:
+                              "Be the first to create a post in this group",
+                          icon: Icons.post_add_outlined,
                         );
                       }
                       return Padding(
@@ -1503,43 +1471,10 @@ class PostWidget extends StatelessWidget {
                     }
 
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(24),
-                              decoration: BoxDecoration(
-                                color:
-                                    Colors.deepPurple.withValues(alpha: 0.15),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.chat_bubble_outline,
-                                size: 48,
-                                color:
-                                    Colors.deepPurple.withValues(alpha: 0.75),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              "No comments yet",
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Be the first to comment!",
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                color: Colors.grey[500],
-                              ),
-                            ),
-                          ],
-                        ),
+                      return buildEmptyState(
+                        icon: Icons.chat_bubble_outline,
+                        title: "No comments yet",
+                        subtitle: "Be the first to comment!",
                       );
                     }
 
