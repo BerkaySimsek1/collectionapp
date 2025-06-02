@@ -79,13 +79,13 @@ class _SoldPageState extends State<SoldPage> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withOpacity(0.1),
+              color: Colors.deepPurple.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
               size: 64,
-              color: Colors.deepPurple.withOpacity(0.5),
+              color: Colors.deepPurple.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 16),
@@ -140,7 +140,7 @@ class _SoldItemState extends State<SoldItem> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -195,7 +195,7 @@ class _SoldItemState extends State<SoldItem> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.9),
+                              color: Colors.deepPurple.withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(
@@ -263,7 +263,8 @@ class _SoldItemState extends State<SoldItem> {
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.deepPurple.withOpacity(0.3),
+                                    color: Colors.deepPurple
+                                        .withValues(alpha: 0.3),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),
@@ -321,7 +322,7 @@ class _SoldItemState extends State<SoldItem> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),

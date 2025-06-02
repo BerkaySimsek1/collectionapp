@@ -4,7 +4,7 @@ import "package:collectionapp/firebase_methods/user_firestore_methods.dart";
 import "package:collectionapp/models/user_info_model.dart";
 import "package:collectionapp/models/notification_model.dart";
 import "package:collectionapp/pages/adressPages/adress_mainpage.dart";
-import "package:collectionapp/pages/auctionPages/auctionPurchasePages/orderMainPage.dart";
+import "package:collectionapp/pages/auctionPages/auctionPurchasePages/order_main_page.dart";
 import "package:collectionapp/pages/auctionPages/userAuctionPages/user_auction_page.dart";
 import "package:collectionapp/pages/notificationPages/notifications_page.dart";
 import "package:collectionapp/pages/paymentPages/payment_methods_page.dart";
@@ -14,7 +14,7 @@ import "package:collectionapp/pages/loginPages/auth_page.dart";
 import "package:collectionapp/pages/socialMediaPages/sm_main_page.dart";
 import "package:collectionapp/pages/profilePages/user_profile_page.dart";
 import "package:firebase_auth/firebase_auth.dart";
-import "package:collectionapp/pages/auctionPages/auction_mainpage.dart";
+import "package:collectionapp/pages/auctionPages/auction_main_page.dart";
 import "package:collectionapp/pages/userCollectionPages/user_collection_screen.dart";
 import "package:google_fonts/google_fonts.dart";
 import "package:collectionapp/pages/paymentPages/add_funds_page.dart";
@@ -506,10 +506,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       },
     );
   }
-  // end of StreamBuilder authSnapshot.hasData case
-  // ... (rest of the _buildDrawerItem, _buildFeatureCard, _buildBalanceCard methods remain the same)
 
-  // ... (rest of the _buildDrawerItem, _buildFeatureCard, _buildBalanceCard methods remain the same)
   Widget _buildDrawerItem({
     required IconData icon,
     required String title,

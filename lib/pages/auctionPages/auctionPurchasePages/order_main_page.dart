@@ -1,6 +1,6 @@
 import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/pages/auctionPages/auctionPurchasePages/purchased.dart';
-import 'package:collectionapp/pages/auctionPages/auctionPurchasePages/soldPage.dart';
+import 'package:collectionapp/pages/auctionPages/auctionPurchasePages/sold_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -41,13 +41,13 @@ class _OrderMainPageState extends State<OrderMainPage>
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(0.15),
+                  color: Colors.deepPurple.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.person_off_outlined,
                   size: 64,
-                  color: Colors.deepPurple.withOpacity(0.75),
+                  color: Colors.deepPurple.withValues(alpha: 0.75),
                 ),
               ),
               const SizedBox(height: 16),
@@ -99,7 +99,7 @@ class _OrderMainPageState extends State<OrderMainPage>
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
+                            color: Colors.white.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -125,7 +125,7 @@ class _OrderMainPageState extends State<OrderMainPage>
                                 "View your purchased and sold items",
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
-                                  color: Colors.white.withOpacity(0.7),
+                                  color: Colors.white.withValues(alpha: 0.7),
                                 ),
                               ),
                             ],
@@ -149,13 +149,14 @@ class _OrderMainPageState extends State<OrderMainPage>
                 borderRadius: BorderRadius.circular(25),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
               child: TabBar(
+                dividerHeight: 0,
                 controller: _tabController,
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicatorPadding: const EdgeInsets.all(4),
@@ -199,7 +200,6 @@ class _OrderMainPageState extends State<OrderMainPage>
               ),
             ),
           ),
-
           // Tab Content
           Expanded(
             child: TabBarView(

@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
       ),
-      home: MainPage(), // checks whether user signed in or not
+      home: const MainPage(), // checks whether user signed in or not
     );
   }
 }
