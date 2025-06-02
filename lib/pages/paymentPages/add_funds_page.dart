@@ -12,6 +12,11 @@ class AddFundsPage extends StatelessWidget {
       subtitle: "Select amount to add to your wallet",
       headerIcon: Icons.account_balance_wallet,
       headerHeight: 250,
+      onPressed: () {
+        // Add payment processing logic here
+      },
+      buttonText: "Proceed to Payment",
+      buttonIcon: Icons.payment,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -39,47 +44,6 @@ class AddFundsPage extends StatelessWidget {
                   .toList(),
             ),
           ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepPurple,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 0,
-          ),
-          onPressed: () {
-            // Add payment processing logic here
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.payment, color: Colors.white),
-              const SizedBox(width: 8),
-              Text(
-                "Proceed to Payment",
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

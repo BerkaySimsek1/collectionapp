@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -61,6 +60,10 @@ class AddCollectionScreenState extends State<AddCollectionScreen> {
       title: "Add New Collection",
       subtitle: "Choose a collection type or create your own",
       headerIcon: Icons.add_box_outlined,
+      isLoading: _isLoading,
+      onPressed: () => _saveCollection(context),
+      buttonText: "Create Collection",
+      buttonIcon: Icons.save_outlined,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -200,12 +203,6 @@ class AddCollectionScreenState extends State<AddCollectionScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: buildBottomButton(
-        isLoading: _isLoading,
-        onPressed: () => _saveCollection(context),
-        buttonText: "Create Collection",
-        icon: Icons.save_outlined,
       ),
     );
   }

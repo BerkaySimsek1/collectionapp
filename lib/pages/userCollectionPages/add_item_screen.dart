@@ -138,6 +138,10 @@ class AddItemScreenState extends State<AddItemScreen> {
       title: "Add New Item",
       subtitle: "to ${widget.collectionName}",
       headerIcon: Icons.add_box_outlined,
+      isLoading: _isUploading,
+      onPressed: () => _saveItem(context),
+      buttonText: "Save Item",
+      buttonIcon: Icons.save_outlined,
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -411,12 +415,6 @@ class AddItemScreenState extends State<AddItemScreen> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: buildBottomButton(
-        isLoading: _isUploading,
-        onPressed: () => _saveItem(context),
-        buttonText: "Save Item",
-        icon: Icons.save_outlined,
       ),
     );
   }

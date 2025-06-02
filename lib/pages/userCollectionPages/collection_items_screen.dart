@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,21 +40,19 @@ class CollectionItemsScreen extends StatelessWidget {
       subtitle: "Collection Items",
       headerIcon: Icons.grid_view_rounded,
       headerHeight: 250,
-      bottomNavigationBar: buildBottomButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddItemScreen(
-                userId: userId,
-                collectionName: collectionName,
-              ),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddItemScreen(
+              userId: userId,
+              collectionName: collectionName,
             ),
-          );
-        },
-        buttonText: "Add Item",
-        icon: Icons.add,
-      ),
+          ),
+        );
+      },
+      buttonText: "Add Item",
+      buttonIcon: Icons.add,
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SizedBox(

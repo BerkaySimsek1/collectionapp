@@ -6,6 +6,7 @@ import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AddressMainPage extends StatefulWidget {
   const AddressMainPage({super.key});
@@ -43,6 +44,16 @@ class _AddressMainPageState extends State<AddressMainPage> {
       title: 'My Addresses',
       subtitle: 'Your saved addresses',
       headerIcon: Icons.location_on,
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const AddressPage(),
+          ),
+        );
+      },
+      buttonText: "Add New Address",
+      buttonIcon: Icons.add_location_alt_outlined,
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future: _fetchAddressDoc(),
         builder: (context, snapshot) {
@@ -87,30 +98,37 @@ class _AddressMainPageState extends State<AddressMainPage> {
                 key: ValueKey(doc.id),
                 direction: DismissDirection.startToEnd,
                 background: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.only(left: 20),
-                  color: Colors.red,
                   child: const Icon(Icons.delete, color: Colors.white),
                 ),
                 confirmDismiss: (direction) async {
-                  // Silme onayı almak isterseniz buraya dialog ekleyebilirsiniz.
-                  return true;
-                },
-                onDismissed: (direction) async {
-                  // Firestore’dan sil
-                  await _deleteAddress();
-                  projectSnackBar(context, 'Address deleted', 'green');
-                  // Silme işleminden sonra adres ekleme sayfasına dön
-                  if (mounted) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AddressPage(),
-                      ),
-                    );
-                  }
+                  return await showWarningDialog(
+                    context,
+                    () async {
+                      await _deleteAddress();
+                      if (mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AddressMainPage(),
+                          ),
+                        );
+                      }
+                    },
+                    title: "Delete Address",
+                    message: "Are you sure you want to delete this address?",
+                    buttonText: "Delete",
+                    icon: Icons.delete_outline,
+                  );
                 },
                 child: Card(
+                  color: Colors.white,
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -120,20 +138,33 @@ class _AddressMainPageState extends State<AddressMainPage> {
                     contentPadding: const EdgeInsets.all(16),
                     title: Text(
                       title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                      style: GoogleFonts.poppins(),
                     ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (country.isNotEmpty) Text('Country: $country'),
-                          if (state.isNotEmpty) Text('State: $state'),
-                          if (city.isNotEmpty) Text('City: $city'),
-                          if (detailed.isNotEmpty) Text('Address: $detailed'),
+                          if (country.isNotEmpty)
+                            Text(
+                              'Country: $country',
+                              style: GoogleFonts.poppins(),
+                            ),
+                          if (state.isNotEmpty)
+                            Text(
+                              'State: $state',
+                              style: GoogleFonts.poppins(),
+                            ),
+                          if (city.isNotEmpty)
+                            Text(
+                              'City: $city',
+                              style: GoogleFonts.poppins(),
+                            ),
+                          if (detailed.isNotEmpty)
+                            Text(
+                              'Address: $detailed',
+                              style: GoogleFonts.poppins(),
+                            ),
                         ],
                       ),
                     ),
@@ -147,18 +178,6 @@ class _AddressMainPageState extends State<AddressMainPage> {
             ],
           );
         },
-      ),
-      bottomNavigationBar: buildBottomButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const AddressPage(),
-            ),
-          );
-        },
-        buttonText: "Add New Address",
-        icon: Icons.add_location_alt_outlined,
       ),
     );
   }

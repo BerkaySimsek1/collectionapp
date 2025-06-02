@@ -7,8 +7,12 @@ class ProjectSingleLayout extends StatelessWidget {
   final String subtitle;
   final IconData headerIcon;
   final Widget body;
-  final Widget? bottomNavigationBar;
   final double headerHeight;
+  // Bottom button parameters
+  final bool? isLoading;
+  final dynamic onPressed; // Future<void> Function() veya VoidCallback
+  final String? buttonText;
+  final IconData? buttonIcon;
 
   const ProjectSingleLayout({
     super.key,
@@ -16,8 +20,11 @@ class ProjectSingleLayout extends StatelessWidget {
     required this.subtitle,
     required this.headerIcon,
     required this.body,
-    this.bottomNavigationBar,
     this.headerHeight = 250,
+    this.isLoading,
+    this.onPressed,
+    this.buttonText,
+    this.buttonIcon,
   });
 
   @override
@@ -36,7 +43,64 @@ class ProjectSingleLayout extends StatelessWidget {
           _buildBodyContent(),
         ],
       ),
-      bottomNavigationBar: bottomNavigationBar,
+      bottomNavigationBar:
+          (onPressed != null && buttonText != null && buttonIcon != null)
+              ? _buildBottomButton(context)
+              : null,
+    );
+  }
+
+  Widget _buildBottomButton(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.deepPurple,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 4,
+        ),
+        onPressed: (isLoading == true)
+            ? null
+            : () async {
+                if (onPressed is Future<void> Function()) {
+                  await onPressed();
+                } else if (onPressed is VoidCallback) {
+                  onPressed();
+                }
+              },
+        icon:
+            (isLoading == true) ? null : Icon(buttonIcon!, color: Colors.white),
+        label: (isLoading == true)
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                buttonText!,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+      ),
     );
   }
 

@@ -62,6 +62,10 @@ class _AddressPageState extends State<AddressPage> {
       title: "Add New Address",
       subtitle: "Fill in your address details",
       headerIcon: Icons.location_on,
+      isLoading: _isLoading,
+      onPressed: _saveAddress,
+      buttonText: "Save Address",
+      buttonIcon: Icons.location_on_outlined,
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -157,12 +161,6 @@ class _AddressPageState extends State<AddressPage> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: buildBottomButton(
-        isLoading: _isLoading,
-        onPressed: () => _saveAddress(),
-        buttonText: "Save Address",
-        icon: Icons.location_on_outlined,
       ),
     );
   }

@@ -2,7 +2,6 @@ import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../../common_ui_methods.dart';
 import '../../models/payment_method_model.dart';
 import '../../viewModels/payment_method_viewmodel.dart';
 import 'add_payment_method_page.dart';
@@ -21,6 +20,12 @@ class PaymentMethodsPage extends StatelessWidget {
               subtitle: "Manage your payment options",
               headerIcon: Icons.credit_card,
               headerHeight: 250,
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddPaymentMethodPage())),
+              buttonText: "Add New Card",
+              buttonIcon: Icons.add_outlined,
               body: StreamBuilder<List<PaymentMethod>>(
                 stream: viewModel.getPaymentMethods(),
                 builder: (context, snapshot) {
@@ -65,14 +70,6 @@ class PaymentMethodsPage extends StatelessWidget {
                     },
                   );
                 },
-              ),
-              bottomNavigationBar: buildBottomButton(
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AddPaymentMethodPage())),
-                buttonText: "Add New Card",
-                icon: Icons.add_outlined,
               ));
         },
       ),

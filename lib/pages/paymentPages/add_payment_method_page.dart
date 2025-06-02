@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../../common_ui_methods.dart';
 import '../../viewModels/payment_method_viewmodel.dart';
 
 class AddPaymentMethodPage extends StatelessWidget {
@@ -20,6 +19,10 @@ class AddPaymentMethodPage extends StatelessWidget {
             subtitle: "Enter your card details",
             headerIcon: Icons.add_card,
             headerHeight: 250,
+            isLoading: viewModel.isLoading,
+            onPressed: () => viewModel.savePaymentMethod(context),
+            buttonText: "Save Card",
+            buttonIcon: Icons.payment_outlined,
             body: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -109,12 +112,6 @@ class AddPaymentMethodPage extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-            bottomNavigationBar: buildBottomButton(
-              isLoading: viewModel.isLoading,
-              onPressed: () => viewModel.savePaymentMethod(context),
-              buttonText: "Save Card",
-              icon: Icons.payment_outlined,
             ),
           );
         },

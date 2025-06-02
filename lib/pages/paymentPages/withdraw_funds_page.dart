@@ -21,6 +21,13 @@ class _WithdrawFundsPageState extends State<WithdrawFundsPage> {
       subtitle: "Enter withdrawal details",
       headerIcon: Icons.payments_outlined,
       headerHeight: 250,
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          // Handle withdrawal process
+        }
+      },
+      buttonText: "Confirm Withdrawal",
+      buttonIcon: Icons.check_circle_outline,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -60,49 +67,6 @@ class _WithdrawFundsPageState extends State<WithdrawFundsPage> {
                   }
                   return null;
                 },
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepPurple,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 0,
-          ),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              // Handle withdrawal process
-            }
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.check_circle_outline, color: Colors.white),
-              const SizedBox(width: 8),
-              Text(
-                "Confirm Withdrawal",
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
               ),
             ],
           ),

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,12 +24,10 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
             subtitle: "Fill in the details below",
             headerIcon: Icons.gavel,
             headerHeight: 250,
-            bottomNavigationBar: buildBottomButton(
-              isLoading: viewModel.isUploading,
-              onPressed: () => viewModel.uploadAuction(context),
-              buttonText: "Create Auction",
-              icon: Icons.gavel_outlined,
-            ),
+            isLoading: viewModel.isUploading,
+            onPressed: () => viewModel.uploadAuction(context),
+            buttonText: "Create Auction",
+            buttonIcon: Icons.gavel_outlined,
             body: ListView(
               padding: const EdgeInsets.all(24),
               children: [

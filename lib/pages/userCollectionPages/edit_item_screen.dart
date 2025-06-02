@@ -202,6 +202,10 @@ class EditItemScreenState extends State<EditItemScreen> {
       title: "Edit Item",
       subtitle: "in ${widget.collectionName}",
       headerIcon: Icons.edit_outlined,
+      isLoading: _isUploading,
+      onPressed: () => _saveItem(context),
+      buttonText: "Update Item",
+      buttonIcon: Icons.save_outlined,
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -497,12 +501,6 @@ class EditItemScreenState extends State<EditItemScreen> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: buildBottomButton(
-        isLoading: _isUploading,
-        onPressed: () => _saveItem(context),
-        buttonText: "Update Item",
-        icon: Icons.save_outlined,
       ),
     );
   }
