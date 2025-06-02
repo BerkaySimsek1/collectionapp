@@ -1,6 +1,6 @@
 import "package:collectionapp/env_config.dart";
 import "package:collectionapp/firebase_options.dart";
-import "package:collectionapp/pages/main_page.dart";
+import "package:collectionapp/screens/home_screen.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
 
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
       ),
-      home: const MainPage(), // checks whether user signed in or not
+      home: const HomeScreen(), // checks whether user signed in or not
     );
   }
 }

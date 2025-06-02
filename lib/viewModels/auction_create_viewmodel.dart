@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:collectionapp/common_ui_methods.dart';
+import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
