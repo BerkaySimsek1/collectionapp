@@ -222,178 +222,271 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Future<void> _showUsernameChangeDialog() async {
-    final TextEditingController usernameController = TextEditingController();
+  Future<void> _showEditDialog(String dialogType) async {
+    final TextEditingController controller = TextEditingController();
+    bool isPasswordVisible = false;
+
+    // Dialog tipine göre başlangıç değerlerini ayarla
+    String title, hintText, fieldName;
+    IconData icon;
+    bool isPassword = false;
+
+    switch (dialogType) {
+      case 'email':
+        title = "Change Email";
+        hintText = "New Email";
+        fieldName = "email";
+        icon = Icons.mail_outline;
+        controller.text = widget.userData['email'] ?? '';
+        break;
+      case 'username':
+        title = "Change Username";
+        hintText = "New Username";
+        fieldName = "username";
+        icon = Icons.person_outline;
+        break;
+      case 'password':
+        title = "Change Password";
+        hintText = "New Password";
+        fieldName = "password";
+        icon = Icons.lock_outline;
+        isPassword = true;
+        break;
+      default:
+        return;
+    }
+
     if (!mounted) return;
 
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple.withValues(alpha: 0.15),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withValues(alpha: 0.15),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.deepPurple.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          icon,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.person_outline,
-                        color: Colors.deepPurple,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      "Change Username",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Enter your new username",
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.grey[200]!,
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        dialogType == 'email'
+                            ? "Enter your new email address"
+                            : dialogType == 'username'
+                                ? "Enter your new username"
+                                : "Enter your new password",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.grey[600],
                         ),
                       ),
-                      child: TextField(
-                        controller: usernameController,
-                        decoration: InputDecoration(
-                          hintText: "New Username",
-                          hintStyle: GoogleFonts.poppins(
-                            color: Colors.grey[400],
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.all(16),
-                          prefixIcon: Icon(
-                            Icons.person_outline,
-                            color: Colors.grey[400],
-                          ),
+                      const SizedBox(height: 12),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey[200]!),
                         ),
-                        style: GoogleFonts.poppins(),
+                        child: TextField(
+                          controller: controller,
+                          obscureText: isPassword && !isPasswordVisible,
+                          keyboardType: dialogType == 'email'
+                              ? TextInputType.emailAddress
+                              : TextInputType.text,
+                          decoration: InputDecoration(
+                            hintText: hintText,
+                            hintStyle: GoogleFonts.poppins(
+                              color: Colors.grey[400],
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.all(16),
+                            prefixIcon: Icon(
+                              icon,
+                              color: Colors.grey[400],
+                            ),
+                            suffixIcon: isPassword
+                                ? IconButton(
+                                    icon: Icon(
+                                      isPasswordVisible
+                                          ? Icons.visibility_off_outlined
+                                          : Icons.visibility_outlined,
+                                      color: Colors.grey[400],
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        isPasswordVisible = !isPasswordVisible;
+                                      });
+                                    },
+                                  )
+                                : null,
+                          ),
+                          style: GoogleFonts.poppins(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              "Cancel",
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              try {
-                                String newUsername =
-                                    usernameController.text.trim();
-                                if (newUsername.isEmpty) {
-                                  throw Exception("Username cannot be empty");
-                                }
-
-                                await _firestoreService
-                                    .updateUserData({"username": newUsername});
-
-                                setState(() {
-                                  userData?["username"] = newUsername;
-                                });
-
-                                if (!mounted) return;
-                                Navigator.pop(context);
-                                projectSnackBar(context,
-                                    "Username updated successfully!", "green");
-                              } catch (e) {
-                                projectSnackBar(
-                                    context,
-                                    "Failed to update username: ${e.toString()}",
-                                    "red");
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              "Update",
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
+                      if (isPassword) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          "Password must be at least 6 characters",
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                            fontStyle: FontStyle.italic,
                           ),
                         ),
                       ],
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: TextButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Text(
+                                "Cancel",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                try {
+                                  String newValue = controller.text.trim();
+                                  if (newValue.isEmpty) {
+                                    throw Exception(
+                                        "$fieldName cannot be empty");
+                                  }
+
+                                  if (dialogType == 'password' &&
+                                      newValue.length < 6) {
+                                    throw Exception(
+                                        "Password must be at least 6 characters");
+                                  }
+
+                                  // Dialog tipine göre güncelleme işlemini yap
+                                  switch (dialogType) {
+                                    case 'email':
+                                      await _auth.currentUser
+                                          ?.verifyBeforeUpdateEmail(newValue);
+                                      await _firestoreService
+                                          .updateUserData({"email": newValue});
+                                      setState(() {
+                                        userData?["email"] = newValue;
+                                      });
+                                      break;
+                                    case 'username':
+                                      await _firestoreService.updateUserData(
+                                          {"username": newValue});
+                                      setState(() {
+                                        userData?["username"] = newValue;
+                                      });
+                                      break;
+                                    case 'password':
+                                      await _auth.currentUser
+                                          ?.updatePassword(newValue);
+                                      break;
+                                  }
+
+                                  if (!mounted) return;
+                                  Navigator.pop(context);
+                                  projectSnackBar(
+                                      context,
+                                      "${title.split(' ').last} updated successfully!",
+                                      "green");
+                                } catch (e) {
+                                  projectSnackBar(
+                                      context,
+                                      "Failed to update $fieldName: ${e.toString()}",
+                                      "red");
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurple,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: Text(
+                                "Update",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -593,21 +686,21 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   label: "Change Email",
                   icon: Icons.mail_outline,
                   description: "Update your email address",
-                  onTap: _showEmailChangeDialog,
+                  onTap: () => _showEditDialog('email'),
                 ),
                 const Divider(height: 1),
                 _buildSettingsButton(
                   label: "Change Username",
                   icon: Icons.person_outline,
                   description: "Update your username",
-                  onTap: _showUsernameChangeDialog,
+                  onTap: () => _showEditDialog('username'),
                 ),
                 const Divider(height: 1),
                 _buildSettingsButton(
                   label: "Change Password",
                   icon: Icons.lock_outline,
                   description: "Update your password",
-                  onTap: _showPasswordChangeDialog,
+                  onTap: () => _showEditDialog('password'),
                 ),
               ],
             ),
@@ -634,393 +727,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Future<void> _showEmailChangeDialog() async {
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple.withValues(alpha: 0.15),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.mail_outline,
-                        color: Colors.deepPurple,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      "Change Email",
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Enter your new email address",
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.grey[200]!,
-                        ),
-                      ),
-                      child: TextField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          hintText: "New Email",
-                          hintStyle: GoogleFonts.poppins(
-                            color: Colors.grey[400],
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.all(16),
-                          prefixIcon: Icon(
-                            Icons.mail_outline,
-                            color: Colors.grey[400],
-                          ),
-                          labelStyle: GoogleFonts.poppins(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        keyboardType: TextInputType.emailAddress,
-                        style: GoogleFonts.poppins(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              "Cancel",
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              try {
-                                String newEmail = emailController.text.trim();
-                                if (newEmail.isEmpty) {
-                                  throw Exception("Email cannot be empty");
-                                }
-
-                                await _auth.currentUser
-                                    ?.verifyBeforeUpdateEmail(newEmail);
-                                await _firestoreService
-                                    .updateUserData({"email": newEmail});
-
-                                setState(() {
-                                  userData?["email"] = newEmail;
-                                });
-                                Navigator.pop(context);
-                                projectSnackBar(context,
-                                    "Email updated successfully!", "green");
-                              } catch (e) {
-                                projectSnackBar(
-                                    context,
-                                    "Failed to update email: ${e.toString()}",
-                                    "red");
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              "Update",
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _showPasswordChangeDialog() async {
-    final TextEditingController newPasswordController = TextEditingController();
-    bool isPasswordVisible = false;
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.withValues(alpha: 0.15),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.deepPurple.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.lock_outline,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        "Change Password",
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Content
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Enter your new password",
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.grey[200]!,
-                          ),
-                        ),
-                        child: TextField(
-                          controller: newPasswordController,
-                          obscureText: !isPasswordVisible,
-                          decoration: InputDecoration(
-                            hintText: "New Password",
-                            hintStyle: GoogleFonts.poppins(
-                              color: Colors.grey[400],
-                            ),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.all(16),
-                            prefixIcon: Icon(
-                              Icons.lock_outline,
-                              color: Colors.grey[400],
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                isPasswordVisible
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
-                                color: Colors.grey[400],
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  isPasswordVisible = !isPasswordVisible;
-                                });
-                              },
-                            ),
-                          ),
-                          style: GoogleFonts.poppins(),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Password must be at least 6 characters",
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.grey[500],
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              style: TextButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-                                "Cancel",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                try {
-                                  String newPassword =
-                                      newPasswordController.text.trim();
-                                  if (newPassword.isEmpty) {
-                                    throw Exception("Password cannot be empty");
-                                  }
-                                  if (newPassword.length < 6) {
-                                    throw Exception(
-                                        "Password must be at least 6 characters");
-                                  }
-
-                                  await _auth.currentUser
-                                      ?.updatePassword(newPassword);
-                                  if (!mounted) return;
-                                  Navigator.pop(context);
-                                  projectSnackBar(
-                                      context,
-                                      "Password updated successfully!",
-                                      "green");
-                                } catch (e) {
-                                  projectSnackBar(
-                                      context,
-                                      "Failed to update password: ${e.toString()}",
-                                      "red");
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                "Update",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
