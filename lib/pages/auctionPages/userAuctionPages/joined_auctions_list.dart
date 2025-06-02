@@ -62,7 +62,11 @@ class JoinedAuctionsList extends StatelessWidget {
 
             final docs = auctionsSnapshot.data!.docs;
             if (docs.isEmpty) {
-              return const Center(child: Text("No auctions found."));
+              return buildEmptyState(
+                icon: Icons.gavel_outlined,
+                title: "There are no joined auctions",
+                subtitle: "You have not joined any auctions yet.",
+              );
             }
 
             return ListView.builder(

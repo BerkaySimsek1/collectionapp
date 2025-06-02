@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/models/auction_model.dart';
 import 'package:collectionapp/pages/auctionPages/auctionPurchasePages/checkoutPages/select_adress.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class _PurchasedPageState extends State<PurchasedPage> {
           );
         }
         if (!snapshot.hasData) {
-          return _buildEmptyState(
+          return buildEmptyState(
             icon: Icons.error_outline,
             title: "Data has not loaded",
             subtitle: "Auction data could not be fetched",
@@ -49,7 +50,7 @@ class _PurchasedPageState extends State<PurchasedPage> {
 
         final docs = snapshot.data!.docs;
         if (docs.isEmpty) {
-          return _buildEmptyState(
+          return buildEmptyState(
             icon: Icons.emoji_events_outlined,
             title: "There are no purchased auctions",
             subtitle: "Auctions you purchased will be listed here",
@@ -66,49 +67,6 @@ class _PurchasedPageState extends State<PurchasedPage> {
           },
         );
       },
-    );
-  }
-
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: 64,
-              color: Colors.deepPurple.withValues(alpha: 0.5),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

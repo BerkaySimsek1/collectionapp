@@ -44,7 +44,7 @@ class OrderSuccessfulPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.check_circle_outline,
               size: 100,
               color: Colors.deepPurple,

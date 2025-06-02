@@ -172,7 +172,7 @@ class _SelectAddressPageState extends State<SelectAddressPage> {
             Icon(
               Icons.location_off,
               size: 64,
-              color: Colors.deepPurple.withOpacity(0.3),
+              color: Colors.deepPurple.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
@@ -208,7 +208,7 @@ class _SelectAddressPageState extends State<SelectAddressPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddressPage(),
+                    builder: (context) => const AddressPage(),
                   ),
                 );
               },

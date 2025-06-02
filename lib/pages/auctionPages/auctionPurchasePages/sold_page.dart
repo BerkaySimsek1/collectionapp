@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/models/auction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,7 +39,7 @@ class _SoldPageState extends State<SoldPage> {
           );
         }
         if (!snapshot.hasData) {
-          return _buildEmptyState(
+          return buildEmptyState(
             icon: Icons.error_outline,
             title: "Data has not loaded",
             subtitle: "Auction data could not be fetched",
@@ -47,7 +48,7 @@ class _SoldPageState extends State<SoldPage> {
 
         final docs = snapshot.data!.docs;
         if (docs.isEmpty) {
-          return _buildEmptyState(
+          return buildEmptyState(
             icon: Icons.inventory_2_outlined,
             title: "There are no sold auctions",
             subtitle: "Auctions you sold will be listed here",
@@ -64,49 +65,6 @@ class _SoldPageState extends State<SoldPage> {
           },
         );
       },
-    );
-  }
-
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: 64,
-              color: Colors.deepPurple.withValues(alpha: 0.5),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

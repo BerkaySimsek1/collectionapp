@@ -60,7 +60,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                     Icon(
                       Icons.credit_card_off,
                       size: 64,
-                      color: Colors.deepPurple.withOpacity(0.3),
+                      color: Colors.deepPurple.withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -218,7 +218,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           );
         },

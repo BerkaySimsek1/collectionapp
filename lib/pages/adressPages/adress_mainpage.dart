@@ -30,12 +30,29 @@ class _AddressMainPageState extends State<AddressMainPage> {
     }
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> _fetchAddressDoc() {
-    return FirebaseFirestore.instance.collection('adresses').doc(_uid).get();
+  Stream<DocumentSnapshot<Map<String, dynamic>>> _getAddressStream() {
+    return FirebaseFirestore.instance
+        .collection('adresses')
+        .doc(_uid)
+        .snapshots();
   }
 
   Future<void> _deleteAddress() async {
     await FirebaseFirestore.instance.collection('adresses').doc(_uid).delete();
+  }
+
+  Future<void> _navigateToAddAddress() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AddressPage(),
+      ),
+    );
+
+    if (result == true && mounted) {
+      // Optional: Show a success message or perform additional actions
+      setState(() {}); // Force rebuild if needed
+    }
   }
 
   @override
@@ -44,26 +61,17 @@ class _AddressMainPageState extends State<AddressMainPage> {
       title: 'My Addresses',
       subtitle: 'Your saved addresses',
       headerIcon: Icons.location_on,
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const AddressPage(),
-          ),
-        );
-      },
+      onPressed: _navigateToAddAddress,
       buttonText: "Add New Address",
       buttonIcon: Icons.add_location_alt_outlined,
-      body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        future: _fetchAddressDoc(),
+      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: _getAddressStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Veri yüklenirken gösterilecek yükleme göstergesi
             return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
-            // Hata olursa kullanıcıya bilgi verin
             return const Center(
               child: Text(
                 'Adres bilgisi alınırken bir hata oluştu.',
@@ -74,8 +82,6 @@ class _AddressMainPageState extends State<AddressMainPage> {
 
           final doc = snapshot.data;
           if (doc == null || !doc.exists) {
-            // Adres yoksa, bir sonraki çerçevede AddressPage’e yönlendir
-
             return buildEmptyState(
               icon: Icons.home_filled,
               title: "There are no addresses",
@@ -112,14 +118,7 @@ class _AddressMainPageState extends State<AddressMainPage> {
                     context,
                     () async {
                       await _deleteAddress();
-                      if (mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AddressMainPage(),
-                          ),
-                        );
-                      }
+                      setState(() {});
                     },
                     title: "Delete Address",
                     message: "Are you sure you want to delete this address?",

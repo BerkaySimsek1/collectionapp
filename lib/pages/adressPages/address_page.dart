@@ -43,7 +43,7 @@ class _AddressPageState extends State<AddressPage> {
         });
 
         if (mounted) {
-          Navigator.pop(context);
+          Navigator.pop(context, true); // Return true to indicate success
           projectSnackBar(context, "Address saved successfully", "green");
         }
       } catch (e) {

@@ -54,22 +54,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.notifications_none,
-                      size: 64, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No notifications yet',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
+            return buildEmptyState(
+              icon: Icons.notifications_none,
+              title: "No notifications yet",
+              subtitle:
+                  "When you receive notifications, they will appear here.",
             );
           }
 

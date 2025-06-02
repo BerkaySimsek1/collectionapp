@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/models/auction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'orderSucessfulPage.dart';
+import 'order_successful_page.dart';
 
 class SumAndProceedPage extends StatefulWidget {
   final AuctionModel auction;
