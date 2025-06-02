@@ -2,7 +2,7 @@ import 'package:collectionapp/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProjectLayout extends StatelessWidget {
+class ProjectSingleLayout extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData headerIcon;
@@ -10,7 +10,7 @@ class ProjectLayout extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final double headerHeight;
 
-  const ProjectLayout({
+  const ProjectSingleLayout({
     super.key,
     required this.title,
     required this.subtitle,

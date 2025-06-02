@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/models/auction_model.dart';
 import 'package:collectionapp/pages/auctionPages/auction_detail.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class JoinedAuctionsList extends StatelessWidget {
           );
         }
         if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-          return _buildEmptyState(
+          return buildEmptyState(
             icon: Icons.person_off_outlined,
             title: "User not logged in",
             subtitle: "Information about the user is not available.",
@@ -35,7 +36,7 @@ class JoinedAuctionsList extends StatelessWidget {
         final List<dynamic> joinedAuctions = userData["joinedAuctions"] ?? [];
 
         if (joinedAuctions.isEmpty) {
-          return _buildEmptyState(
+          return buildEmptyState(
             icon: Icons.gavel_outlined,
             title: "There are no joined auctions",
             subtitle: "You have not joined any auctions yet.",
@@ -270,49 +271,6 @@ class JoinedAuctionsList extends StatelessWidget {
           },
         );
       },
-    );
-  }
-
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: 64,
-              color: Colors.deepPurple.withValues(alpha: 0.75),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
     );
   }
 

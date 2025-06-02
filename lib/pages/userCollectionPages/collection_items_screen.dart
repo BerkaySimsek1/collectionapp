@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:collectionapp/common_ui_methods.dart';
-import 'package:collectionapp/widgets/common/project_layout.dart';
+import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,7 +36,7 @@ class CollectionItemsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProjectLayout(
+    return ProjectSingleLayout(
       title: collectionName,
       subtitle: "Collection Items",
       headerIcon: Icons.grid_view_rounded,

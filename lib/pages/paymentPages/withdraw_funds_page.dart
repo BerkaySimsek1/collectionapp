@@ -1,4 +1,4 @@
-import 'package:collectionapp/widgets/common/project_layout.dart';
+import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,7 +16,7 @@ class _WithdrawFundsPageState extends State<WithdrawFundsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ProjectLayout(
+    return ProjectSingleLayout(
       title: "Withdraw Funds",
       subtitle: "Enter withdrawal details",
       headerIcon: Icons.payments_outlined,

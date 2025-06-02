@@ -8,7 +8,7 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:intl/intl.dart";
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:collectionapp/widgets/common/project_layout.dart';
+import 'package:collectionapp/widgets/common/project_single_layout.dart';
 
 class AddItemScreen extends StatefulWidget {
   final String userId;
@@ -134,7 +134,7 @@ class AddItemScreenState extends State<AddItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ProjectLayout(
+    return ProjectSingleLayout(
       title: "Add New Item",
       subtitle: "to ${widget.collectionName}",
       headerIcon: Icons.add_box_outlined,

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/common_ui_methods.dart';
-import 'package:collectionapp/widgets/common/project_layout.dart';
+import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:collectionapp/models/predefined_collections.dart';
@@ -57,7 +57,7 @@ class AddCollectionScreenState extends State<AddCollectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ProjectLayout(
+    return ProjectSingleLayout(
       title: "Add New Collection",
       subtitle: "Choose a collection type or create your own",
       headerIcon: Icons.add_box_outlined,

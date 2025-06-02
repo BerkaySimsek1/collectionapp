@@ -1,6 +1,6 @@
 import "dart:io";
 import "package:collectionapp/common_ui_methods.dart";
-import "package:collectionapp/widgets/common/project_layout.dart";
+import "package:collectionapp/widgets/common/project_single_layout.dart";
 import "package:firebase_storage/firebase_storage.dart";
 import "package:image_picker/image_picker.dart";
 import "package:collectionapp/models/predefined_collections.dart";
@@ -198,7 +198,7 @@ class EditItemScreenState extends State<EditItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ProjectLayout(
+    return ProjectSingleLayout(
       title: "Edit Item",
       subtitle: "in ${widget.collectionName}",
       headerIcon: Icons.edit_outlined,

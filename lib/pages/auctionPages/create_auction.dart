@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:collectionapp/common_ui_methods.dart';
-import 'package:collectionapp/widgets/common/project_layout.dart';
+import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,7 +20,7 @@ class _AuctionUploadScreenState extends State<AuctionUploadScreen> {
       create: (_) => AuctionCreateViewModel(),
       child: Consumer<AuctionCreateViewModel>(
         builder: (context, viewModel, child) {
-          return ProjectLayout(
+          return ProjectSingleLayout(
             title: "Create New Auction",
             subtitle: "Fill in the details below",
             headerIcon: Icons.gavel,

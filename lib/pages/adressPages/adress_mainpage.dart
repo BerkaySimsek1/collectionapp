@@ -2,7 +2,7 @@
 
 import 'package:collectionapp/common_ui_methods.dart';
 import 'package:collectionapp/pages/adressPages/address_page.dart';
-import 'package:collectionapp/widgets/common/project_layout.dart';
+import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,7 +39,7 @@ class _AddressMainPageState extends State<AddressMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ProjectLayout(
+    return ProjectSingleLayout(
       title: 'My Addresses',
       subtitle: 'Your saved addresses',
       headerIcon: Icons.location_on,
@@ -64,15 +64,12 @@ class _AddressMainPageState extends State<AddressMainPage> {
           final doc = snapshot.data;
           if (doc == null || !doc.exists) {
             // Adres yoksa, bir sonraki çerçevede AddressPage’e yönlendir
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const AddressPage(),
-                ),
-              );
-            });
-            return const SizedBox.shrink();
+
+            return buildEmptyState(
+              icon: Icons.home_filled,
+              title: "There are no addresses",
+              subtitle: "You haven't added any addresses yet.",
+            );
           }
 
           // Belge varsa, içindeki alanları alalım
@@ -151,27 +148,17 @@ class _AddressMainPageState extends State<AddressMainPage> {
           );
         },
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        child: ElevatedButton.icon(
-          onPressed: () {
-            // “Yeni Adres Ekle” butonuyla AddressPage’e gidebilir
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const AddressPage(),
-              ),
-            );
-          },
-          icon: const Icon(Icons.add_location_alt_outlined),
-          label: const Text('Add New Address'),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+      bottomNavigationBar: buildBottomButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const AddressPage(),
             ),
-          ),
-        ),
+          );
+        },
+        buttonText: "Add New Address",
+        icon: Icons.add_location_alt_outlined,
       ),
     );
   }

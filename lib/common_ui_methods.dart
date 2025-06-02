@@ -788,3 +788,46 @@ Color getColorForCollectionType(String type) {
       return Colors.deepPurple;
   }
 }
+
+Widget buildEmptyState({
+  required IconData icon,
+  required String title,
+  required String subtitle,
+}) {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.deepPurple.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            size: 64,
+            color: Colors.deepPurple.withValues(alpha: 0.75),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          subtitle,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            color: Colors.grey[600],
+          ),
+        ),
+      ],
+    ),
+  );
+}

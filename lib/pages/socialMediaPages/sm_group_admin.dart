@@ -2,7 +2,7 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/common_ui_methods.dart";
 import "package:flutter/material.dart";
 import 'package:google_fonts/google_fonts.dart';
-import 'package:collectionapp/widgets/common/project_layout.dart';
+import 'package:collectionapp/widgets/common/project_single_layout.dart';
 
 class SmGroupAdmin extends StatefulWidget {
   final String groupId;
@@ -110,7 +110,7 @@ class SmGroupAdminState extends State<SmGroupAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    return ProjectLayout(
+    return ProjectSingleLayout(
       title: "Admin Panel",
       subtitle: "Manage join requests",
       headerIcon: Icons.admin_panel_settings,

@@ -1,4 +1,4 @@
-import 'package:collectionapp/widgets/common/project_layout.dart';
+import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +16,7 @@ class PaymentMethodsPage extends StatelessWidget {
       create: (_) => PaymentMethodViewModel(),
       child: Consumer<PaymentMethodViewModel>(
         builder: (context, viewModel, child) {
-          return ProjectLayout(
+          return ProjectSingleLayout(
               title: "Payment Methods",
               subtitle: "Manage your payment options",
               headerIcon: Icons.credit_card,

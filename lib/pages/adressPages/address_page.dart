@@ -1,5 +1,5 @@
 import 'package:collectionapp/common_ui_methods.dart';
-import 'package:collectionapp/widgets/common/project_layout.dart';
+import 'package:collectionapp/widgets/common/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:csc_picker/csc_picker.dart';
@@ -58,7 +58,7 @@ class _AddressPageState extends State<AddressPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ProjectLayout(
+    return ProjectSingleLayout(
       title: "Add New Address",
       subtitle: "Fill in your address details",
       headerIcon: Icons.location_on,
