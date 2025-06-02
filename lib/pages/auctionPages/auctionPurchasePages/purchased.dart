@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/models/auction_model.dart';
+import 'package:collectionapp/pages/auctionPages/auctionPurchasePages/checkoutPages/select_adress.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -283,7 +284,14 @@ class _PurchasedItemState extends State<PurchasedItem> {
                         Center(
                           child: TextButton(
                             onPressed: () {
-                              // Navigate to checkout page if implemented
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SelectAddressPage(
+                                      auction: widget.auction,
+                                      userUid: widget.auction.bidderId,
+                                    ),
+                                  ));
                             },
                             child: Text(
                               "Proceed to checkout page",
