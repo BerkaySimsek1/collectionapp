@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Collection App',
+        title: "Collection App",
         theme: ThemeData(
           primarySwatch: Colors.deepPurple,
           textTheme: projectTextTheme(context),

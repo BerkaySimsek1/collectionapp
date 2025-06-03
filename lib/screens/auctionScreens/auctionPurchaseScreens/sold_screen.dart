@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:collectionapp/models/auction_model.dart';
-import 'package:collectionapp/screens/auctionScreens/auctionPurchaseScreens/shippingScreens/PrepareOrderforShippingPage.dart';
+import 'package:collectionapp/screens/auctionScreens/auctionPurchaseScreens/shippingScreens/prepare_order_for_shipping_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -296,7 +296,7 @@ class _SoldItemState extends State<SoldItem> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16, vertical: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.green.withOpacity(0.2),
+                                    color: Colors.green.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(

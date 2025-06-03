@@ -10,9 +10,9 @@ class PrepareOrderForShippingPage extends StatefulWidget {
   final AuctionModel auction;
 
   const PrepareOrderForShippingPage({
-    Key? key,
+    super.key,
     required this.auction,
-  }) : super(key: key);
+  });
 
   @override
   State<PrepareOrderForShippingPage> createState() =>
