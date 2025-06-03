@@ -23,7 +23,6 @@ class _CreateAuctionScreenState extends State<CreateAuctionScreen> {
             title: "Create New Auction",
             subtitle: "Fill in the details below",
             headerIcon: Icons.gavel,
-            headerHeight: 250,
             isLoading: viewModel.isUploading,
             onPressed: () => viewModel.uploadAuction(context),
             buttonText: "Create Auction",

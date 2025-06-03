@@ -20,7 +20,6 @@ class _WithdrawFundsScreenState extends State<WithdrawFundsScreen> {
       title: "Withdraw Funds",
       subtitle: "Enter withdrawal details",
       headerIcon: Icons.payments_outlined,
-      headerHeight: 250,
       onPressed: () {
         if (_formKey.currentState!.validate()) {
           // Handle withdrawal process

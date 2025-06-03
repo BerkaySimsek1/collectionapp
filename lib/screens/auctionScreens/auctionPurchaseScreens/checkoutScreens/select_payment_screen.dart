@@ -34,9 +34,8 @@ class _SelectPaymentScreenState extends State<SelectPaymentScreen> {
   Widget build(BuildContext context) {
     return ProjectSingleLayout(
       title: 'Select Payment Method',
-      subtitle: 'Choose your preferred payment option',
+      subtitle: 'Choose your payment option',
       headerIcon: Icons.payment_outlined,
-      headerHeight: 275,
       isLoading: false,
       onPressed: (_selectedPaymentMethod == null)
           ? null

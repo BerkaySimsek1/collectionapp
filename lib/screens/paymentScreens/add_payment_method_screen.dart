@@ -18,7 +18,6 @@ class AddPaymentMethodScreen extends StatelessWidget {
             title: "Add Payment Method",
             subtitle: "Enter your card details",
             headerIcon: Icons.add_card,
-            headerHeight: 250,
             isLoading: viewModel.isLoading,
             onPressed: () => viewModel.savePaymentMethod(context),
             buttonText: "Save Card",

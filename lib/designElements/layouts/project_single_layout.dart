@@ -70,7 +70,7 @@ class _ProjectSingleLayoutState extends State<ProjectSingleLayout>
                 widget.buttonText != null &&
                 widget.buttonIcon != null)
             ? buildBottomButton(
-                isLoading: widget.isLoading,
+                isLoading: widget.isLoading ?? false,
                 onPressed: () async {
                   if (widget.onPressed is Future<void> Function()) {
                     await widget.onPressed();
@@ -78,8 +78,8 @@ class _ProjectSingleLayoutState extends State<ProjectSingleLayout>
                     widget.onPressed();
                   }
                 },
-                buttonText: widget.buttonText!,
-                icon: widget.buttonIcon!,
+                buttonText: widget.buttonText ?? '',
+                icon: widget.buttonIcon ?? Icons.check,
               )
             : null,
       ),
@@ -94,50 +94,81 @@ class _ProjectSingleLayoutState extends State<ProjectSingleLayout>
       right: 0,
       child: buildAnimatedGradientContainer(
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 5, 24, 80),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    widget.headerIcon,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: GoogleFonts.poppins(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Ekran boyutuna göre değerleri hesapla
+              final screenWidth = constraints.maxWidth;
+              final isSmallScreen = screenWidth < 360;
+              final isMediumScreen = screenWidth < 400;
+
+              // Responsive değerler
+              final horizontalPadding = isSmallScreen ? 16.0 : 24.0;
+              final iconSize = isSmallScreen ? 20.0 : 24.0;
+              final iconPadding = isSmallScreen ? 8.0 : 12.0;
+              final titleFontSize = isSmallScreen
+                  ? 20.0
+                  : isMediumScreen
+                      ? 22.0
+                      : 24.0;
+              final subtitleFontSize = isSmallScreen ? 14.0 : 16.0;
+              final spaceBetween = isSmallScreen ? 12.0 : 16.0;
+              final topMargin = isSmallScreen ? 4.0 : 8.0;
+
+              return Padding(
+                padding: EdgeInsets.fromLTRB(
+                    horizontalPadding, 5, horizontalPadding, 80),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: topMargin),
+                      padding: EdgeInsets.all(iconPadding),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
                       ),
-                      Text(
-                        widget.subtitle,
-                        style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            color: Colors.white.withValues(alpha: 0.7)),
+                      child: Icon(
+                        widget.headerIcon,
+                        color: Colors.white,
+                        size: iconSize,
                       ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(width: spaceBetween),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            widget.title,
+                            style: GoogleFonts.poppins(
+                              fontSize: titleFontSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              height: 1.2,
+                            ),
+                            maxLines: isSmallScreen ? 2 : 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: isSmallScreen ? 2 : 4),
+                          Text(
+                            widget.subtitle,
+                            style: GoogleFonts.poppins(
+                              fontSize: subtitleFontSize,
+                              color: Colors.white.withValues(alpha: 0.8),
+                              height: 1.3,
+                            ),
+                            maxLines: isSmallScreen ? 2 : 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),

@@ -40,6 +40,7 @@ class CollectionItemsScreen extends StatelessWidget {
       title: collectionName,
       subtitle: "Collection Items",
       headerIcon: Icons.grid_view_rounded,
+      isLoading: false,
       onPressed: () {
         Navigator.push(
           context,

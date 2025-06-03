@@ -20,7 +20,6 @@ class PaymentMethodsScreen extends StatelessWidget {
               title: "Payment Methods",
               subtitle: "Manage your payment options",
               headerIcon: Icons.credit_card,
-              headerHeight: 250,
               onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(

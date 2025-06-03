@@ -33,9 +33,8 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   Widget build(BuildContext context) {
     return ProjectSingleLayout(
       title: 'Select Shipping Address',
-      subtitle: 'Choose where to deliver your auction item',
+      subtitle: 'Choose where to deliver your item',
       headerIcon: Icons.location_on_outlined,
-      headerHeight: 275,
       isLoading: false,
       onPressed: _selectedAddressId == null
           ? null

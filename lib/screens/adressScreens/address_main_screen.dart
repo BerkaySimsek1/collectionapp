@@ -61,6 +61,7 @@ class _AddressMainScreenState extends State<AddressMainScreen> {
       title: 'My Addresses',
       subtitle: 'Your saved addresses',
       headerIcon: Icons.location_on,
+      isLoading: false,
       onPressed: _navigateToAddAddress,
       buttonText: "Add New Address",
       buttonIcon: Icons.add_location_alt_outlined,

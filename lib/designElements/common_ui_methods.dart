@@ -530,48 +530,35 @@ Widget buildBottomButton({
           ),
         ],
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: projectLinearGradient,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            overlayColor: Colors.red,
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          overlayColor: Colors.red,
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          onPressed: isLoading! ? null : onPressed,
-          icon: isLoading ? null : Icon(icon, color: Colors.white),
-          label: isLoading
-              ? const SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: CircularProgressIndicator(
-                    color: Colors.deepPurple,
-                    strokeWidth: 2,
-                  ),
-                )
-              : Text(
-                  buttonText,
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
         ),
+        onPressed: (isLoading == true) ? null : onPressed,
+        icon: (isLoading == true) ? null : Icon(icon, color: Colors.white),
+        label: (isLoading == true)
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                buttonText,
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
       ),
     ),
   );
@@ -890,7 +877,7 @@ LinearGradient getAnimatedHeaderGradient(double animationValue) {
     ],
     [
       const Color.fromARGB(255, 94, 84, 142),
-      const Color.fromARGB(255, 49, 27, 146),
+      const Color.fromARGB(255, 70, 40, 205),
     ],
     [
       const Color.fromARGB(255, 81, 45, 168),

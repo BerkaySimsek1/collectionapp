@@ -11,7 +11,6 @@ class AddFundsScreen extends StatelessWidget {
       title: "Add Funds",
       subtitle: "Select amount to add to your wallet",
       headerIcon: Icons.account_balance_wallet,
-      headerHeight: 250,
       onPressed: () {
         // Add payment processing logic here
       },
