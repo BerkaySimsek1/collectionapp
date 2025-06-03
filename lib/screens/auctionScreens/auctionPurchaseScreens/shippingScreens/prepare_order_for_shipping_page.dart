@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -107,254 +108,411 @@ class _PrepareOrderForShippingPageState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Prepare For Shipping',
-          style: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        backgroundColor: Colors.deepPurple,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-          future: _addressFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+    return ProjectSingleLayout(
+      title: 'Prepare For Shipping',
+      subtitle: 'Get your item ready for delivery',
+      headerIcon: Icons.local_shipping_outlined,
+      isLoading: false,
+      onPressed: () => _markAsShipped(),
+      buttonText: 'Mark as Shipped',
+      buttonIcon: Icons.check_circle_outline,
+      body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        future: _addressFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: Colors.deepPurple.shade300,
+              ),
+            );
+          }
 
-            if (snapshot.hasError ||
-                !snapshot.hasData ||
-                !snapshot.data!.exists) {
-              return Center(
-                child: Text(
-                  'Could not load address.',
-                  style: GoogleFonts.poppins(fontSize: 16),
+          if (snapshot.hasError ||
+              !snapshot.hasData ||
+              !snapshot.data!.exists) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Colors.red.withValues(alpha: 0.75),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Could not load address.',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Please check the buyer information and try again.',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-              );
-            }
+              ),
+            );
+          }
 
-            final addressData = snapshot.data!.data()!;
-            // Örneğin addressData içinde "street", "city", "zipcode" vb. alanlar var:
-            final street = addressData['state'] ?? '';
-            final city = addressData['city'] ?? '';
-            final district = addressData['detailedAddress'] ?? '';
+          final addressData = snapshot.data!.data()!;
+          final street = addressData['state'] ?? '';
+          final city = addressData['city'] ?? '';
+          final district = addressData['detailedAddress'] ?? '';
 
-            return Column(
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                // Product Information
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.inventory_2_outlined,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Product Information',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (widget.auction.imageUrls.isNotEmpty)
-                          ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(16),
-                            ),
-                            child: Image.network(
-                              widget.auction.imageUrls.first,
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Container(
-                                  height: 200,
-                                  color: Colors.grey[200],
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      value:
-                                          loadingProgress.expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                      color: Colors.deepPurple,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.auction.imageUrls.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(16),
                           ),
-                        const SizedBox(height: 16),
-                        Text(
-                          widget.auction.name,
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.auction.description,
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        FutureBuilder<List<String>>(
-                          future: Future.wait(
-                              [_buyerNameFuture, _buyerProfileImageFuture]),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox(
-                                height: 40,
+                          child: Image.network(
+                            widget.auction.imageUrls.first,
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                height: 200,
+                                color: Colors.grey[200],
                                 child: Center(
                                   child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
                                     color: Colors.deepPurple,
                                   ),
                                 ),
                               );
-                            }
-                            if (snapshot.hasError || !snapshot.hasData) {
-                              return Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundColor: Colors.grey[300],
-                                    child: Icon(Icons.person,
-                                        color: Colors.grey[600]),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    'Buyer Info Unavailable',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey[800],
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }
-                            final buyerName = snapshot.data![0];
-                            final profileUrl = snapshot.data![1];
-                            return Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundImage: profileUrl.isNotEmpty
-                                      ? NetworkImage(profileUrl)
-                                      : null,
-                                  backgroundColor: profileUrl.isEmpty
-                                      ? Colors.grey[300]
-                                      : null,
-                                  child: profileUrl.isEmpty
-                                      ? Icon(Icons.person,
-                                          color: Colors.grey[600])
-                                      : null,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  buyerName,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey[800],
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                            },
+                          ),
                         ),
-                      ],
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.auction.name,
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              widget.auction.description,
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            // Buyer Info
+                            FutureBuilder<List<String>>(
+                              future: Future.wait(
+                                  [_buyerNameFuture, _buyerProfileImageFuture]),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Container(
+                                    height: 40,
+                                    alignment: Alignment.centerLeft,
+                                    child: const CircularProgressIndicator(
+                                      color: Colors.deepPurple,
+                                      strokeWidth: 2,
+                                    ),
+                                  );
+                                }
+                                if (snapshot.hasError || !snapshot.hasData) {
+                                  return Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor: Colors.grey[300],
+                                        child: Icon(Icons.person,
+                                            color: Colors.grey[600]),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Buyer Info Unavailable',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey[800],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }
+                                final buyerName = snapshot.data![0];
+                                final profileUrl = snapshot.data![1];
+                                return Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepPurple
+                                        .withValues(alpha: 0.05),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: profileUrl.isNotEmpty
+                                            ? NetworkImage(profileUrl)
+                                            : null,
+                                        backgroundColor: profileUrl.isEmpty
+                                            ? Colors.grey[300]
+                                            : null,
+                                        child: profileUrl.isEmpty
+                                            ? Icon(Icons.person,
+                                                color: Colors.grey[600])
+                                            : null,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Buyer',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 12,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                          Text(
+                                            buyerName,
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.grey[800],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+
                 const SizedBox(height: 24),
-                Text(
-                  'Shipping Address:',
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+
+                // Shipping Address
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.location_on_outlined,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Shipping Address',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Text(
                     '$street\n$district / $city',
-                    style: GoogleFonts.poppins(fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Shipping Code:',
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    _shippingCode,
                     style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.deepPurple,
+                      fontSize: 16,
+                      color: Colors.grey[800],
+                      height: 1.5,
                     ),
                   ),
                 ),
-                const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => _markAsShipped(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
+
+                const SizedBox(height: 24),
+
+                // Shipping Code
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                    ),
-                    child: Text(
-                      'I delivered it to cargo company',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                      child: const Icon(
+                        Icons.qr_code_2_outlined,
+                        color: Colors.deepPurple,
+                        size: 20,
                       ),
                     ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Shipping Code',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.deepPurple.withValues(alpha: 0.3),
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.deepPurple.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.confirmation_number_outlined,
+                          color: Colors.deepPurple,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _shippingCode,
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          // Copy to clipboard functionality can be added here
+                        },
+                        icon: const Icon(
+                          Icons.copy_outlined,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

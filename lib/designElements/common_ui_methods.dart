@@ -518,34 +518,61 @@ Widget buildBottomButton({
         ),
       ],
     ),
-    child: ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.deepPurple,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        elevation: 4,
+    child: Container(
+      decoration: BoxDecoration(
+        gradient: projectLinearGradient,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      onPressed: isLoading! ? null : onPressed,
-      icon: isLoading ? null : Icon(icon, color: Colors.white),
-      label: isLoading
-          ? const SizedBox(
-              height: 24,
-              width: 24,
-              child: CircularProgressIndicator(
-                color: Colors.deepPurple,
-                strokeWidth: 2,
-              ),
-            )
-          : Text(
-              buttonText,
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: projectLinearGradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
+          ],
+        ),
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            overlayColor: Colors.red,
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          onPressed: isLoading! ? null : onPressed,
+          icon: isLoading ? null : Icon(icon, color: Colors.white),
+          label: isLoading
+              ? const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.deepPurple,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(
+                  buttonText,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+        ),
+      ),
     ),
   );
 }
@@ -802,6 +829,89 @@ LinearGradient get projectLinearGradient => LinearGradient(
         Colors.deepPurple.shade900,
       ],
     );
+
+// Animasyon yönetimi için mixin
+mixin HeaderGradientAnimationMixin<T extends StatefulWidget>
+    on State<T>, TickerProviderStateMixin<T> {
+  late AnimationController _headerGradientController;
+  late Animation<double> _headerGradientAnimation;
+
+  void initializeHeaderGradientAnimation() {
+    _headerGradientController = AnimationController(
+      duration: const Duration(seconds: 8),
+      vsync: this,
+    );
+
+    _headerGradientAnimation = Tween<double>(
+      begin: 0,
+      end: 4.0, // colorSets.length değerine eşit
+    ).animate(CurvedAnimation(
+      parent: _headerGradientController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Sonsuz döngü başlat
+    _headerGradientController.repeat();
+  }
+
+  void disposeHeaderGradientAnimation() {
+    _headerGradientController.dispose();
+  }
+
+  Animation<double> get headerGradientAnimation => _headerGradientAnimation;
+
+  Widget buildAnimatedGradientContainer({
+    required Widget child,
+  }) {
+    return AnimatedBuilder(
+      animation: _headerGradientAnimation,
+      builder: (context, _) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: getAnimatedHeaderGradient(_headerGradientAnimation.value),
+          ),
+          child: child,
+        );
+      },
+    );
+  }
+}
+
+// Layout header'ları için özel animasyonlu gradient fonksiyonu
+LinearGradient getAnimatedHeaderGradient(double animationValue) {
+  final colorSets = [
+    [
+      const Color.fromARGB(255, 107, 69, 173),
+      Colors.deepPurple.shade900,
+    ],
+    [
+      const Color.fromARGB(255, 120, 75, 190),
+      const Color.fromARGB(255, 67, 56, 202),
+    ],
+    [
+      const Color.fromARGB(255, 94, 84, 142),
+      const Color.fromARGB(255, 49, 27, 146),
+    ],
+    [
+      const Color.fromARGB(255, 81, 45, 168),
+      const Color.fromARGB(255, 74, 20, 140),
+    ],
+  ];
+
+  final value = animationValue;
+  final index = value.floor() % colorSets.length;
+  final nextIndex = (index + 1) % colorSets.length;
+  final t = value - value.floor();
+
+  return LinearGradient(
+    colors: [
+      Color.lerp(colorSets[index][0], colorSets[nextIndex][0], t)!,
+      Color.lerp(colorSets[index][1], colorSets[nextIndex][1], t)!,
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+}
 
 IconData getIconForCollectionType(String type) {
   switch (type) {

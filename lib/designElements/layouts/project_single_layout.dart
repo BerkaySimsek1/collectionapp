@@ -2,7 +2,7 @@ import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProjectSingleLayout extends StatelessWidget {
+class ProjectSingleLayout extends StatefulWidget {
   final String title;
   final String subtitle;
   final IconData headerIcon;
@@ -28,6 +28,24 @@ class ProjectSingleLayout extends StatelessWidget {
   });
 
   @override
+  State<ProjectSingleLayout> createState() => _ProjectSingleLayoutState();
+}
+
+class _ProjectSingleLayoutState extends State<ProjectSingleLayout>
+    with TickerProviderStateMixin, HeaderGradientAnimationMixin {
+  @override
+  void initState() {
+    super.initState();
+    initializeHeaderGradientAnimation();
+  }
+
+  @override
+  void dispose() {
+    disposeHeaderGradientAnimation();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -48,79 +66,22 @@ class ProjectSingleLayout extends StatelessWidget {
             _buildBodyContent(),
           ],
         ),
-        bottomNavigationBar:
-            (onPressed != null && buttonText != null && buttonIcon != null)
-                ? _buildBottomButton(context)
-                : null,
-      ),
-    );
-  }
-
-  Widget _buildBottomButton(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: projectLinearGradient,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            overlayColor: Colors.red,
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          onPressed: (isLoading == true)
-              ? null
-              : () async {
-                  if (onPressed is Future<void> Function()) {
-                    await onPressed();
-                  } else if (onPressed is VoidCallback) {
-                    onPressed();
+        bottomNavigationBar: (widget.onPressed != null &&
+                widget.buttonText != null &&
+                widget.buttonIcon != null)
+            ? buildBottomButton(
+                isLoading: widget.isLoading,
+                onPressed: () async {
+                  if (widget.onPressed is Future<void> Function()) {
+                    await widget.onPressed();
+                  } else if (widget.onPressed is VoidCallback) {
+                    widget.onPressed();
                   }
                 },
-          icon: (isLoading == true)
-              ? null
-              : Icon(buttonIcon!, color: Colors.white),
-          label: (isLoading == true)
-              ? const SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
-              : Text(
-                  buttonText!,
-                  style: GoogleFonts.poppins(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-        ),
+                buttonText: widget.buttonText!,
+                icon: widget.buttonIcon!,
+              )
+            : null,
       ),
     );
   }
@@ -131,17 +92,7 @@ class ProjectSingleLayout extends StatelessWidget {
       bottom: 40,
       left: 0,
       right: 0,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color.fromARGB(255, 107, 69, 173),
-              Colors.deepPurple.shade900,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+      child: buildAnimatedGradientContainer(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 5, 24, 80),
@@ -157,7 +108,7 @@ class ProjectSingleLayout extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    headerIcon,
+                    widget.headerIcon,
                     color: Colors.white,
                     size: 24,
                   ),
@@ -169,7 +120,7 @@ class ProjectSingleLayout extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        title,
+                        widget.title,
                         style: GoogleFonts.poppins(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -177,10 +128,10 @@ class ProjectSingleLayout extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        subtitle,
+                        widget.subtitle,
                         style: GoogleFonts.poppins(
                             fontSize: 16,
-                            color: Colors.white..withValues(alpha: 0.7)),
+                            color: Colors.white.withValues(alpha: 0.7)),
                       ),
                     ],
                   ),
@@ -196,7 +147,7 @@ class ProjectSingleLayout extends StatelessWidget {
   Widget _buildBodyContent() {
     return Positioned(
       bottom: -60,
-      top: headerHeight ?? 250,
+      top: widget.headerHeight ?? 250,
       left: 0,
       right: 0,
       child: Transform.translate(
@@ -209,7 +160,7 @@ class ProjectSingleLayout extends StatelessWidget {
               topRight: Radius.circular(30),
             ),
           ),
-          child: body,
+          child: widget.body,
         ),
       ),
     );
