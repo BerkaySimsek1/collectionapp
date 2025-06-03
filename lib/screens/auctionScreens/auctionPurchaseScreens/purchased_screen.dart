@@ -88,6 +88,13 @@ class _PurchasedItemState extends State<PurchasedItem> {
     });
   }
 
+  Future<void> _markAsCompleted() async {
+    await FirebaseFirestore.instance
+        .collection("auctions")
+        .doc(widget.auction.id)
+        .update({"status": "Completed"});
+  }
+
   @override
   Widget build(BuildContext context) {
     final auction = widget.auction;
@@ -234,28 +241,65 @@ class _PurchasedItemState extends State<PurchasedItem> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        Center(
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
+                        if (auction.status == null ||
+                            auction.status!.isEmpty) ...[
+                          Center(
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => SelectAddressScreen(
                                       auction: widget.auction,
                                       userUid: widget.auction.bidderId,
                                     ),
-                                  ));
-                            },
-                            child: Text(
-                              "Proceed to checkout page",
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.deepPurple,
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Proceed to checkout page",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.deepPurple,
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                        ] else if (auction.status == "Completed") ...[
+                          Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                "Completed!",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.green[800],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ] else ...[
+                          Center(
+                            child: TextButton(
+                              onPressed: _toggleExpanded,
+                              child: Text(
+                                _isExpanded ? "Close status" : "Show status",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.deepPurple,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -292,13 +336,73 @@ class _PurchasedItemState extends State<PurchasedItem> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  "Waiting for payment",
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                if (auction.status == "Order Placed") ...[
+                  Text(
+                    "Order placed",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Waiting for shipping",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ] else if (auction.status == "Shipped") ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Shipped",
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          await _markAsCompleted();
+                          setState(() {});
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          "I received the product!",
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else if (auction.status == "Completed") ...[
+                  Text(
+                    "Completed",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ] else ...[
+                  // Fallback for other statuses:
+                  Text(
+                    auction.status ?? '',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

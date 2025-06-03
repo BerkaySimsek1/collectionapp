@@ -12,6 +12,7 @@ class AuctionModel {
   List<String> imageUrls; // Tek resim yerine liste yapısına dönüştürdük
   bool isAuctionEnd;
   List<Bid> bidHistory; // Teklif geçmişi için yeni alan
+  String? status; // Yeni durum alanı, null olabilir
 
   AuctionModel({
     required this.id,
@@ -23,6 +24,7 @@ class AuctionModel {
     required this.description,
     required this.imageUrls,
     required this.isAuctionEnd,
+    this.status,
     List<Bid>? bidHistory,
   }) : bidHistory = bidHistory ?? [];
 
@@ -39,6 +41,7 @@ class AuctionModel {
       "image_urls": imageUrls, // Liste olarak kaydediliyor
       "created_at": DateTime.now().millisecondsSinceEpoch,
       "isAuctionEnd": isAuctionEnd,
+      "status": status,
       "bid_history": bidHistory
           .map((bid) => bid.toMap())
           .toList(), // Teklif geçmişini Map listesine dönüştür
@@ -63,6 +66,7 @@ class AuctionModel {
       imageUrls:
           List<String>.from(map["image_urls"] ?? []), // Listeye dönüştürme
       isAuctionEnd: map["isAuctionEnd"] ?? false,
+      status: map["status"] as String?,
       bidHistory: bids,
     );
   }

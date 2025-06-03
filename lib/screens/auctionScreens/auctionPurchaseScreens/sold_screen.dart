@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:collectionapp/models/auction_model.dart';
+import 'package:collectionapp/screens/auctionScreens/auctionPurchaseScreens/shippingScreens/PrepareOrderforShippingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -26,7 +27,8 @@ class _SoldPageState extends State<SoldPage> {
 
     final soldAuctionsQuery = FirebaseFirestore.instance
         .collection("auctions")
-        .where("creator_id", isEqualTo: widget.userUid);
+        .where("creator_id", isEqualTo: widget.userUid)
+        .orderBy("end_time", descending: true);
 
     return StreamBuilder<QuerySnapshot>(
       stream: soldAuctionsQuery.snapshots(),
@@ -79,6 +81,14 @@ class SoldItem extends StatefulWidget {
 
 class _SoldItemState extends State<SoldItem> {
   bool _isExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.auction.status == "shipped") {
+      _isExpanded = true;
+    }
+  }
 
   void _toggleExpanded() {
     setState(() {
@@ -243,18 +253,83 @@ class _SoldItemState extends State<SoldItem> {
                         ),
                         const SizedBox(height: 16),
                         Center(
-                          child: TextButton(
-                            onPressed: () {
-                              // Navigate to shipping preparation page if implemented
-                            },
-                            child: Text(
-                              "Prepare for shipping",
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.deepPurple,
-                              ),
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (auction.status == null ||
+                                  auction.status!.isEmpty) ...[
+                                TextButton(
+                                  onPressed: null,
+                                  child: Text(
+                                    "Prepare for shipping",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "(Waiting for payment)",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ] else if (auction.status == "Shipped") ...[
+                                TextButton(
+                                  onPressed: _toggleExpanded,
+                                  child: Text(
+                                    _isExpanded
+                                        ? "Close status"
+                                        : "Show status",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.deepPurple,
+                                    ),
+                                  ),
+                                ),
+                              ] else if (auction.status == "Completed") ...[
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    "Completed!",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.green[800],
+                                    ),
+                                  ),
+                                ),
+                              ] else ...[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            PrepareOrderForShippingPage(
+                                                auction: auction),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Prepare for shipping",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.deepPurple,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                         ),
                       ],
@@ -294,12 +369,26 @@ class _SoldItemState extends State<SoldItem> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Waiting for payment",
+                  auction.status == null || auction.status!.isEmpty
+                      ? "Waiting for payment"
+                      : auction.status == "Order Placed"
+                          ? "Order placed"
+                          : auction.status!,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     color: Colors.grey[600],
                   ),
                 ),
+                if (auction.status == "Order Placed") ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    "Waiting for shipping",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

@@ -589,6 +589,10 @@ class AuctionCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
+            print(DateTime.now()
+                .add(Duration(minutes: 10))
+                .millisecondsSinceEpoch);
+
             Navigator.push(
               context,
               MaterialPageRoute(

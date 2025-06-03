@@ -35,11 +35,19 @@ class _SumAndProceedScreenState extends State<SumAndProceedScreen> {
       isLoading: false,
       onPressed: _termsAccepted
           ? () {
-              _loadOrderDetails().then((orderData) {
+              _loadOrderDetails().then((orderData) async {
                 final addressData =
                     orderData['address'] as Map<String, dynamic>;
                 final paymentData =
                     orderData['payment'] as Map<String, dynamic>;
+
+                // Update auction status in Firestore before navigating
+                await FirebaseFirestore.instance
+                    .collection('auctions')
+                    .doc(widget.auction.id)
+                    .update({'status': 'Order Placed'});
+                widget.auction.status =
+                    'Order Placed'; // Optional: update local model
 
                 Navigator.pushReplacement(
                   context,
