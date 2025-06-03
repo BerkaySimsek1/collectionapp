@@ -29,24 +29,30 @@ class ProjectSingleLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: const ProjectIconButton(),
+    return GestureDetector(
+      onTap: () {
+        // Klavyeyi kapat
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: const ProjectIconButton(),
+        ),
+        body: Stack(
+          children: [
+            _buildGradientHeader(),
+            _buildBodyContent(),
+          ],
+        ),
+        bottomNavigationBar:
+            (onPressed != null && buttonText != null && buttonIcon != null)
+                ? _buildBottomButton(context)
+                : null,
       ),
-      body: Stack(
-        children: [
-          _buildGradientHeader(),
-          _buildBodyContent(),
-        ],
-      ),
-      bottomNavigationBar:
-          (onPressed != null && buttonText != null && buttonIcon != null)
-              ? _buildBottomButton(context)
-              : null,
     );
   }
 

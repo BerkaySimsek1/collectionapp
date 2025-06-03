@@ -74,24 +74,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               }
               if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
                 // This case handles when user data is not found in Firestore
-                return Container(
-                  color: Colors.grey[100],
-                  child: Center(
+                return Scaffold(
+                  backgroundColor: Colors.grey[100],
+                  body: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: Colors.grey[400],
-                        ),
+                        buildEmptyState(
+                            icon: Icons.error_outline,
+                            title: "User data not found. Please log in again.",
+                            subtitle: "Tap to log out."),
                         const SizedBox(height: 16),
                         GestureDetector(
                           onTap: () {
                             FirebaseAuth.instance.signOut();
                           },
                           child: Text(
-                            "User data not found. Please log in again.",
+                            "Log Out",
                             style: GoogleFonts.poppins(
                               fontSize: 18,
                               color: Colors.grey[600],
@@ -142,22 +141,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                         ),
                         const SizedBox(height: 30),
-                        ElevatedButton.icon(
+                        ProjectFloatingActionButton(
+                          title: "Log Out",
                           onPressed: () async {
                             await FirebaseAuth.instance.signOut();
                           },
-                          icon: const Icon(Icons.exit_to_app),
-                          label: const Text("Log Out"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 25, vertical: 12),
-                            textStyle: GoogleFonts.poppins(fontSize: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
+                          icon: Icons.exit_to_app,
                         ),
                       ],
                     ),

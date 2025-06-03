@@ -1,3 +1,4 @@
+import "package:collectionapp/designElements/common_ui_methods.dart";
 import "package:collectionapp/env_config.dart";
 import "package:collectionapp/firebase_options.dart";
 import "package:collectionapp/screens/home_screen.dart";
@@ -18,18 +19,20 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        dialogTheme: DialogTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          backgroundColor: Colors.white,
+    return GestureDetector(
+      onTap: () {
+        // Klavyeyi kapat
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Collection App',
+        theme: ThemeData(
+          primarySwatch: Colors.deepPurple,
+          textTheme: projectTextTheme(context),
         ),
+        home: const HomeScreen(),
       ),
-      home: const HomeScreen(), // checks whether user signed in or not
     );
   }
 }

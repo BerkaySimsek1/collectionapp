@@ -889,3 +889,27 @@ Widget buildEmptyState({
     ),
   );
 }
+
+// Klavyeyi kapatmak için yardımcı fonksiyon
+void dismissKeyboard() {
+  FocusManager.instance.primaryFocus?.unfocus();
+}
+
+// Scaffold wrapper with keyboard dismissal
+class KeyboardDismissibleScaffold extends StatelessWidget {
+  final Widget child;
+
+  const KeyboardDismissibleScaffold({
+    super.key,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => dismissKeyboard(),
+      behavior: HitTestBehavior.opaque,
+      child: child,
+    );
+  }
+}
