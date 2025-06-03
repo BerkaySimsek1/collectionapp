@@ -18,9 +18,9 @@ class _PurchasedScreenState extends State<PurchasedScreen> {
   Widget build(BuildContext context) {
     if (widget.userUid == null) {
       return Center(
-        child: Text(
-          "User ID is null",
-          style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+        child: buildEmptyState(
+          icon: Icons.error_outline,
+          title: "User ID is null",
         ),
       );
     }

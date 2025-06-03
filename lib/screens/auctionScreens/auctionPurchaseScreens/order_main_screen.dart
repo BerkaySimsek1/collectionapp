@@ -1,9 +1,9 @@
+import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:collectionapp/screens/auctionScreens/auctionPurchaseScreens/purchased_screen.dart';
 import 'package:collectionapp/screens/auctionScreens/auctionPurchaseScreens/sold_screen.dart';
 import 'package:collectionapp/designElements/layouts/project_multi_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class OrderMainScreen extends StatelessWidget {
   const OrderMainScreen({super.key});
@@ -16,31 +16,11 @@ class OrderMainScreen extends StatelessWidget {
       return Scaffold(
         backgroundColor: Colors.grey[100],
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.person_off_outlined,
-                  size: 64,
-                  color: Colors.deepPurple.withValues(alpha: 0.75),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "User not logged in",
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
+          child: buildEmptyState(
+            icon: Icons.person_off_outlined,
+            title: "User not logged in",
+            subtitle:
+                "You need to be logged in to view your orders. Please log in to continue.",
           ),
         ),
       );

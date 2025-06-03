@@ -29,9 +29,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         title: Text(
           'Notifications',
           style: GoogleFonts.poppins(
-              color: Colors.deepPurple,
-              fontWeight: FontWeight.bold,
-              fontSize: 24),
+            color: Colors.deepPurple,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         leading: const ProjectIconButton(),
         actions: [
