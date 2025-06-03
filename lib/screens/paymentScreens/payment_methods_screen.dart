@@ -1,3 +1,4 @@
+import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,7 +26,7 @@ class PaymentMethodsScreen extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => const AddPaymentMethodScreen())),
               buttonText: "Add New Card",
-              buttonIcon: Icons.add_outlined,
+              buttonIcon: Icons.add,
               body: StreamBuilder<List<PaymentMethod>>(
                 stream: viewModel.getPaymentMethods(),
                 builder: (context, snapshot) {
@@ -80,14 +81,7 @@ class PaymentMethodsScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.deepPurple.shade300,
-            Colors.deepPurple.shade500,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: projectLinearGradient,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(

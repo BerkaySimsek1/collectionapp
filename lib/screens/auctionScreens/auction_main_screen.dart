@@ -64,8 +64,7 @@ class _AuctionMainScreenState extends State<AuctionMainScreen> {
             "Auctions",
             style: GoogleFonts.poppins(
               color: Colors.deepPurple,
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
+              fontWeight: FontWeight.w600,
             ),
           ),
           leading: const ProjectIconButton(),
@@ -268,7 +267,7 @@ class _AuctionMainScreenState extends State<AuctionMainScreen> {
             );
           },
         ),
-        floatingActionButton: FloatingActionButton.extended(
+        floatingActionButton: ProjectFloatingActionButton(
           onPressed: () {
             Navigator.push(
               context,
@@ -276,20 +275,8 @@ class _AuctionMainScreenState extends State<AuctionMainScreen> {
                   builder: (context) => const CreateAuctionScreen()),
             );
           },
-          backgroundColor: Colors.deepPurple,
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: Text(
-            "Create Auction",
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          title: "Create Auction",
+          icon: Icons.gavel_outlined,
         ),
       ),
     );
@@ -783,12 +770,7 @@ class AuctionCard extends StatelessWidget {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.deepPurple.shade400,
-                                    Colors.deepPurple.shade700,
-                                  ],
-                                ),
+                                gradient: projectLinearGradient,
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(

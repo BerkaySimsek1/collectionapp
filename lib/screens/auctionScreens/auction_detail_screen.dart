@@ -241,12 +241,7 @@ class AuctionDetailScreen extends StatelessWidget {
                                             vertical: 8,
                                           ),
                                           decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                Colors.deepPurple.shade400,
-                                                Colors.deepPurple.shade700,
-                                              ],
-                                            ),
+                                            gradient: projectLinearGradient,
                                             borderRadius:
                                                 BorderRadius.circular(12),
                                             boxShadow: [
@@ -481,28 +476,15 @@ class AuctionDetailScreen extends StatelessWidget {
           builder: (context, viewModel, child) {
             if (viewModel.currentUser.uid != auction.creatorId &&
                 !auction.isAuctionEnd) {
-              return FloatingActionButton.extended(
+              return ProjectFloatingActionButton(
                 onPressed: () => _showBidDialog(context, viewModel, auction),
-                backgroundColor: Colors.deepPurple,
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                icon: const Icon(Icons.gavel_outlined, color: Colors.white),
-                label: Text(
-                  "Place Bid",
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                title: "Place Bid",
+                icon: Icons.gavel_outlined,
               );
             }
             return const SizedBox.shrink();
           },
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }
@@ -745,19 +727,7 @@ class __ImageCarouselState extends State<_ImageCarousel> {
                     return PhotoView(
                       imageProvider: NetworkImage(widget.imageUrls[index]),
                       minScale: PhotoViewComputedScale.contained,
-                      maxScale: PhotoViewComputedScale.covered * 2,
-                      backgroundDecoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Colors.deepPurple.shade400,
-                            Colors.deepPurple.shade900,
-                          ],
-                        ),
-                        color: Colors.deepPurple,
-                        backgroundBlendMode: BlendMode.srcIn,
-                      ),
+                      maxScale: PhotoViewComputedScale.covered * 3,
                       loadingBuilder: (context, event) => Center(
                         child: CircularProgressIndicator(
                           color: Colors.white,

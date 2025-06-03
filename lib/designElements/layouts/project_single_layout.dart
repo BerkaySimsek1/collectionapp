@@ -7,7 +7,7 @@ class ProjectSingleLayout extends StatelessWidget {
   final String subtitle;
   final IconData headerIcon;
   final Widget body;
-  final double headerHeight;
+  final double? headerHeight;
   // Bottom button parameters
   final bool? isLoading;
   final dynamic onPressed; // Future<void> Function() veya VoidCallback
@@ -20,7 +20,7 @@ class ProjectSingleLayout extends StatelessWidget {
     required this.subtitle,
     required this.headerIcon,
     required this.body,
-    this.headerHeight = 250,
+    this.headerHeight,
     this.isLoading,
     this.onPressed,
     this.buttonText,
@@ -63,43 +63,58 @@ class ProjectSingleLayout extends StatelessWidget {
           ),
         ],
       ),
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.deepPurple,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          elevation: 4,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: projectLinearGradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        onPressed: (isLoading == true)
-            ? null
-            : () async {
-                if (onPressed is Future<void> Function()) {
-                  await onPressed();
-                } else if (onPressed is VoidCallback) {
-                  onPressed();
-                }
-              },
-        icon:
-            (isLoading == true) ? null : Icon(buttonIcon!, color: Colors.white),
-        label: (isLoading == true)
-            ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            overlayColor: Colors.red,
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          onPressed: (isLoading == true)
+              ? null
+              : () async {
+                  if (onPressed is Future<void> Function()) {
+                    await onPressed();
+                  } else if (onPressed is VoidCallback) {
+                    onPressed();
+                  }
+                },
+          icon: (isLoading == true)
+              ? null
+              : Icon(buttonIcon!, color: Colors.white),
+          label: (isLoading == true)
+              ? const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(
+                  buttonText!,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
-              )
-            : Text(
-                buttonText!,
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
+        ),
       ),
     );
   }
@@ -114,7 +129,7 @@ class ProjectSingleLayout extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Colors.deepPurple.shade400,
+              const Color.fromARGB(255, 107, 69, 173),
               Colors.deepPurple.shade900,
             ],
             begin: Alignment.topLeft,
@@ -175,7 +190,7 @@ class ProjectSingleLayout extends StatelessWidget {
   Widget _buildBodyContent() {
     return Positioned(
       bottom: -60,
-      top: headerHeight,
+      top: headerHeight ?? 250,
       left: 0,
       right: 0,
       child: Transform.translate(

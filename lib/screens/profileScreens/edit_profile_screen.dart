@@ -160,14 +160,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
                             return Container(
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Colors.deepPurple.shade400,
-                                    Colors.deepPurple.shade800,
-                                  ],
-                                ),
+                                gradient: projectLinearGradient,
                               ),
                               child: FlexibleSpaceBar(
                                 centerTitle: true,
@@ -864,14 +857,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildProfileHeader() {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.deepPurple.shade400,
-            Colors.deepPurple.shade800,
-          ],
-        ),
+        gradient: projectLinearGradient,
       ),
       child: Stack(
         children: [

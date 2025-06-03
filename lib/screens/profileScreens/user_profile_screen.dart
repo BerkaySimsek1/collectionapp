@@ -539,7 +539,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
           indicatorPadding: const EdgeInsets.symmetric(horizontal: -12),
           dividerHeight: 0,
           indicator: BoxDecoration(
-            color: Colors.deepPurple,
+            gradient: projectLinearGradient,
             borderRadius: BorderRadius.circular(25),
           ),
           labelColor: Colors.white,
@@ -618,14 +618,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     final String? profileImageUrl = userData?["profileImageUrl"];
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.deepPurple.shade400,
-            Colors.deepPurple.shade800,
-          ],
-        ),
+        gradient: projectLinearGradient,
       ),
       child: Stack(
         children: [
@@ -1260,12 +1253,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                     vertical: 8,
                                   ),
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.deepPurple.shade400,
-                                        Colors.deepPurple.shade700,
-                                      ],
-                                    ),
+                                    gradient: projectLinearGradient,
                                     borderRadius: BorderRadius.circular(25),
                                     boxShadow: [
                                       BoxShadow(
@@ -1480,14 +1468,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
 
                           return Container(
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.deepPurple.shade400,
-                                  Colors.deepPurple.shade800,
-                                ],
-                              ),
+                              gradient: projectLinearGradient,
                             ),
                             child: FlexibleSpaceBar(
                               centerTitle: true,

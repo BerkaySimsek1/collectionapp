@@ -20,8 +20,7 @@ class CollectionMainScreen extends StatelessWidget {
           "Collections",
           style: GoogleFonts.poppins(
             color: Colors.deepPurple,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
+            fontWeight: FontWeight.w600,
           ),
         ),
         leading: const ProjectIconButton(),
@@ -212,7 +211,7 @@ class CollectionMainScreen extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: ProjectFloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
@@ -221,20 +220,8 @@ class CollectionMainScreen extends StatelessWidget {
             ),
           );
         },
-        backgroundColor: Colors.deepPurple,
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          "Add Collection",
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+        title: "Add Collection",
+        icon: Icons.add,
       ),
     );
   }

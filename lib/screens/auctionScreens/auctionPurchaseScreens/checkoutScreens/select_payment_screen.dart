@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/models/auction_model.dart';
 import 'package:collectionapp/screens/auctionScreens/auctionPurchaseScreens/checkoutScreens/sum_and_proceed_screen.dart';
+import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
+import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -30,13 +32,29 @@ class _SelectPaymentScreenState extends State<SelectPaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Select Payment Method',
-          style: GoogleFonts.poppins(),
-        ),
-      ),
+    return ProjectSingleLayout(
+      title: 'Select Payment Method',
+      subtitle: 'Choose your preferred payment option',
+      headerIcon: Icons.payment_outlined,
+      headerHeight: 275,
+      isLoading: false,
+      onPressed: (_selectedPaymentMethod == null)
+          ? null
+          : () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SumAndProceedScreen(
+                    auction: widget.auction,
+                    userUid: widget.userUid,
+                    addressId: widget.addressId,
+                    paymentMethod: _selectedPaymentMethod!,
+                  ),
+                ),
+              );
+            },
+      buttonText: 'Continue',
+      buttonIcon: Icons.arrow_forward_outlined,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('paymentMethods')
@@ -51,54 +69,33 @@ class _SelectPaymentScreenState extends State<SelectPaymentScreen> {
             );
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.credit_card_off,
-                      size: 64,
-                      color: Colors.deepPurple.withValues(alpha: 0.3),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No saved payment methods found.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Please add a payment method in your profile settings.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+            return buildEmptyState(
+              icon: Icons.credit_card_off,
+              title: 'No saved payment methods found.',
+              subtitle: 'Please add a payment method in your profile settings.',
             );
           }
 
           final docs = snapshot.data!.docs;
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             children: [
-              // Display selected address info (unchanged)
-              Card(
+              // Display selected address info
+              Container(
                 margin: const EdgeInsets.only(bottom: 24),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   child: StreamBuilder<DocumentSnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('adresses')
@@ -131,25 +128,44 @@ class _SelectPaymentScreenState extends State<SelectPaymentScreen> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color:
+                                      Colors.deepPurple.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.location_on_outlined,
+                                  color: Colors.deepPurple,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Shipping Address',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.deepPurple,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
                           Text(
-                            'Shipping Address',
+                            title,
                             style: GoogleFonts.poppins(
                               fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                               color: Colors.grey[800],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '$title',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.grey[700],
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '$detailedAddress',
+                            detailedAddress,
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -170,15 +186,32 @@ class _SelectPaymentScreenState extends State<SelectPaymentScreen> {
                 ),
               ),
               // Payment method selection header
-              Text(
-                'Saved Payment Methods',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.deepPurple.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.credit_card_outlined,
+                      color: Colors.deepPurple,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Saved Payment Methods',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.deepPurple,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               // List of saved cards
               ...docs.map((doc) {
                 final pmData = doc.data() as Map<String, dynamic>;
@@ -188,10 +221,18 @@ class _SelectPaymentScreenState extends State<SelectPaymentScreen> {
                     ? cardNumber.substring(cardNumber.length - 4)
                     : '****';
                 final expiry = pmData['expiryDate'] ?? '';
-                return Card(
+                return Container(
                   margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: RadioListTile<String>(
                     value: doc.id,
@@ -202,7 +243,7 @@ class _SelectPaymentScreenState extends State<SelectPaymentScreen> {
                       });
                     },
                     title: Text(
-                      '$cardHolder',
+                      cardHolder,
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -222,41 +263,6 @@ class _SelectPaymentScreenState extends State<SelectPaymentScreen> {
             ],
           );
         },
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepPurple,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          onPressed: (_selectedPaymentMethod == null)
-              ? null
-              : () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SumAndProceedScreen(
-                        auction: widget.auction,
-                        userUid: widget.userUid,
-                        addressId: widget.addressId,
-                        paymentMethod: _selectedPaymentMethod!,
-                      ),
-                    ),
-                  );
-                },
-          child: Text(
-            'Continue',
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ),
       ),
     );
   }

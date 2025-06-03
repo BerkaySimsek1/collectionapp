@@ -218,14 +218,14 @@ class JoinedAuctionsList extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           colors: [
-                                            Colors.deepPurple.shade400,
-                                            Colors.deepPurple.shade700,
+                                            Colors.amber.shade400,
+                                            Colors.amber.shade700,
                                           ],
                                         ),
                                         borderRadius: BorderRadius.circular(12),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.deepPurple
+                                            color: Colors.amber
                                                 .withValues(alpha: 0.3),
                                             blurRadius: 8,
                                             offset: const Offset(0, 2),

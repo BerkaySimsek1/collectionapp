@@ -60,7 +60,7 @@ class _ProjectMultiLayoutState extends State<ProjectMultiLayout>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.deepPurple.shade400,
+                  const Color.fromARGB(255, 107, 69, 173),
                   Colors.deepPurple.shade900,
                 ],
                 begin: Alignment.topLeft,
@@ -141,12 +141,7 @@ class _ProjectMultiLayoutState extends State<ProjectMultiLayout>
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicatorPadding: const EdgeInsets.all(4),
                 indicator: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.deepPurple.shade400,
-                      Colors.deepPurple.shade700,
-                    ],
-                  ),
+                  gradient: projectLinearGradient,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 labelColor: Colors.white,

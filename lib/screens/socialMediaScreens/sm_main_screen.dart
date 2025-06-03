@@ -32,8 +32,7 @@ class SmMainScreenState extends State<SmMainScreen> {
           "Groups",
           style: GoogleFonts.poppins(
             color: Colors.deepPurple,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
+            fontWeight: FontWeight.w600,
           ),
         ),
         leading: const ProjectIconButton(),
@@ -190,29 +189,17 @@ class SmMainScreenState extends State<SmMainScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const SmCreateGroupScreen()),
-          );
-        },
-        backgroundColor: Colors.deepPurple,
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          "Create Group",
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      floatingActionButton: ProjectFloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SmCreateGroupScreen(),
+              ),
+            );
+          },
+          title: "Create Group",
+          icon: Icons.add),
     );
   }
 
@@ -660,12 +647,7 @@ class GroupListItem extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.deepPurple.shade400,
-                                Colors.deepPurple.shade700,
-                              ],
-                            ),
+                            gradient: projectLinearGradient,
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(

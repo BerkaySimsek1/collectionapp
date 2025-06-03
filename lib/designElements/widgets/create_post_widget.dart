@@ -243,12 +243,7 @@ class CreatePostWidgetState extends State<CreatePostWidget> {
                   child: Container(
                     height: 48,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.deepPurple.shade400,
-                          Colors.deepPurple.shade700,
-                        ],
-                      ),
+                      gradient: projectLinearGradient,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(

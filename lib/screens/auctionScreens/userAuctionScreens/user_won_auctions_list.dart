@@ -124,7 +124,7 @@ class WonAuctionsList extends StatelessWidget {
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.amber.withValues(alpha: 0.9),
+                                  color: Colors.green.withValues(alpha: 0.9),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Row(
@@ -187,15 +187,15 @@ class WonAuctionsList extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Colors.amber.shade400,
-                                        Colors.amber.shade700,
+                                        Colors.green.shade400,
+                                        Colors.green.shade700,
                                       ],
                                     ),
                                     borderRadius: BorderRadius.circular(12),
                                     boxShadow: [
                                       BoxShadow(
                                         color:
-                                            Colors.amber.withValues(alpha: 0.3),
+                                            Colors.green.withValues(alpha: 0.3),
                                         blurRadius: 8,
                                         offset: const Offset(0, 2),
                                       ),

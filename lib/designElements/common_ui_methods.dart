@@ -1,7 +1,9 @@
-import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
 
 class ProjectIconButton extends StatelessWidget {
   final IconData? icon;
@@ -744,6 +746,62 @@ Future<void> showReportDialog(
     ),
   );
 }
+
+class ProjectFloatingActionButton extends StatelessWidget {
+  final String title;
+  final VoidCallback onPressed;
+  final IconData icon; // Default icon, can be changed if needed
+
+  const ProjectFloatingActionButton({
+    super.key,
+    required this.title,
+    required this.onPressed,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: projectLinearGradient,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.deepPurple.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: FloatingActionButton.extended(
+        onPressed: onPressed,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+LinearGradient get projectLinearGradient => LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        Colors.deepPurple.shade400,
+        Colors.deepPurple.shade900,
+      ],
+    );
 
 IconData getIconForCollectionType(String type) {
   switch (type) {

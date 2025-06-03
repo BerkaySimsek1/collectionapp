@@ -108,79 +108,78 @@ class SmGroupScreenState extends State<SmGroupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(
-          physics: const BouncingScrollPhysics(
-              decelerationRate: ScrollDecelerationRate.fast),
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-          },
-        ),
-        child: CustomScrollView(
-          controller: _mainScrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Colors.transparent,
-              flexibleSpace: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-                  final double scrollPercent =
-                      constraints.maxHeight > kToolbarHeight
-                          ? 1 -
-                              (constraints.maxHeight - kToolbarHeight) /
-                                  (360 - kToolbarHeight)
-                          : 1.0;
-                  final double opacity =
-                      ((scrollPercent - 0.3) / 0.45).clamp(0.0, 1.0);
+        backgroundColor: Colors.grey[100],
+        body: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(
+            physics: const BouncingScrollPhysics(
+                decelerationRate: ScrollDecelerationRate.fast),
+            dragDevices: {
+              PointerDeviceKind.touch,
+              PointerDeviceKind.mouse,
+            },
+          ),
+          child: CustomScrollView(
+            controller: _mainScrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                backgroundColor: Colors.transparent,
+                flexibleSpace: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    final double scrollPercent =
+                        constraints.maxHeight > kToolbarHeight
+                            ? 1 -
+                                (constraints.maxHeight - kToolbarHeight) /
+                                    (360 - kToolbarHeight)
+                            : 1.0;
+                    final double opacity =
+                        ((scrollPercent - 0.3) / 0.45).clamp(0.0, 1.0);
 
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.deepPurple.shade400,
-                          Colors.deepPurple.shade800,
-                        ],
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: projectLinearGradient,
                       ),
-                    ),
-                    child: FlexibleSpaceBar(
-                      centerTitle: true,
-                      titlePadding: const EdgeInsets.only(bottom: 16),
-                      title: Opacity(
-                        opacity: opacity,
-                        child: Text(
-                          widget.group.name,
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                      child: FlexibleSpaceBar(
+                        centerTitle: true,
+                        titlePadding: const EdgeInsets.only(bottom: 16),
+                        title: Opacity(
+                          opacity: opacity,
+                          child: Text(
+                            widget.group.name,
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      background: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          // Kapak Fotoğrafı
-                          widget.group.coverImageUrl != null
-                              ? Image.network(
-                                  widget.group.coverImageUrl!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Colors.deepPurple.shade400,
-                                          Colors.deepPurple.shade800,
-                                        ],
+                        background: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            // Kapak Fotoğrafı
+                            widget.group.coverImageUrl != null
+                                ? Image.network(
+                                    widget.group.coverImageUrl!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                      decoration: BoxDecoration(
+                                        gradient: projectLinearGradient,
                                       ),
+                                      child: Icon(
+                                        Icons.group_outlined,
+                                        size: 64,
+                                        color:
+                                            Colors.white.withValues(alpha: 0.3),
+                                      ),
+                                    ),
+                                  )
+                                : Container(
+                                    decoration: BoxDecoration(
+                                      gradient: projectLinearGradient,
                                     ),
                                     child: Icon(
                                       Icons.group_outlined,
@@ -188,386 +187,360 @@ class SmGroupScreenState extends State<SmGroupScreen> {
                                       color:
                                           Colors.white.withValues(alpha: 0.3),
                                     ),
-                                  ),
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Colors.deepPurple.shade400,
-                                        Colors.deepPurple.shade800,
+                                  ), // Gradient Overlay
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.black.withValues(alpha: 0.1),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            // Grup Bilgileri
+                            Positioned(
+                              left: 20,
+                              right: 20,
+                              bottom: 20,
+                              child: Opacity(
+                                opacity: 1 - opacity,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.group.name,
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white
+                                                .withValues(alpha: 0.15),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.people_outline,
+                                                size: 16,
+                                                color: Colors.white
+                                                    .withValues(alpha: 0.9),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                "${widget.group.members.length} $memberCount",
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.9),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white
+                                                .withValues(alpha: 0.15),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.category_outlined,
+                                                size: 16,
+                                                color: Colors.white
+                                                    .withValues(alpha: 0.9),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                widget.group.category,
+                                                style: GoogleFonts.poppins(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.9),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                  child: Icon(
-                                    Icons.group_outlined,
-                                    size: 64,
-                                    color: Colors.white.withValues(alpha: 0.3),
-                                  ),
-                                ), // Gradient Overlay
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  Colors.black.withValues(alpha: 0.1),
-                                ],
-                              ),
-                            ),
-                          ),
-                          // Grup Bilgileri
-                          Positioned(
-                            left: 20,
-                            right: 20,
-                            bottom: 20,
-                            child: Opacity(
-                              opacity: 1 - opacity,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.group.name,
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.white,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white
-                                              .withValues(alpha: 0.15),
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.people_outline,
-                                              size: 16,
-                                              color: Colors.white
-                                                  .withValues(alpha: 0.9),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              "${widget.group.members.length} $memberCount",
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white
-                                                    .withValues(alpha: 0.9),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white
-                                              .withValues(alpha: 0.15),
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.category_outlined,
-                                              size: 16,
-                                              color: Colors.white
-                                                  .withValues(alpha: 0.9),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              widget.group.category,
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white
-                                                    .withValues(alpha: 0.9),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-              elevation: 0,
-              floating: false,
-              pinned: true,
-              expandedHeight: 300,
-              leading: const ProjectIconButton(),
-              actions: [
-                if (!widget.group.adminIds.contains(_currentUser!.uid))
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.flag_outlined,
-                          color: Colors.deepPurple),
-                      onPressed: () => showReportDialog(
-                        context,
-                        "group",
-                        widget.group.id,
-                      ),
-                      tooltip: "Report Group",
-                    ),
-                  ),
-              ],
-            ),
-            SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.group.description,
-                      style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        color: Colors.grey[600],
-                        height: 1.5,
-                      ),
-                    ),
-                    if (widget.group.adminIds.contains(_currentUser!.uid)) ...[
-                      const SizedBox(height: 20),
-                      AdminPanelButton(groupId: widget.group.id),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  if (_isMember == null || hasJoinRequest == null) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 32),
-                          CircularProgressIndicator(
-                            color: Colors.deepPurple.shade300,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            "Loading...",
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (!_isMember!) {
-                    return Container(
-                      margin: const EdgeInsets.all(16),
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.deepPurple.withValues(alpha: 0.15),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              hasJoinRequest!
-                                  ? Icons.pending_outlined
-                                  : Icons.group_add_outlined,
-                              size: 40,
-                              color: Colors.deepPurple,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Text(
-                            hasJoinRequest!
-                                ? "Join Request Pending"
-                                : "Join This Group",
-                            style: GoogleFonts.poppins(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            hasJoinRequest!
-                                ? "Your request is being reviewed by admins"
-                                : "Join this group to see posts and interact with members",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          if (!hasJoinRequest!) ...[
-                            const SizedBox(height: 24),
-                            ElevatedButton(
-                              onPressed: _sendJoinRequest,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                              ),
-                              child: Text(
-                                "Request to Join",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  ],
                                 ),
                               ),
                             ),
                           ],
-                        ],
+                        ),
                       ),
                     );
-                  }
-                  return StreamBuilder<List<Post>>(
-                    stream: _groupDetailService.getGroupPosts(widget.group.id),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(height: 32),
-                              CircularProgressIndicator(
-                                color: Colors.deepPurple.shade300,
+                  },
+                ),
+                elevation: 0,
+                floating: false,
+                pinned: true,
+                expandedHeight: 300,
+                leading: const ProjectIconButton(),
+                actions: [
+                  if (!widget.group.adminIds.contains(_currentUser!.uid))
+                    Container(
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.flag_outlined,
+                            color: Colors.deepPurple),
+                        onPressed: () => showReportDialog(
+                          context,
+                          "group",
+                          widget.group.id,
+                        ),
+                        tooltip: "Report Group",
+                      ),
+                    ),
+                ],
+              ),
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.group.description,
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                      ),
+                      if (widget.group.adminIds
+                          .contains(_currentUser!.uid)) ...[
+                        const SizedBox(height: 20),
+                        AdminPanelButton(groupId: widget.group.id),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (_isMember == null || hasJoinRequest == null) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 32),
+                            CircularProgressIndicator(
+                              color: Colors.deepPurple.shade300,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "Loading...",
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[600],
                               ),
-                              const SizedBox(height: 16),
-                              Text(
-                                "Loading posts...",
-                                style: GoogleFonts.poppins(
-                                  color: Colors.grey[600],
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (!_isMember!) {
+                      return Container(
+                        margin: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color:
+                                    Colors.deepPurple.withValues(alpha: 0.15),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                hasJoinRequest!
+                                    ? Icons.pending_outlined
+                                    : Icons.group_add_outlined,
+                                size: 40,
+                                color: Colors.deepPurple,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              hasJoinRequest!
+                                  ? "Join Request Pending"
+                                  : "Join This Group",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              hasJoinRequest!
+                                  ? "Your request is being reviewed by admins"
+                                  : "Join this group to see posts and interact with members",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            if (!hasJoinRequest!) ...[
+                              const SizedBox(height: 24),
+                              ElevatedButton(
+                                onPressed: _sendJoinRequest,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.deepPurple,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 32,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                                child: Text(
+                                  "Request to Join",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ],
-                          ),
-                        );
-                      }
-
-                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return buildEmptyState(
-                          title: "No posts yet",
-                          subtitle:
-                              "Be the first to create a post in this group",
-                          icon: Icons.post_add_outlined,
-                        );
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          children: snapshot.data!.map((post) {
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.1),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: PostWidget(
-                                post: post,
-                                onLike: () => _groupDetailService.toggleLike(
-                                    post.id, _currentUser!.uid),
-                                groupDetailService: _groupDetailService,
-                              ),
-                            );
-                          }).toList(),
+                          ],
                         ),
                       );
-                    },
-                  );
-                },
-                childCount: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: (_isMember ?? false)
-          ? FloatingActionButton.extended(
-              onPressed: () => _showCreatePostDialog(context),
-              backgroundColor: Colors.deepPurple,
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: Text(
-                "Create Post",
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                    }
+                    return StreamBuilder<List<Post>>(
+                      stream:
+                          _groupDetailService.getGroupPosts(widget.group.id),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(height: 32),
+                                CircularProgressIndicator(
+                                  color: Colors.deepPurple.shade300,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "Loading posts...",
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return buildEmptyState(
+                            title: "No posts yet",
+                            subtitle:
+                                "Be the first to create a post in this group",
+                            icon: Icons.post_add_outlined,
+                          );
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            children: snapshot.data!.map((post) {
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Colors.black.withValues(alpha: 0.1),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: PostWidget(
+                                  post: post,
+                                  onLike: () => _groupDetailService.toggleLike(
+                                      post.id, _currentUser!.uid),
+                                  groupDetailService: _groupDetailService,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  childCount: 1,
                 ),
               ),
-            )
-          : null,
-    );
+            ],
+          ),
+        ),
+        floatingActionButton: (_isMember ?? false)
+            ? ProjectFloatingActionButton(
+                onPressed: () => _showCreatePostDialog(context),
+                title: "Create Post",
+                icon: Icons.add,
+              )
+            : null);
   }
 }
 
@@ -584,12 +557,7 @@ class AdminPanelButton extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.deepPurple.shade400,
-            Colors.deepPurple.shade700,
-          ],
-        ),
+        gradient: projectLinearGradient,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -1739,12 +1707,7 @@ class CommentBottomSheetState extends State<CommentBottomSheet> {
             const SizedBox(width: 12),
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.deepPurple.shade400,
-                    Colors.deepPurple.shade700,
-                  ],
-                ),
+                gradient: projectLinearGradient,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
