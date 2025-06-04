@@ -2,24 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class WithdrawalSuccessfulScreen extends StatefulWidget {
-  final String transactionId;
+class SuccessfulScreen extends StatefulWidget {
+  final bool isWithdrawal;
   final double amount;
-  final String accountInfo;
+  final String transactionId;
+  final String? accountInfo;
 
-  const WithdrawalSuccessfulScreen({
+  const SuccessfulScreen({
     super.key,
-    required this.transactionId,
+    required this.isWithdrawal,
     required this.amount,
-    required this.accountInfo,
+    required this.transactionId,
+    this.accountInfo,
   });
 
   @override
-  State<WithdrawalSuccessfulScreen> createState() =>
-      _WithdrawalSuccessfulScreenState();
+  State<SuccessfulScreen> createState() => _SuccessfulScreenState();
 }
 
-class _WithdrawalSuccessfulScreenState extends State<WithdrawalSuccessfulScreen>
+class _SuccessfulScreenState extends State<SuccessfulScreen>
     with TickerProviderStateMixin {
   late AnimationController _checkAnimationController;
   late AnimationController _contentAnimationController;
@@ -80,6 +81,13 @@ class _WithdrawalSuccessfulScreenState extends State<WithdrawalSuccessfulScreen>
 
   @override
   Widget build(BuildContext context) {
+    final title = widget.isWithdrawal
+        ? 'Withdrawal Submitted!'
+        : 'Funds Added Successfully!';
+    final subtitle = widget.isWithdrawal
+        ? 'Your withdrawal request has been submitted successfully. It will be processed within 1-3 business days.'
+        : '\$${widget.amount.toStringAsFixed(2)} has been added to your wallet.';
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -87,7 +95,7 @@ class _WithdrawalSuccessfulScreenState extends State<WithdrawalSuccessfulScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Withdrawal Request',
+          widget.isWithdrawal ? 'Withdrawal Request' : 'Funds Added',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             color: Colors.deepPurple,
@@ -140,7 +148,7 @@ class _WithdrawalSuccessfulScreenState extends State<WithdrawalSuccessfulScreen>
                   child: Column(
                     children: [
                       Text(
-                        'Withdrawal Submitted!',
+                        title,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: 28,
@@ -150,7 +158,7 @@ class _WithdrawalSuccessfulScreenState extends State<WithdrawalSuccessfulScreen>
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Your withdrawal request has been submitted successfully. It will be processed within 1-3 business days.',
+                        subtitle,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
                           fontSize: 16,
@@ -165,22 +173,36 @@ class _WithdrawalSuccessfulScreenState extends State<WithdrawalSuccessfulScreen>
 
               const SizedBox(height: 40),
 
-              // Withdrawal Details
+              // Transaction Details
               SlideTransition(
                 position: _contentSlideAnimation,
                 child: FadeTransition(
                   opacity: _contentFadeAnimation,
                   child: _buildDetailCard(
-                    icon: Icons.account_balance_wallet_outlined,
-                    title: 'Withdrawal Details',
+                    icon: widget.isWithdrawal
+                        ? Icons.account_balance_wallet_outlined
+                        : Icons.add_circle_outline,
+                    title: widget.isWithdrawal
+                        ? 'Withdrawal Details'
+                        : 'Transaction Details',
                     children: [
                       _buildDetailRow(
                           'Amount', '\$${widget.amount.toStringAsFixed(2)}'),
-                      _buildDetailRow('Transaction ID',
-                          widget.transactionId.substring(0, 8).toUpperCase()),
-                      _buildDetailRow('Account', widget.accountInfo),
-                      _buildDetailRow('Status', 'Pending'),
-                      _buildDetailRow('Processing Time', '1-3 business days'),
+                      _buildDetailRow(
+                        'Transaction ID',
+                        widget.transactionId.length >= 8
+                            ? widget.transactionId.substring(0, 8).toUpperCase()
+                            : widget.transactionId.toUpperCase(),
+                      ),
+                      if (widget.isWithdrawal &&
+                          widget.accountInfo != null) ...[
+                        _buildDetailRow('Account', widget.accountInfo!),
+                        _buildDetailRow('Status', 'Pending'),
+                        _buildDetailRow('Processing Time', '1-3 business days'),
+                      ] else if (!widget.isWithdrawal) ...[
+                        _buildDetailRow('Status', 'Completed'),
+                        _buildDetailRow('Processing Time', 'Instant'),
+                      ],
                     ],
                   ),
                 ),
@@ -188,7 +210,7 @@ class _WithdrawalSuccessfulScreenState extends State<WithdrawalSuccessfulScreen>
 
               const SizedBox(height: 40),
 
-              // Action Buttons
+              // Action Button
               SlideTransition(
                 position: _contentSlideAnimation,
                 child: FadeTransition(

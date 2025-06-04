@@ -1,5 +1,6 @@
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
 import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
+import 'package:collectionapp/screens/paymentScreens/add_funds_payment_screen.dart';
 import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,34 +37,15 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final result = await _userMethods.addFunds(
-        amount: _selectedAmount!.toDouble(),
-      );
-
-      if (result['success']) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => AddFundsSuccessfulScreen(
-              amount: _selectedAmount!.toDouble(),
-              transactionId: result['transactionId'],
-            ),
-          ),
-        );
-      } else {
-        projectSnackBar(context, result['message'], 'error');
-      }
-    } catch (e) {
-      projectSnackBar(context, 'Failed to add funds', 'error');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    // Navigate to payment method selection instead of directly adding funds
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddFundsPaymentScreen(
+          amount: _selectedAmount!.toDouble(),
+        ),
+      ),
+    );
   }
 
   @override

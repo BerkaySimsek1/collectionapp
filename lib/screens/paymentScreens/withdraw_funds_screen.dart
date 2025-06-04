@@ -1,6 +1,6 @@
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
 import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
-import 'package:collectionapp/screens/paymentScreens/withdrawal_successful_screen.dart';
+import 'package:collectionapp/screens/paymentScreens/successful_screen.dart';
 import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -51,9 +51,10 @@ class _WithdrawFundsScreenState extends State<WithdrawFundsScreen> {
       if (result['success']) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => WithdrawalSuccessfulScreen(
-              transactionId: result['transactionId'],
+            builder: (context) => SuccessfulScreen(
+              isWithdrawal: true,
               amount: result['amount'],
+              transactionId: result['transactionId'],
               accountInfo: result['accountInfo'],
             ),
           ),
