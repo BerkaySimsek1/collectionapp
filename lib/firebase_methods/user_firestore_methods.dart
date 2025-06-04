@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:collectionapp/firebase_methods/notification_methods.dart';
 
 class UserFirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final NotificationMethods _notificationMethods = NotificationMethods();
 
   // Kullanıcı bilgilerini al
   Future<Map<String, dynamic>?> getUserData() async {
@@ -163,6 +165,181 @@ class UserFirestoreMethods {
       return true;
     } catch (e) {
       debugPrint("Son aktiflik güncellenirken hata: $e");
+      return false;
+    }
+  }
+
+  // Para çekme işlemi
+  Future<Map<String, dynamic>> withdrawFunds({
+    required double amount,
+    required String accountInfo,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return {'success': false, 'message': 'User not authenticated'};
+    }
+
+    try {
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        return {'success': false, 'message': 'User not found'};
+      }
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+      final currentBalance = (userData['balance'] as num?)?.toDouble() ?? 0.0;
+
+      if (currentBalance < amount) {
+        return {'success': false, 'message': 'Insufficient balance'};
+      }
+
+      if (amount < 10) {
+        return {
+          'success': false,
+          'message': 'Minimum withdrawal amount is \$10'
+        };
+      }
+
+      final newBalance = currentBalance - amount;
+      final transactionId =
+          _firestore.collection('withdrawal_requests').doc().id;
+
+      // Kullanıcının bakiyesini güncelle
+      await _firestore.collection('users').doc(user.uid).update({
+        'balance': newBalance,
+      });
+
+      // Para çekme talebini kaydet
+      await _firestore.collection('withdrawal_requests').add({
+        'userId': user.uid,
+        'transactionId': transactionId,
+        'amount': amount,
+        'accountInfo': accountInfo,
+        'status': 'pending',
+        'requestedAt': FieldValue.serverTimestamp(),
+      });
+
+      // Kullanıcıya bildirim gönder
+      await _notificationMethods.createNotification(
+        userId: user.uid,
+        auctionId: '',
+        title: 'Withdrawal Request Submitted',
+        message:
+            'Your withdrawal request of \$${amount.toStringAsFixed(2)} has been submitted and is being processed.',
+        type: 'withdrawal',
+      );
+
+      return {
+        'success': true,
+        'message': 'Withdrawal request submitted successfully',
+        'transactionId': transactionId,
+        'amount': amount,
+        'accountInfo': accountInfo,
+      };
+    } catch (e) {
+      debugPrint('Error processing withdrawal: $e');
+      return {'success': false, 'message': 'Failed to process withdrawal'};
+    }
+  }
+
+  // Para ekleme işlemi
+  Future<Map<String, dynamic>> addFunds({
+    required double amount,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return {'success': false, 'message': 'User not authenticated'};
+    }
+
+    try {
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        return {'success': false, 'message': 'User not found'};
+      }
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+      final currentBalance = (userData['balance'] as num?)?.toDouble() ?? 0.0;
+      final newBalance = currentBalance + amount;
+      final transactionId = _firestore.collection('transactions').doc().id;
+
+      // Kullanıcının bakiyesini güncelle
+      await _firestore.collection('users').doc(user.uid).update({
+        'balance': newBalance,
+      });
+
+      // İşlem kaydını tut
+      await _firestore.collection('transactions').add({
+        'userId': user.uid,
+        'transactionId': transactionId,
+        'type': 'add_funds',
+        'amount': amount,
+        'previousBalance': currentBalance,
+        'newBalance': newBalance,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return {
+        'success': true,
+        'message': 'Funds added successfully',
+        'transactionId': transactionId,
+        'amount': amount,
+        'newBalance': newBalance,
+      };
+    } catch (e) {
+      debugPrint('Error adding funds: $e');
+      return {'success': false, 'message': 'Failed to add funds'};
+    }
+  }
+
+  // Kullanıcının bakiyesini getir
+  Future<double> getUserBalance() async {
+    final user = _auth.currentUser;
+    if (user == null) return 0.0;
+
+    try {
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        final userData = userDoc.data() as Map<String, dynamic>;
+        return (userData['balance'] as num?)?.toDouble() ?? 0.0;
+      }
+      return 0.0;
+    } catch (e) {
+      debugPrint('Error getting user balance: $e');
+      return 0.0;
+    }
+  }
+
+  // Başka kullanıcıya para ekleme (müzayede satışları için)
+  Future<bool> addFundsToUser({
+    required String userId,
+    required double amount,
+    required String description,
+  }) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (!userDoc.exists) return false;
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+      final currentBalance = (userData['balance'] as num?)?.toDouble() ?? 0.0;
+      final newBalance = currentBalance + amount;
+
+      await _firestore.collection('users').doc(userId).update({
+        'balance': newBalance,
+      });
+
+      // İşlem kaydını tut
+      await _firestore.collection('transactions').add({
+        'userId': userId,
+        'type': 'auction_sale',
+        'amount': amount,
+        'description': description,
+        'previousBalance': currentBalance,
+        'newBalance': newBalance,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return true;
+    } catch (e) {
+      debugPrint('Error adding funds to user: $e');
       return false;
     }
   }

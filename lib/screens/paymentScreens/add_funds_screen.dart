@@ -1,9 +1,70 @@
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
+import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
+import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AddFundsScreen extends StatelessWidget {
+class AddFundsScreen extends StatefulWidget {
   const AddFundsScreen({super.key});
+
+  @override
+  State<AddFundsScreen> createState() => _AddFundsScreenState();
+}
+
+class _AddFundsScreenState extends State<AddFundsScreen> {
+  final UserFirestoreMethods _userMethods = UserFirestoreMethods();
+  int? _selectedAmount;
+  bool _isLoading = false;
+  double _userBalance = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserBalance();
+  }
+
+  Future<void> _loadUserBalance() async {
+    final balance = await _userMethods.getUserBalance();
+    setState(() {
+      _userBalance = balance;
+    });
+  }
+
+  Future<void> _handleAddFunds() async {
+    if (_selectedAmount == null) {
+      projectSnackBar(context, 'Please select an amount', 'error');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await _userMethods.addFunds(
+        amount: _selectedAmount!.toDouble(),
+      );
+
+      if (result['success']) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => AddFundsSuccessfulScreen(
+              amount: _selectedAmount!.toDouble(),
+              transactionId: result['transactionId'],
+            ),
+          ),
+        );
+      } else {
+        projectSnackBar(context, result['message'], 'error');
+      }
+    } catch (e) {
+      projectSnackBar(context, 'Failed to add funds', 'error');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,16 +72,58 @@ class AddFundsScreen extends StatelessWidget {
       title: "Add Funds",
       subtitle: "Select amount to add to your wallet",
       headerIcon: Icons.account_balance_wallet,
-      onPressed: () {
-        // Add payment processing logic here
-      },
-      buttonText: "Proceed to Payment",
-      buttonIcon: Icons.payment,
+      onPressed: _isLoading ? null : _handleAddFunds,
+      buttonText: _isLoading ? "Processing..." : "Proceed to Payment",
+      buttonIcon: _isLoading ? Icons.hourglass_empty : Icons.payment,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Current Balance Card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                gradient: projectLinearGradient,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.deepPurple.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  const Icon(
+                    Icons.account_balance_wallet,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Current Balance',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '\$${_userBalance.toStringAsFixed(2)}',
+                    style: GoogleFonts.poppins(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             Text(
               "Select Amount",
               style: GoogleFonts.poppins(
@@ -49,14 +152,20 @@ class AddFundsScreen extends StatelessWidget {
   }
 
   Widget _buildAmountCard(BuildContext context, int amount) {
+    final isSelected = _selectedAmount == amount;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border:
+            isSelected ? Border.all(color: Colors.deepPurple, width: 2) : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
+            color: isSelected
+                ? Colors.deepPurple.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.1),
+            blurRadius: isSelected ? 15 : 10,
             offset: const Offset(0, 4),
           ),
         ],
@@ -66,7 +175,9 @@ class AddFundsScreen extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            // Handle amount selection
+            setState(() {
+              _selectedAmount = amount;
+            });
           },
           child: Container(
             padding: const EdgeInsets.all(16),
@@ -78,18 +189,145 @@ class AddFundsScreen extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    color: isSelected ? Colors.deepPurple : Colors.grey[800],
                   ),
                 ),
                 Text(
                   'USD',
                   style: GoogleFonts.poppins(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: isSelected ? Colors.deepPurple : Colors.grey[600],
                   ),
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AddFundsSuccessfulScreen extends StatelessWidget {
+  final double amount;
+  final String transactionId;
+
+  const AddFundsSuccessfulScreen({
+    super.key,
+    required this.amount,
+    required this.transactionId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Funds Added',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: Colors.deepPurple,
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+
+              // Success Icon
+              Container(
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  gradient: projectLinearGradient,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.deepPurple.withValues(alpha: 0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  size: 80,
+                  color: Colors.white,
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Success Message
+              Text(
+                'Funds Added Successfully!',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '\$${amount.toStringAsFixed(2)} has been added to your wallet.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                  height: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 60),
+
+              // Back to Home Button
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: projectLinearGradient,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.deepPurple.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  icon: const Icon(
+                    Icons.home_outlined,
+                    color: Colors.white,
+                  ),
+                  label: Text(
+                    'Back to Home',
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
