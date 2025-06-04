@@ -34,32 +34,68 @@ class _SumAndProceedScreenState extends State<SumAndProceedScreen> {
       headerIcon: Icons.receipt_long_outlined,
       isLoading: false,
       onPressed: _termsAccepted
-          ? () {
-              _loadOrderDetails().then((orderData) async {
-                final addressData =
-                    orderData['address'] as Map<String, dynamic>;
-                final paymentData =
-                    orderData['payment'] as Map<String, dynamic>;
+          ? () async {
+              // Fetch order details
+              final rawData = await _loadOrderDetails();
+              final orderData = Map<String, dynamic>.from(rawData);
+              final addressData =
+                  Map<String, dynamic>.from(orderData['address']);
+              final paymentData =
+                  Map<String, dynamic>.from(orderData['payment']);
 
-                // Update auction status in Firestore before navigating
+              // Determine price
+              final double price = widget.auction.startingPrice.toDouble();
+
+              // Handle wallet deduction if needed
+              if (widget.paymentMethod == 'wallet' ||
+                  widget.paymentMethod == 'composite') {
+                // Get current balance
+                final userDoc = await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.userUid)
+                    .get();
+                final userData = userDoc.exists
+                    ? userDoc.data() as Map<String, dynamic>
+                    : {};
+                final rawBalance = userData['balance'];
+                final double balance =
+                    (rawBalance != null) ? (rawBalance as num).toDouble() : 0.0;
+
+                double newBalance;
+                if (widget.paymentMethod == 'wallet') {
+                  // Deduct full price from balance
+                  newBalance = balance - price;
+                } else {
+                  // Composite: deduct entire balance
+                  newBalance = 0.0;
+                }
+
+                // Update user's balance in Firestore
                 await FirebaseFirestore.instance
-                    .collection('auctions')
-                    .doc(widget.auction.id)
-                    .update({'status': 'Order Placed'});
-                widget.auction.status =
-                    'Order Placed'; // Optional: update local model
+                    .collection('users')
+                    .doc(widget.userUid)
+                    .update({'balance': newBalance});
+              }
 
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OrderSuccessfulScreen(
-                      auction: widget.auction,
-                      addressData: addressData,
-                      paymentData: paymentData,
-                    ),
+              // Update auction status in Firestore before navigating
+              await FirebaseFirestore.instance
+                  .collection('auctions')
+                  .doc(widget.auction.id)
+                  .update({'status': 'Order Placed'});
+              widget.auction.status =
+                  'Order Placed'; // Optional: update local model
+
+              // Navigate to order successful screen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OrderSuccessfulScreen(
+                    auction: widget.auction,
+                    addressData: addressData,
+                    paymentData: paymentData,
                   ),
-                );
-              });
+                ),
+              );
             }
           : null,
       buttonText: 'Place Order',
@@ -83,9 +119,20 @@ class _SumAndProceedScreenState extends State<SumAndProceedScreen> {
             );
           }
 
-          final orderData = snapshot.data as Map<String, dynamic>;
-          final addressData = orderData['address'] as Map<String, dynamic>;
-          final paymentData = orderData['payment'] as Map<String, dynamic>;
+          final rawData = snapshot.data;
+          if (rawData == null) {
+            return Center(
+              child: Text(
+                'Order data not available.',
+                style: GoogleFonts.poppins(color: Colors.red),
+              ),
+            );
+          }
+          final orderData = Map<String, dynamic>.from(rawData as Map);
+          final addressData =
+              Map<String, dynamic>.from(orderData['address'] as Map);
+          final paymentData =
+              Map<String, dynamic>.from(orderData['payment'] as Map);
 
           final cardNumber = paymentData['cardNumber'] ?? '';
           final cardLast4 = cardNumber.length >= 4

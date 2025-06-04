@@ -89,10 +89,21 @@ class _PurchasedItemState extends State<PurchasedItem> {
   }
 
   Future<void> _markAsCompleted() async {
+    // Update auction status to "Completed"
     await FirebaseFirestore.instance
         .collection("auctions")
         .doc(widget.auction.id)
         .update({"status": "Completed"});
+
+    // Add the auction's starting price to the creator's wallet balance
+    final String creatorId = widget.auction.creatorId!;
+    final double price = widget.auction.startingPrice.toDouble();
+    print(creatorId);
+    print(price);
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(creatorId)
+        .set({"balance": FieldValue.increment(price)}, SetOptions(merge: true));
   }
 
   @override

@@ -54,213 +54,213 @@ class _SelectPaymentScreenState extends State<SelectPaymentScreen> {
             },
       buttonText: 'Continue',
       buttonIcon: Icons.arrow_forward_outlined,
-      body: StreamBuilder<QuerySnapshot>(
+      body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('paymentMethods')
-            .where('userId', isEqualTo: widget.userUid)
+            .collection('users')
+            .doc(widget.userUid)
             .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+        builder: (context, userSnapshot) {
+          if (userSnapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(
                 color: Colors.deepPurple.shade300,
               ),
             );
           }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return buildEmptyState(
-              icon: Icons.credit_card_off,
-              title: 'No saved payment methods found.',
-              subtitle: 'Please add a payment method in your profile settings.',
+          if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+            return Center(
+              child: Text(
+                'User data not found.',
+                style:
+                    GoogleFonts.poppins(fontSize: 16, color: Colors.grey[600]),
+              ),
             );
           }
+          final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+          final rawBalance = userData['balance'];
+          final double balance =
+              (rawBalance != null) ? (rawBalance as num).toDouble() : 0.0;
+          final double price = widget.auction.startingPrice.toDouble();
 
-          final docs = snapshot.data!.docs;
-          return ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              // Display selected address info
-              Container(
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: StreamBuilder<DocumentSnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('adresses')
-                        .doc(widget.addressId)
-                        .snapshots(),
-                    builder: (context, addressSnapshot) {
-                      if (addressSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.deepPurple.shade300,
-                          ),
-                        );
-                      }
-                      if (!addressSnapshot.hasData ||
-                          !addressSnapshot.data!.exists) {
-                        return Text(
-                          'Address not found.',
-                          style: GoogleFonts.poppins(
-                              fontSize: 16, color: Colors.grey[600]),
-                        );
-                      }
-                      final data =
-                          addressSnapshot.data!.data() as Map<String, dynamic>;
-                      final title = data['title'] ?? '';
-                      final detailedAddress = data['detailedAddress'] ?? '';
-                      final city = data['city'] ?? '';
-                      final country = data['country'] ?? '';
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color:
-                                      Colors.deepPurple.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Icon(
-                                  Icons.location_on_outlined,
-                                  color: Colors.deepPurple,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                'Shipping Address',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.deepPurple,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            title,
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            detailedAddress,
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '$city, $country',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
+          if (balance < price && balance == 0.0) {
+            // No funds at all
+            return Center(
+              child: Text(
+                'Not enough money in your wallet',
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.red),
               ),
-              // Payment method selection header
-              Row(
+            );
+          } else if (balance < price && balance > 0.0) {
+            // Partial funds
+            final double needed = price - balance;
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.deepPurple.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.credit_card_outlined,
-                      color: Colors.deepPurple,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
                   Text(
-                    'Saved Payment Methods',
+                    'Your wallet has \$${balance.toStringAsFixed(2)}.\n'
+                    'You need \$${needed.toStringAsFixed(2)} more.',
+                    textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.deepPurple,
+                        fontSize: 16, color: Colors.grey[800]),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedPaymentMethod = 'composite';
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'Use \$${balance.toStringAsFixed(2)} from wallet and \$${needed.toStringAsFixed(2)} from card',
+                      style: GoogleFonts.poppins(
+                          fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              // List of saved cards
-              ...docs.map((doc) {
-                final pmData = doc.data() as Map<String, dynamic>;
-                final cardHolder = pmData['cardHolderName'] ?? '';
-                final cardNumber = pmData['cardNumber'] ?? '';
-                final cardLast4 = cardNumber.length >= 4
-                    ? cardNumber.substring(cardNumber.length - 4)
-                    : '****';
-                final expiry = pmData['expiryDate'] ?? '';
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+            );
+          } else {
+            // balance >= price: show wallet or card choice + saved cards
+            return ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                // Wallet option
+                RadioListTile<String>(
+                  value: 'wallet',
+                  groupValue: _selectedPaymentMethod,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedPaymentMethod = value;
+                    });
+                  },
+                  title: Text(
+                    'Use \$${balance.toStringAsFixed(2)} from wallet',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[800],
+                    ),
                   ),
-                  child: RadioListTile<String>(
-                    value: doc.id,
-                    groupValue: _selectedPaymentMethod,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedPaymentMethod = value;
-                      });
-                    },
-                    title: Text(
-                      cardHolder,
+                  subtitle: Text(
+                    'Pay \$${price.toStringAsFixed(2)} using wallet balance',
+                    style: GoogleFonts.poppins(
+                        fontSize: 14, color: Colors.grey[600]),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Or pay by card header
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.credit_card_outlined,
+                        color: Colors.deepPurple,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Or pay with card',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[800],
+                        fontWeight: FontWeight.w600,
+                        color: Colors.deepPurple,
                       ),
                     ),
-                    subtitle: Text(
-                      '**** **** **** $cardLast4  Exp: $expiry',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ],
-          );
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // StreamBuilder for saved cards (existing code)
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('paymentMethods')
+                      .where('userId', isEqualTo: widget.userUid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.deepPurple.shade300,
+                        ),
+                      );
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return buildEmptyState(
+                        icon: Icons.credit_card_off,
+                        title: 'No saved payment methods found.',
+                        subtitle:
+                            'Please add a payment method in your profile settings.',
+                      );
+                    }
+
+                    final docs = snapshot.data!.docs;
+                    return Column(
+                      children: docs.map((doc) {
+                        final pmData = doc.data() as Map<String, dynamic>;
+                        final cardHolder = pmData['cardHolderName'] ?? '';
+                        final cardNumber = pmData['cardNumber'] ?? '';
+                        final cardLast4 = cardNumber.length >= 4
+                            ? cardNumber.substring(cardNumber.length - 4)
+                            : '****';
+                        final expiry = pmData['expiryDate'] ?? '';
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: RadioListTile<String>(
+                            value: doc.id,
+                            groupValue: _selectedPaymentMethod,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedPaymentMethod = value;
+                              });
+                            },
+                            title: Text(
+                              cardHolder,
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[800],
+                              ),
+                            ),
+                            subtitle: Text(
+                              '**** **** **** $cardLast4  Exp: $expiry',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ],
+            );
+          }
         },
       ),
     );
