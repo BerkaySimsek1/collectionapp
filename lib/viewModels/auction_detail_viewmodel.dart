@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:collectionapp/models/user_info_model.dart';
 import 'package:collectionapp/models/auction_model.dart';
+import 'package:collectionapp/firebase_methods/notification_methods.dart';
 
 class AuctionDetailViewModel with ChangeNotifier {
   final AuctionModel auction;
   final User currentUser = FirebaseAuth.instance.currentUser!;
+  final NotificationMethods _notificationMethods = NotificationMethods();
   UserInfoModel? creatorInfo;
   UserInfoModel? bidderInfo;
 
@@ -112,17 +114,14 @@ class AuctionDetailViewModel with ChangeNotifier {
       }
 
       // Bildirim oluştur
-      await FirebaseFirestore.instance.collection('notifications').add({
-        'userId': auction
-            .creatorId, // Bildirimin gideceği kullanıcı (açık artırma sahibi)
-        'auctionId': auction.id,
-        'title': 'New Bid',
-        'message':
+      await _notificationMethods.createNotification(
+        userId: auction.creatorId,
+        auctionId: auction.id,
+        title: 'New Bid',
+        message:
             'Someone placed a bid of \$${bidAmount.toStringAsFixed(2)} on your auction "${auction.name}"',
-        'isRead': false,
-        'createdAt': DateTime.now().millisecondsSinceEpoch,
-        'type': 'bid'
-      });
+        type: 'bid',
+      );
 
       await _loadUserInfo(); // Bidder bilgilerini güncelle
       notifyListeners();

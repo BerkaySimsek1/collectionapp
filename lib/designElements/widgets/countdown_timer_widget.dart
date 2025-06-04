@@ -1,6 +1,7 @@
 import "dart:async";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:collectionapp/models/auction_model.dart";
+import "package:collectionapp/firebase_methods/notification_methods.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
 
@@ -20,6 +21,7 @@ class CountdownTimerState extends State<CountdownTimer> {
   Duration _remainingDuration = const Duration();
   bool _isAuctionEnded = false;
   StreamSubscription<DocumentSnapshot>? _auctionSubscription;
+  final NotificationMethods _notificationMethods = NotificationMethods();
 
   @override
   void initState() {
@@ -92,29 +94,25 @@ class CountdownTimerState extends State<CountdownTimer> {
       final finalPrice = auctionData['starting_price'] as num;
 
       // Açık artırma sahibine bildirim
-      await FirebaseFirestore.instance.collection('notifications').add({
-        'userId': creatorId,
-        'auctionId': widget.auctionId,
-        'title': 'Auction Ended',
-        'message':
-            'Your auction "$auctionName" has ended with final price \$${finalPrice.toStringAsFixed(2)}',
-        'isRead': false,
-        'createdAt': DateTime.now().millisecondsSinceEpoch,
-        'type': 'auction_end'
-      });
+      await _notificationMethods.createNotification(
+        userId: creatorId,
+        auctionId: widget.auctionId,
+        title: 'Auction Ended',
+        message:
+            'Your auction "$auctionName" has ended with final price \$${finalPrice.toStringAsFixed(2)}.',
+        type: 'auction_end',
+      );
 
       if (bidderId.isNotEmpty) {
         // En yüksek teklifi veren kişiye kazandı bildirimi
-        await FirebaseFirestore.instance.collection('notifications').add({
-          'userId': bidderId,
-          'auctionId': widget.auctionId,
-          'title': 'Congratulations! You Won the Auction',
-          'message':
+        await _notificationMethods.createNotification(
+          userId: bidderId,
+          auctionId: widget.auctionId,
+          title: 'Congratulations! You Won the Auction',
+          message:
               'You won the auction "$auctionName" with your bid of \$${finalPrice.toStringAsFixed(2)}',
-          'isRead': false,
-          'createdAt': DateTime.now().millisecondsSinceEpoch,
-          'type': 'auction_won'
-        });
+          type: 'auction_won',
+        );
 
         // Kaybeden teklif sahiplerine bildirim gönder
         final auctionModel = AuctionModel.fromMap(auctionData);
@@ -125,16 +123,14 @@ class CountdownTimerState extends State<CountdownTimer> {
             .toList();
 
         for (var loserId in losingBidders) {
-          await FirebaseFirestore.instance.collection('notifications').add({
-            'userId': loserId,
-            'auctionId': widget.auctionId,
-            'title': 'Auction Ended',
-            'message':
+          await _notificationMethods.createNotification(
+            userId: loserId,
+            auctionId: widget.auctionId,
+            title: 'Auction Ended',
+            message:
                 'The auction "$auctionName" has ended. Final price was \$${finalPrice.toStringAsFixed(2)}',
-            'isRead': false,
-            'createdAt': DateTime.now().millisecondsSinceEpoch,
-            'type': 'auction_end'
-          });
+            type: 'auction_end',
+          );
         }
       }
     } catch (e) {

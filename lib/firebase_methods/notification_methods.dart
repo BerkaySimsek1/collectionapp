@@ -55,4 +55,26 @@ class NotificationMethods {
 
     await batch.commit();
   }
+
+  Future<void> createNotification({
+    required String userId,
+    required String auctionId,
+    required String title,
+    required String message,
+    required String type,
+  }) async {
+    try {
+      await _firestore.collection('notifications').add({
+        'userId': userId,
+        'auctionId': auctionId,
+        'title': title,
+        'message': message,
+        'isRead': false,
+        'createdAt': DateTime.now().millisecondsSinceEpoch,
+        'type': type,
+      });
+    } catch (e) {
+      debugPrint('Error creating notification: $e');
+    }
+  }
 }
