@@ -7,8 +7,8 @@ import "package:collectionapp/models/predefined_collections.dart";
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:intl/intl.dart";
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:collectionapp/image_picker.dart';
 
 class EditItemScreen extends StatefulWidget {
   final String userId;
@@ -102,8 +102,7 @@ class EditItemScreenState extends State<EditItemScreen> {
   }
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final images = await picker.pickMultiImage();
+    final images = await pickMultipleImages(maxImages: 5);
     if (_selectedImages.length + images.length <= 5) {
       setState(() {
         _selectedImages.addAll(images);
@@ -121,17 +120,6 @@ class EditItemScreenState extends State<EditItemScreen> {
     });
   }
 
-  Future<File?> _compressImage(File file) async {
-    final compressedFile = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      "${file.parent.path}/compressed_${file.uri.pathSegments.last}",
-      quality: 70,
-      minWidth: 800,
-      minHeight: 600,
-    );
-    return compressedFile != null ? File(compressedFile.path) : null;
-  }
-
   Future<void> _saveItem(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -146,7 +134,7 @@ class EditItemScreenState extends State<EditItemScreen> {
         if (image.path.startsWith('http')) {
           photoPaths.add(image.path);
         } else {
-          final compressedFile = await _compressImage(File(image.path));
+          final compressedFile = await compressImage(xFileToFile(image));
           final storageRef = FirebaseStorage.instance.ref().child(
               "item_images/${DateTime.now().millisecondsSinceEpoch}_${image.name}");
 

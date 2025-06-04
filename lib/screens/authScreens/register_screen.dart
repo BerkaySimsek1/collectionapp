@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:collectionapp/image_picker.dart';
 
 class RegisterScreen extends StatefulWidget {
   final VoidCallback showLoginScreen;
@@ -31,12 +31,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _pickImage() async {
     try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      final image = await pickImage();
 
       if (image != null) {
         setState(() {
-          _pickedImage = File(image.path);
+          _pickedImage = xFileToFile(image);
         });
       }
     } catch (e) {

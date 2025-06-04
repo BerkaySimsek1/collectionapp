@@ -3,7 +3,7 @@ import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:collectionapp/image_picker.dart';
 import 'package:collectionapp/firebase_methods/sm_firestore_methods.dart';
 import 'package:collectionapp/models/predefined_collections.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,11 +32,10 @@ class SmCreateGroupScreenState extends State<SmCreateGroupScreen> {
   ];
 
   Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await pickImage();
     if (pickedFile != null) {
       setState(() {
-        _coverImage = File(pickedFile.path);
+        _coverImage = xFileToFile(pickedFile);
       });
     }
   }

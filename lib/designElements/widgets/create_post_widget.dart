@@ -5,7 +5,7 @@ import "package:collectionapp/firebase_methods/sm_firestore_methods.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
-import "package:image_picker/image_picker.dart";
+import "package:collectionapp/image_picker.dart";
 
 class CreatePostWidget extends StatefulWidget {
   final String groupId;
@@ -24,11 +24,10 @@ class CreatePostWidgetState extends State<CreatePostWidget> {
   bool _isLoading = false;
 
   Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await pickImage();
     if (pickedFile != null) {
       setState(() {
-        _imageFile = File(pickedFile.path);
+        _imageFile = xFileToFile(pickedFile);
       });
     }
   }
