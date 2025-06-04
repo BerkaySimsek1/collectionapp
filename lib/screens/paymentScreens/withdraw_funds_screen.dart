@@ -89,47 +89,11 @@ class _WithdrawFundsScreenState extends State<WithdrawFundsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Wallet Balance Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  gradient: projectLinearGradient,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.deepPurple.withValues(alpha: 0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.account_balance_wallet,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Available Balance',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        color: Colors.white.withValues(alpha: 0.9),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '\$${_userBalance.toStringAsFixed(2)}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+              buildPrimaryCard(
+                icon: Icons.account_balance_wallet,
+                title: 'Available Balance',
+                value: '\$${_userBalance.toStringAsFixed(2)}',
+                margin: const EdgeInsets.only(bottom: 16),
               ),
 
               Text(

@@ -1010,3 +1010,54 @@ class KeyboardDismissibleScaffold extends StatelessWidget {
     );
   }
 }
+
+Widget buildPrimaryCard({
+  required IconData icon,
+  required String title,
+  required String value,
+  EdgeInsets? margin,
+  EdgeInsets? padding,
+}) {
+  return Container(
+    width: double.infinity,
+    padding: padding ?? const EdgeInsets.all(20),
+    margin: margin ?? const EdgeInsets.only(bottom: 24),
+    decoration: BoxDecoration(
+      gradient: projectLinearGradient,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.deepPurple.withValues(alpha: 0.3),
+          blurRadius: 15,
+          offset: const Offset(0, 8),
+        ),
+      ],
+    ),
+    child: Column(
+      children: [
+        Icon(
+          icon,
+          color: Colors.white,
+          size: 40,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            color: Colors.white.withValues(alpha: 0.9),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    ),
+  );
+}

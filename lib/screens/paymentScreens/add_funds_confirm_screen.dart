@@ -109,68 +109,30 @@ class _AddFundsConfirmScreenState extends State<AddFundsConfirmScreen> {
             child: Column(
               children: [
                 // Amount Summary Card
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: projectLinearGradient,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.deepPurple.withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.account_balance_wallet,
-                        color: Colors.white,
-                        size: 50,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Amount to Add',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Colors.white.withValues(alpha: 0.9),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '\$${widget.amount.toStringAsFixed(2)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'This amount will be added to your wallet',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.white.withValues(alpha: 0.9),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                buildPrimaryCard(
+                  icon: Icons.account_balance_wallet,
+                  title: 'Amount to Add',
+                  value: '\$${widget.amount.toStringAsFixed(2)}',
                 ),
 
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: projectLinearGradient,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'This amount will be added to your wallet',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 24),
-
                 // Payment Method Card
                 _buildDetailCard(
                   icon: Icons.credit_card_outlined,

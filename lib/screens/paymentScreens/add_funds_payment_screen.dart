@@ -69,47 +69,11 @@ class _AddFundsPaymentScreenState extends State<AddFundsPaymentScreen> {
             padding: const EdgeInsets.all(20),
             children: [
               // Amount Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  gradient: projectLinearGradient,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.deepPurple.withValues(alpha: 0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.attach_money,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Amount to Add',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        color: Colors.white.withValues(alpha: 0.9),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '\$${widget.amount.toStringAsFixed(2)}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+              buildPrimaryCard(
+                icon: Icons.attach_money,
+                title: 'Amount to Add',
+                value: '\$${widget.amount.toStringAsFixed(2)}',
+                margin: const EdgeInsets.only(bottom: 16),
               ),
 
               // Payment method selection header
