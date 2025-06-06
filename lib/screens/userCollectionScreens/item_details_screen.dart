@@ -181,88 +181,107 @@ class ItemDetailsScreenState extends State<ItemDetailsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Image Carousel
-                if (photos != null && photos.isNotEmpty)
-                  Stack(
-                    children: [
-                      Container(
-                        height: 350,
-                        width: double.infinity,
-                        color: Colors.grey[200],
-                        child: PageView.builder(
-                          controller: _pageController,
-                          itemCount: photos.length,
-                          onPageChanged: (index) {
-                            setState(() {
-                              _currentPage = index;
-                            });
-                          },
-                          itemBuilder: (context, index) {
-                            final photo = photos[index];
-                            return GestureDetector(
-                              onTap: () =>
-                                  _showPhotoDialog(context, photos, index),
-                              child: Hero(
-                                tag: 'item_image_$index',
-                                child: photo.startsWith('http')
-                                    ? Image.network(
-                                        photo,
-                                        fit: BoxFit.cover,
-                                        loadingBuilder:
-                                            (context, child, loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child;
-                                          }
-                                          return Center(
-                                            child: CircularProgressIndicator(
-                                              value: loadingProgress
-                                                          .expectedTotalBytes !=
-                                                      null
-                                                  ? loadingProgress
-                                                          .cumulativeBytesLoaded /
-                                                      loadingProgress
-                                                          .expectedTotalBytes!
-                                                  : null,
-                                              color: Colors.deepPurple,
-                                            ),
-                                          );
-                                        },
-                                      )
-                                    : Image.file(
-                                        File(photo),
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      if (photos.length > 1)
-                        Positioned(
-                          bottom: 16,
-                          left: 0,
-                          right: 0,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(
-                              photos.length,
-                              (index) => Container(
-                                width: 8,
-                                height: 8,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: _currentPage == index
-                                      ? Colors.deepPurple
-                                      : Colors.white.withValues(alpha: 0.5),
+                // Image Carousel (her zaman göster)
+                Stack(
+                  children: [
+                    Container(
+                      height: 320,
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: photos != null && photos.isNotEmpty
+                          ? PageView.builder(
+                              controller: _pageController,
+                              itemCount: photos.length,
+                              onPageChanged: (index) {
+                                setState(() {
+                                  _currentPage = index;
+                                });
+                              },
+                              itemBuilder: (context, index) {
+                                final photo = photos[index];
+                                return GestureDetector(
+                                  onTap: () => showPhotoDialog(context,
+                                      photos.map((e) => e.toString()).toList(),
+                                      initialIndex: index),
+                                  child: Hero(
+                                    tag: 'item_image_$index',
+                                    child: photo.startsWith('http')
+                                        ? Image.network(
+                                            photo,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              }
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  value: loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          loadingProgress
+                                                              .expectedTotalBytes!
+                                                      : null,
+                                                  color: Colors.deepPurple,
+                                                ),
+                                              );
+                                            },
+                                          )
+                                        : Image.file(
+                                            File(photo),
+                                            fit: BoxFit.cover,
+                                          ),
+                                  ),
+                                );
+                              },
+                            )
+                          : // Varsayılan görüntü
+                          Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.deepPurple.withValues(alpha: 0.1),
+                                    Colors.deepPurple.withValues(alpha: 0.3),
+                                  ],
                                 ),
+                              ),
+                              child: buildEmptyState(
+                                icon: Icons.image_not_supported,
+                                title: "No Image Available",
+                              ),
+                            ),
+                    ),
+                    // Sayfa göstergesi sadece birden fazla fotoğraf varsa
+                    if (photos != null && photos.length > 1)
+                      Positioned(
+                        bottom: 16,
+                        left: 0,
+                        right: 0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            photos.length,
+                            (index) => Container(
+                              width: 8,
+                              height: 8,
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _currentPage == index
+                                    ? Colors.deepPurple
+                                    : Colors.white.withValues(alpha: 0.5),
                               ),
                             ),
                           ),
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
+                ),
 
                 // Details Section
                 Transform.translate(
@@ -392,63 +411,6 @@ class ItemDetailsScreenState extends State<ItemDetailsScreen> {
       return DateFormat('dd.MM.yyyy').format(value);
     }
     return value.toString();
-  }
-
-  Future<void> _showPhotoDialog(
-      BuildContext context, List<dynamic> photos, int initialIndex) {
-    return showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.zero,
-        child: Stack(
-          children: [
-            GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Colors.black,
-                child: PageView.builder(
-                  controller: PageController(initialPage: initialIndex),
-                  itemCount: photos.length,
-                  itemBuilder: (context, index) {
-                    final photo = photos[index];
-                    return InteractiveViewer(
-                      minScale: 0.5,
-                      maxScale: 3.0,
-                      child: photo.startsWith('http')
-                          ? Image.network(
-                              photo,
-                              fit: BoxFit.contain,
-                            )
-                          : Image.file(
-                              File(photo),
-                              fit: BoxFit.contain,
-                            ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            Positioned(
-              top: 16,
-              right: 16,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Future<void> _deleteItem(BuildContext context) async {

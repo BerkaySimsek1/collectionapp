@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:collectionapp/models/auction_model.dart';
 import 'package:collectionapp/designElements/widgets/countdown_timer_widget.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AuctionDetailScreen extends StatelessWidget {
@@ -538,7 +537,8 @@ class __ImageCarouselState extends State<_ImageCarousel> {
             },
             itemBuilder: (context, index) {
               return GestureDetector(
-                onTap: () => _showPhotoDialog(context, widget.imageUrls[index]),
+                onTap: () => showPhotoDialog(context, widget.imageUrls,
+                    initialIndex: index),
                 child: Hero(
                   tag: 'auction_image_$index',
                   child: Image.network(
@@ -698,67 +698,6 @@ class __ImageCarouselState extends State<_ImageCarousel> {
             color: Colors.white,
             size: 24,
           ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _showPhotoDialog(BuildContext context, String initialImageUrl) {
-    return showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.zero,
-        child: Stack(
-          children: [
-            // Photo View
-            GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Colors.black,
-                child: PageView.builder(
-                  itemCount: widget.imageUrls.length,
-                  controller: PageController(
-                    initialPage: widget.imageUrls.indexOf(initialImageUrl),
-                  ),
-                  itemBuilder: (context, index) {
-                    return PhotoView(
-                      imageProvider: NetworkImage(widget.imageUrls[index]),
-                      minScale: PhotoViewComputedScale.contained,
-                      maxScale: PhotoViewComputedScale.covered * 3,
-                      loadingBuilder: (context, event) => Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          value: event == null
-                              ? 0
-                              : event.cumulativeBytesLoaded /
-                                  (event.expectedTotalBytes ?? 1),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-
-            // Close Button
-            Positioned(
-              top: 16,
-              right: 16,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -1039,185 +978,187 @@ Future<void> _showEditDialog(
   final formKey = GlobalKey<FormState>();
 
   return showDialog(
-    context: context,
-    builder: (BuildContext context) => Dialog(
-      backgroundColor: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple.withValues(alpha: 0.15),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+      context: context,
+      builder: (BuildContext context) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
-                ),
-                child: Row(
+                ],
+              ),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Header
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.deepPurple.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.edit_outlined,
-                        color: Colors.deepPurple,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      "Edit Auction",
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildEditField(
-                      controller: nameController,
-                      label: "Auction Name",
-                      icon: Icons.title,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Name cannot be empty";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _buildEditField(
-                      controller: descriptionController,
-                      label: "Description",
-                      icon: Icons.description,
-                      maxLines: 3,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Description cannot be empty";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _buildEditField(
-                      controller: priceController,
-                      label: "Starting Price",
-                      icon: Icons.attach_money,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Price cannot be empty";
-                        }
-                        if (double.tryParse(value) == null) {
-                          return "Please enter a valid price";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Action Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.deepPurple.withValues(alpha: 0.15),
+                              shape: BoxShape.circle,
                             ),
-                            child: Text(
-                              "Cancel",
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[600],
-                              ),
+                            child: const Icon(
+                              Icons.edit_outlined,
+                              color: Colors.deepPurple,
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (formKey.currentState!.validate()) {
-                                final success = await viewModel.editAuction(
-                                  nameController.text,
-                                  descriptionController.text,
-                                  double.parse(priceController.text),
-                                );
+                          const SizedBox(width: 12),
+                          Text(
+                            "Edit Auction",
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
-                                if (!context.mounted) return;
-
-                                if (context.mounted) {
-                                  Navigator.pop(context);
-                                  projectSnackBar(
-                                      context,
-                                      success
-                                          ? "Auction updated successfully!"
-                                          : "Failed to update auction",
-                                      success ? "green" : "red");
-                                }
+                    // Content
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildEditField(
+                            controller: nameController,
+                            label: "Auction Name",
+                            icon: Icons.title,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Name cannot be empty";
                               }
+                              return null;
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              "Save Changes",
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          _buildEditField(
+                            controller: descriptionController,
+                            label: "Description",
+                            icon: Icons.description,
+                            maxLines: 3,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Description cannot be empty";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _buildEditField(
+                            controller: priceController,
+                            label: "Starting Price",
+                            icon: Icons.attach_money,
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Price cannot be empty";
+                              }
+                              if (double.tryParse(value) == null) {
+                                return "Please enter a valid price";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Action Buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Cancel",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    if (formKey.currentState!.validate()) {
+                                      final success =
+                                          await viewModel.editAuction(
+                                        nameController.text,
+                                        descriptionController.text,
+                                        double.parse(priceController.text),
+                                      );
+
+                                      if (!context.mounted) return;
+
+                                      if (context.mounted) {
+                                        Navigator.pop(context);
+                                        projectSnackBar(
+                                            context,
+                                            success
+                                                ? "Auction updated successfully!"
+                                                : "Failed to update auction",
+                                            success ? "green" : "red");
+                                      }
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.deepPurple,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Text(
+                                    "Save Changes",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
+            ),
+          ));
 }
 
 Widget _buildEditField({

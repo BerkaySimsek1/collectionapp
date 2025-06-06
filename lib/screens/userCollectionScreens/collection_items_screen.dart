@@ -29,7 +29,8 @@ class _CollectionItemsScreenState extends State<CollectionItemsScreen> {
   String _searchQuery = '';
   List<QueryDocumentSnapshot> _allItems = [];
   List<QueryDocumentSnapshot> _filteredItems = [];
-  bool _isDataLoaded = false; // Track if data has been loaded initially
+  bool _isDataLoaded = false;
+  bool _hasItems = false; // Öğe varlığını takip etmek için
 
   @override
   void initState() {
@@ -128,108 +129,112 @@ class _CollectionItemsScreenState extends State<CollectionItemsScreen> {
             height: constraints.maxHeight,
             child: Column(
               children: [
-                // Enhanced Search Bar
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: _searchQuery.isNotEmpty
-                            ? Colors.deepPurple.withValues(alpha: 0.5)
-                            : Colors.grey[400]!,
-                        width: _searchQuery.isNotEmpty ? 2 : 1,
-                      ),
-                      boxShadow: _searchQuery.isNotEmpty
-                          ? [
-                              BoxShadow(
-                                color: Colors.deepPurple.withValues(alpha: 0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText:
-                            "Search items by name, description, category...",
-                        hintStyle: GoogleFonts.poppins(
-                          color: Colors.grey[400],
-                          fontSize: 14,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search,
+                // Arama çubuğunu sadece öğe varsa göster
+                if (_hasItems) ...[
+                  // Enhanced Search Bar
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
                           color: _searchQuery.isNotEmpty
-                              ? Colors.deepPurple
-                              : Colors.grey[400],
+                              ? Colors.deepPurple.withValues(alpha: 0.5)
+                              : Colors.grey[400]!,
+                          width: _searchQuery.isNotEmpty ? 2 : 1,
                         ),
-                        suffixIcon: _searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: Icon(
-                                  Icons.clear,
-                                  color: Colors.grey[600],
+                        boxShadow: _searchQuery.isNotEmpty
+                            ? [
+                                BoxShadow(
+                                  color:
+                                      Colors.deepPurple.withValues(alpha: 0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
                                 ),
-                                onPressed: _clearSearch,
-                              )
+                              ]
                             : null,
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
                       ),
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[800],
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText:
+                              "Search items by name, description, category...",
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey[400],
+                            fontSize: 14,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: _searchQuery.isNotEmpty
+                                ? Colors.deepPurple
+                                : Colors.grey[400],
+                          ),
+                          suffixIcon: _searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(
+                                    Icons.clear,
+                                    color: Colors.grey[600],
+                                  ),
+                                  onPressed: _clearSearch,
+                                )
+                              : null,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.grey[800],
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-                // Search Results Info
-                if (_searchQuery.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          size: 16,
-                          color: Colors.grey[600],
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Found ${_filteredItems.length} item${_filteredItems.length != 1 ? 's' : ''} for "$_searchQuery"',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
+                  // Search Results Info
+                  if (_searchQuery.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 16,
                             color: Colors.grey[600],
                           ),
-                        ),
-                        const Spacer(),
-                        if (_filteredItems.length != _allItems.length)
-                          TextButton(
-                            onPressed: _clearSearch,
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(
-                              'Show all',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.deepPurple,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Found ${_filteredItems.length} item${_filteredItems.length != 1 ? 's' : ''} for "$_searchQuery"',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.grey[600],
                             ),
                           ),
-                      ],
+                          const Spacer(),
+                          if (_filteredItems.length != _allItems.length)
+                            TextButton(
+                              onPressed: _clearSearch,
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Text(
+                                'Show all',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: Colors.deepPurple,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
+                ],
 
                 Expanded(
                   child: StreamBuilder(
@@ -262,7 +267,26 @@ class _CollectionItemsScreenState extends State<CollectionItemsScreen> {
                         );
                       }
 
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      // Öğe varlığını kontrol et
+                      final hasData =
+                          snapshot.hasData && snapshot.data!.docs.isNotEmpty;
+
+                      if (_hasItems != hasData) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) {
+                            setState(() {
+                              _hasItems = hasData;
+                              // Öğe yoksa arama durumunu temizle
+                              if (!hasData) {
+                                _searchQuery = '';
+                                _searchController.clear();
+                              }
+                            });
+                          }
+                        });
+                      }
+
+                      if (!hasData) {
                         if (!_isDataLoaded) {
                           _isDataLoaded = true;
                         }
@@ -278,63 +302,31 @@ class _CollectionItemsScreenState extends State<CollectionItemsScreen> {
                       if (!_isDataLoaded ||
                           _allItems.length != newItems.length) {
                         _allItems = newItems;
-                        _isDataLoaded = true;
 
-                        // Only re-filter if we have a search query or if filteredItems is empty
-                        if (_searchQuery.isNotEmpty || _filteredItems.isEmpty) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            _filterItems();
-                          });
-                        } else {
+                        // İlk yüklemede filtrelenmiş listeyi hemen doldur
+                        if (!_isDataLoaded) {
                           _filteredItems = List.from(_allItems);
+                          _isDataLoaded = true;
+                        } else {
+                          // Veri değiştiğinde mevcut arama kriterlerine göre filtrele
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              setState(() {
+                                _filterItems();
+                              });
+                            }
+                          });
                         }
                       }
 
-                      // Show search results
+                      // Gösterilecek öğeler
                       final itemsToShow = _filteredItems;
 
                       if (_searchQuery.isNotEmpty && itemsToShow.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.search_off,
-                                size: 64,
-                                color: Colors.grey[400],
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No items found',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Try adjusting your search terms',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              ElevatedButton.icon(
-                                onPressed: _clearSearch,
-                                icon: const Icon(Icons.clear_all),
-                                label: const Text('Clear search'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.deepPurple,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        return buildEmptyState(
+                          icon: Icons.search_off,
+                          title: "Öğe bulunamadı",
+                          subtitle: "Arama terimlerinizi düzenlemeyi deneyin",
                         );
                       }
 

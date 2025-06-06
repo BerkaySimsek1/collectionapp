@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:photo_view/photo_view.dart';
+import 'dart:io';
 
 import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
 
@@ -1032,6 +1034,89 @@ Widget buildPrimaryCard({
           ),
         ),
       ],
+    ),
+  );
+}
+
+Future<void> showPhotoDialog(
+  BuildContext context,
+  List<String> imageUrls, {
+  int initialIndex = 0,
+}) {
+  return showDialog(
+    context: context,
+    builder: (context) => Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.zero,
+      child: Stack(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black,
+              child: PageView.builder(
+                controller: PageController(initialPage: initialIndex),
+                itemCount: imageUrls.length,
+                itemBuilder: (context, index) {
+                  final imageUrl = imageUrls[index];
+                  return PhotoView(
+                    imageProvider: imageUrl.startsWith('http')
+                        ? NetworkImage(imageUrl)
+                        : FileImage(File(imageUrl)) as ImageProvider,
+                    minScale: PhotoViewComputedScale.contained,
+                    maxScale: PhotoViewComputedScale.covered * 3,
+                    loadingBuilder: (context, event) => Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        value: event == null
+                            ? 0
+                            : event.cumulativeBytesLoaded /
+                                (event.expectedTotalBytes ?? 1),
+                      ),
+                    ),
+                    errorBuilder: (context, error, stackTrace) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.white.withValues(alpha: 0.7),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Failed to load image",
+                            style: GoogleFonts.poppins(
+                              color: Colors.white.withValues(alpha: 0.7),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          Positioned(
+            top: 16,
+            right: 16,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.5),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }
