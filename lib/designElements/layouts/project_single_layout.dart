@@ -47,42 +47,36 @@ class _ProjectSingleLayoutState extends State<ProjectSingleLayout>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // Klavyeyi kapat
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: const ProjectIconButton(),
-        ),
-        body: Stack(
-          children: [
-            _buildGradientHeader(),
-            _buildBodyContent(),
-          ],
-        ),
-        bottomNavigationBar: (widget.onPressed != null &&
-                widget.buttonText != null &&
-                widget.buttonIcon != null)
-            ? buildBottomButton(
-                isLoading: widget.isLoading ?? false,
-                onPressed: () async {
-                  if (widget.onPressed is Future<void> Function()) {
-                    await widget.onPressed();
-                  } else if (widget.onPressed is VoidCallback) {
-                    widget.onPressed();
-                  }
-                },
-                buttonText: widget.buttonText ?? '',
-                icon: widget.buttonIcon ?? Icons.check,
-              )
-            : null,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: const ProjectIconButton(),
       ),
+      body: Stack(
+        children: [
+          _buildGradientHeader(),
+          _buildBodyContent(),
+        ],
+      ),
+      bottomNavigationBar: (widget.onPressed != null &&
+              widget.buttonText != null &&
+              widget.buttonIcon != null)
+          ? buildBottomButton(
+              isLoading: widget.isLoading ?? false,
+              onPressed: () async {
+                if (widget.onPressed is Future<void> Function()) {
+                  await widget.onPressed();
+                } else if (widget.onPressed is VoidCallback) {
+                  widget.onPressed();
+                }
+              },
+              buttonText: widget.buttonText ?? '',
+              icon: widget.buttonIcon ?? Icons.check,
+            )
+          : null,
     );
   }
 

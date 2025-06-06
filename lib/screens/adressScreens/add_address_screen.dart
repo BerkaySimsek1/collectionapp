@@ -6,14 +6,14 @@ import 'package:csc_picker/csc_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AddAddressPage extends StatefulWidget {
-  const AddAddressPage({super.key});
+class AddAddressScreen extends StatefulWidget {
+  const AddAddressScreen({super.key});
 
   @override
-  State<AddAddressPage> createState() => _AddAddressPageState();
+  State<AddAddressScreen> createState() => _AddAddressScreenState();
 }
 
-class _AddAddressPageState extends State<AddAddressPage> {
+class _AddAddressScreenState extends State<AddAddressScreen> {
   final _formKey = GlobalKey<FormState>();
   String? countryValue;
   String? stateValue;

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'item_details_screen.dart';
 import 'add_item_screen.dart';
 
-class CollectionItemsScreen extends StatelessWidget {
+class CollectionItemsScreen extends StatefulWidget {
   final String userId;
   final String collectionName;
 
@@ -17,6 +18,73 @@ class CollectionItemsScreen extends StatelessWidget {
     required this.userId,
     required this.collectionName,
   });
+
+  @override
+  State<CollectionItemsScreen> createState() => _CollectionItemsScreenState();
+}
+
+class _CollectionItemsScreenState extends State<CollectionItemsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounceTimer;
+  String _searchQuery = '';
+  List<QueryDocumentSnapshot> _allItems = [];
+  List<QueryDocumentSnapshot> _filteredItems = [];
+  bool _isDataLoaded = false; // Track if data has been loaded initially
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        setState(() {
+          _searchQuery = _searchController.text.toLowerCase().trim();
+          _filterItems();
+        });
+      }
+    });
+  }
+
+  void _filterItems() {
+    if (_searchQuery.isEmpty) {
+      _filteredItems = List.from(_allItems);
+    } else {
+      _filteredItems = _allItems.where((item) {
+        final data = item.data() as Map<String, dynamic>;
+        final itemName = (data['İsim'] ?? '').toString().toLowerCase();
+        final description = (data['Açıklama'] ?? '').toString().toLowerCase();
+        final category = (data['Kategori'] ?? '').toString().toLowerCase();
+        final brand = (data['Marka'] ?? '').toString().toLowerCase();
+
+        return itemName.contains(_searchQuery) ||
+            description.contains(_searchQuery) ||
+            category.contains(_searchQuery) ||
+            brand.contains(_searchQuery);
+      }).toList();
+    }
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    if (mounted) {
+      setState(() {
+        _searchQuery = '';
+        _filteredItems = List.from(_allItems);
+      });
+    }
+  }
 
   Future<String> _ensureLocalCopy(String filePath) async {
     final appDir = await getApplicationDocumentsDirectory();
@@ -37,7 +105,7 @@ class CollectionItemsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProjectSingleLayout(
-      title: collectionName,
+      title: widget.collectionName,
       subtitle: "Collection Items",
       headerIcon: Icons.grid_view_rounded,
       isLoading: false,
@@ -46,8 +114,8 @@ class CollectionItemsScreen extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => AddItemScreen(
-              userId: userId,
-              collectionName: collectionName,
+              userId: widget.userId,
+              collectionName: widget.collectionName,
             ),
           ),
         );
@@ -60,6 +128,7 @@ class CollectionItemsScreen extends StatelessWidget {
             height: constraints.maxHeight,
             child: Column(
               children: [
+                // Enhanced Search Bar
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                   child: Container(
@@ -67,41 +136,113 @@ class CollectionItemsScreen extends StatelessWidget {
                       color: Colors.grey[50],
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.grey[400]!,
-                        width: 1,
+                        color: _searchQuery.isNotEmpty
+                            ? Colors.deepPurple.withValues(alpha: 0.5)
+                            : Colors.grey[400]!,
+                        width: _searchQuery.isNotEmpty ? 2 : 1,
                       ),
+                      boxShadow: _searchQuery.isNotEmpty
+                          ? [
+                              BoxShadow(
+                                color: Colors.deepPurple.withValues(alpha: 0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
                     ),
                     child: TextField(
+                      controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: "Search items...",
+                        hintText:
+                            "Search items by name, description, category...",
                         hintStyle: GoogleFonts.poppins(
                           color: Colors.grey[400],
+                          fontSize: 14,
                         ),
                         prefixIcon: Icon(
                           Icons.search,
-                          color: Colors.grey[400],
+                          color: _searchQuery.isNotEmpty
+                              ? Colors.deepPurple
+                              : Colors.grey[400],
                         ),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: Icon(
+                                  Icons.clear,
+                                  color: Colors.grey[600],
+                                ),
+                                onPressed: _clearSearch,
+                              )
+                            : null,
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
                         ),
                       ),
-                      style: GoogleFonts.poppins(),
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[800],
+                      ),
                     ),
                   ),
                 ),
+
+                // Search Results Info
+                if (_searchQuery.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          size: 16,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Found ${_filteredItems.length} item${_filteredItems.length != 1 ? 's' : ''} for "$_searchQuery"',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const Spacer(),
+                        if (_filteredItems.length != _allItems.length)
+                          TextButton(
+                            onPressed: _clearSearch,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              'Show all',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: Colors.deepPurple,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+
                 Expanded(
                   child: StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection("userCollections")
-                        .doc(userId)
+                        .doc(widget.userId)
                         .collection("collectionsList")
-                        .doc(collectionName)
+                        .doc(widget.collectionName)
                         .collection("items")
                         .snapshots(),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                      if (snapshot.connectionState == ConnectionState.waiting &&
+                          !_isDataLoaded) {
                         return Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -122,23 +263,93 @@ class CollectionItemsScreen extends StatelessWidget {
                       }
 
                       if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        if (!_isDataLoaded) {
+                          _isDataLoaded = true;
+                        }
                         return buildEmptyState(
                           icon: Icons.grid_off,
                           title: "No items yet",
                           subtitle: "Add your first item to this collection",
                         );
                       }
-                      final items = snapshot.data!.docs;
+
+                      // Only update items list if data has actually changed
+                      final newItems = snapshot.data!.docs;
+                      if (!_isDataLoaded ||
+                          _allItems.length != newItems.length) {
+                        _allItems = newItems;
+                        _isDataLoaded = true;
+
+                        // Only re-filter if we have a search query or if filteredItems is empty
+                        if (_searchQuery.isNotEmpty || _filteredItems.isEmpty) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _filterItems();
+                          });
+                        } else {
+                          _filteredItems = List.from(_allItems);
+                        }
+                      }
+
+                      // Show search results
+                      final itemsToShow = _filteredItems;
+
+                      if (_searchQuery.isNotEmpty && itemsToShow.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.search_off,
+                                size: 64,
+                                color: Colors.grey[400],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No items found',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Try adjusting your search terms',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton.icon(
+                                onPressed: _clearSearch,
+                                icon: const Icon(Icons.clear_all),
+                                label: const Text('Clear search'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.deepPurple,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: ListView.builder(
                           padding: const EdgeInsets.symmetric(vertical: 15),
                           physics: const BouncingScrollPhysics(),
-                          itemCount: items.length,
+                          itemCount: itemsToShow.length,
                           itemBuilder: (context, index) {
-                            final item = items[index];
-                            final photos = item["Photos"] as List<dynamic>?;
+                            final item = itemsToShow[index];
+                            final itemData =
+                                item.data() as Map<String, dynamic>;
+                            final photos = itemData["Photos"] as List<dynamic>?;
+                            final itemName = itemData["İsim"] ?? "İsimsiz Ürün";
 
                             return FutureBuilder<String>(
                               future: photos != null && photos.isNotEmpty
@@ -147,9 +358,18 @@ class CollectionItemsScreen extends StatelessWidget {
                               builder: (context, fileSnapshot) {
                                 if (fileSnapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.deepPurple,
+                                  return Container(
+                                    height: 104,
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[100],
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.deepPurple,
+                                        strokeWidth: 2,
+                                      ),
                                     ),
                                   );
                                 }
@@ -161,6 +381,16 @@ class CollectionItemsScreen extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(16),
+                                    border: _searchQuery.isNotEmpty &&
+                                            itemName
+                                                .toLowerCase()
+                                                .contains(_searchQuery)
+                                        ? Border.all(
+                                            color: Colors.deepPurple
+                                                .withValues(alpha: 0.3),
+                                            width: 2,
+                                          )
+                                        : null,
                                     boxShadow: [
                                       BoxShadow(
                                         color:
@@ -181,8 +411,9 @@ class CollectionItemsScreen extends StatelessWidget {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 ItemDetailsScreen(
-                                              userId: userId,
-                                              collectionName: collectionName,
+                                              userId: widget.userId,
+                                              collectionName:
+                                                  widget.collectionName,
                                               itemId: item.id,
                                             ),
                                           ),
@@ -231,6 +462,7 @@ class CollectionItemsScreen extends StatelessWidget {
                                                                   CircularProgressIndicator(
                                                                 color: Colors
                                                                     .deepPurple,
+                                                                strokeWidth: 2,
                                                                 value: loadingProgress
                                                                             .expectedTotalBytes !=
                                                                         null
@@ -276,28 +508,39 @@ class CollectionItemsScreen extends StatelessWidget {
                                             ),
                                             const SizedBox(width: 16),
 
-                                            // Item Details
+                                            // Item Details with highlighted search terms
                                             Expanded(
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    item["İsim"] ??
-                                                        "İsimsiz Ürün",
-                                                    style: GoogleFonts.poppins(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Colors.grey[800],
+                                                  RichText(
+                                                    text: _buildHighlightedText(
+                                                      itemName,
+                                                      _searchQuery,
+                                                      GoogleFonts.poppins(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Colors.grey[800],
+                                                      ),
                                                     ),
                                                   ),
                                                   const SizedBox(height: 4),
                                                   Text(
-                                                    "Tap to view details",
+                                                    _searchQuery.isNotEmpty
+                                                        ? "Matched search • Tap to view"
+                                                        : "Tap to view details",
                                                     style: GoogleFonts.poppins(
                                                       fontSize: 12,
-                                                      color: Colors.grey[600],
+                                                      color: _searchQuery
+                                                              .isNotEmpty
+                                                          ? Colors.deepPurple
+                                                          : Colors.grey[600],
+                                                      fontWeight: _searchQuery
+                                                              .isNotEmpty
+                                                          ? FontWeight.w500
+                                                          : FontWeight.normal,
                                                     ),
                                                   ),
                                                 ],
@@ -338,5 +581,51 @@ class CollectionItemsScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  // Helper method to highlight search terms in text
+  TextSpan _buildHighlightedText(String text, String query, TextStyle style) {
+    if (query.isEmpty) {
+      return TextSpan(text: text, style: style);
+    }
+
+    final lowerText = text.toLowerCase();
+    final lowerQuery = query.toLowerCase();
+    final List<TextSpan> spans = [];
+
+    int start = 0;
+    int index = lowerText.indexOf(lowerQuery, start);
+
+    while (index >= 0) {
+      // Add text before the match
+      if (index > start) {
+        spans.add(TextSpan(
+          text: text.substring(start, index),
+          style: style,
+        ));
+      }
+
+      // Add highlighted match
+      spans.add(TextSpan(
+        text: text.substring(index, index + query.length),
+        style: style.copyWith(
+          backgroundColor: Colors.yellow.withValues(alpha: 0.3),
+          fontWeight: FontWeight.bold,
+        ),
+      ));
+
+      start = index + query.length;
+      index = lowerText.indexOf(lowerQuery, start);
+    }
+
+    // Add remaining text
+    if (start < text.length) {
+      spans.add(TextSpan(
+        text: text.substring(start),
+        style: style,
+      ));
+    }
+
+    return TextSpan(children: spans);
   }
 }

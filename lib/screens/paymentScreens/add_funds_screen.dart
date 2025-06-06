@@ -15,7 +15,6 @@ class AddFundsScreen extends StatefulWidget {
 class _AddFundsScreenState extends State<AddFundsScreen> {
   final UserFirestoreMethods _userMethods = UserFirestoreMethods();
   int? _selectedAmount;
-  bool _isLoading = false;
   double _userBalance = 0.0;
 
   @override
@@ -54,9 +53,9 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
       title: "Add Funds",
       subtitle: "Select amount to add to your wallet",
       headerIcon: Icons.account_balance_wallet,
-      onPressed: _isLoading ? null : _handleAddFunds,
-      buttonText: _isLoading ? "Processing..." : "Proceed to Payment",
-      buttonIcon: _isLoading ? Icons.hourglass_empty : Icons.payment,
+      onPressed: _handleAddFunds,
+      buttonText: "Proceed to Payment",
+      buttonIcon: Icons.payment,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(

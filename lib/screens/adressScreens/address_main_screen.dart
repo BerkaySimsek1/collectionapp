@@ -45,7 +45,7 @@ class _AddressMainScreenState extends State<AddressMainScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => const AddAddressPage(),
+        builder: (_) => const AddAddressScreen(),
       ),
     );
 

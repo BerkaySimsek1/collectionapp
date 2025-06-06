@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,13 +7,13 @@ import 'package:collectionapp/firebase_methods/user_firestore_methods.dart';
 class ProjectIconButton extends StatelessWidget {
   final IconData? icon;
   final VoidCallback? onPressed;
-  final int? unreadCount; // Yeni parametre
+  final int? unreadCount;
 
   const ProjectIconButton({
     super.key,
     this.icon,
     this.onPressed,
-    this.unreadCount, // Opsiyonel parametre
+    this.unreadCount,
   });
 
   @override
@@ -764,7 +763,7 @@ Future<void> showReportDialog(
 class ProjectFloatingActionButton extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
-  final IconData icon; // Default icon, can be changed if needed
+  final IconData icon;
 
   const ProjectFloatingActionButton({
     super.key,
@@ -817,7 +816,7 @@ LinearGradient get projectLinearGradient => LinearGradient(
       ],
     );
 
-// Animasyon yönetimi için mixin
+// Mixin for animated header gradient
 mixin HeaderGradientAnimationMixin<T extends StatefulWidget>
     on State<T>, TickerProviderStateMixin<T> {
   late AnimationController _headerGradientController;
@@ -831,13 +830,13 @@ mixin HeaderGradientAnimationMixin<T extends StatefulWidget>
 
     _headerGradientAnimation = Tween<double>(
       begin: 0,
-      end: 4.0, // colorSets.length değerine eşit
+      end: 4.0,
     ).animate(CurvedAnimation(
       parent: _headerGradientController,
       curve: Curves.easeInOut,
     ));
 
-    // Sonsuz döngü başlat
+    // Endless animation loop
     _headerGradientController.repeat();
   }
 
@@ -864,7 +863,6 @@ mixin HeaderGradientAnimationMixin<T extends StatefulWidget>
   }
 }
 
-// Layout header'ları için özel animasyonlu gradient fonksiyonu
 LinearGradient getAnimatedHeaderGradient(double animationValue) {
   final colorSets = [
     [
@@ -985,30 +983,6 @@ Widget buildEmptyState({
       ],
     ),
   );
-}
-
-// Klavyeyi kapatmak için yardımcı fonksiyon
-void dismissKeyboard() {
-  FocusManager.instance.primaryFocus?.unfocus();
-}
-
-// Scaffold wrapper with keyboard dismissal
-class KeyboardDismissibleScaffold extends StatelessWidget {
-  final Widget child;
-
-  const KeyboardDismissibleScaffold({
-    super.key,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => dismissKeyboard(),
-      behavior: HitTestBehavior.opaque,
-      child: child,
-    );
-  }
 }
 
 Widget buildPrimaryCard({

@@ -343,4 +343,120 @@ class UserFirestoreMethods {
       return false;
     }
   }
+
+  // Composite payment işlemi (wallet + card)
+  Future<Map<String, dynamic>> processCompositePayment({
+    required String userId,
+    required double totalAmount,
+    required String cardId,
+    required String description,
+  }) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (!userDoc.exists) {
+        return {'success': false, 'message': 'User not found'};
+      }
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+      final currentBalance = (userData['balance'] as num?)?.toDouble() ?? 0.0;
+
+      if (currentBalance <= 0) {
+        return {'success': false, 'message': 'No wallet balance available'};
+      }
+
+      final walletAmount = currentBalance;
+      final cardAmount = totalAmount - walletAmount;
+
+      if (cardAmount <= 0) {
+        return {'success': false, 'message': 'Invalid payment calculation'};
+      }
+
+      // Wallet bakiyesini sıfırla (tüm bakiye kullanılıyor)
+      await _firestore.collection('users').doc(userId).update({
+        'balance': 0.0,
+      });
+
+      // İşlem kaydını tut
+      final transactionId = _firestore.collection('transactions').doc().id;
+      await _firestore.collection('transactions').add({
+        'userId': userId,
+        'transactionId': transactionId,
+        'type': 'composite_payment',
+        'totalAmount': totalAmount,
+        'walletAmount': walletAmount,
+        'cardAmount': cardAmount,
+        'cardId': cardId,
+        'description': description,
+        'previousBalance': currentBalance,
+        'newBalance': 0.0,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return {
+        'success': true,
+        'message': 'Composite payment processed successfully',
+        'transactionId': transactionId,
+        'walletAmount': walletAmount,
+        'cardAmount': cardAmount,
+      };
+    } catch (e) {
+      debugPrint('Error processing composite payment: $e');
+      return {
+        'success': false,
+        'message': 'Failed to process composite payment'
+      };
+    }
+  }
+
+  // Wallet'tan para çekme işlemi (müzayede ödemeleri için)
+  Future<Map<String, dynamic>> deductFromWallet({
+    required String userId,
+    required double amount,
+    required String description,
+  }) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      if (!userDoc.exists) {
+        return {'success': false, 'message': 'User not found'};
+      }
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+      final currentBalance = (userData['balance'] as num?)?.toDouble() ?? 0.0;
+
+      if (currentBalance < amount) {
+        return {'success': false, 'message': 'Insufficient wallet balance'};
+      }
+
+      final newBalance = currentBalance - amount;
+
+      // Kullanıcının bakiyesini güncelle
+      await _firestore.collection('users').doc(userId).update({
+        'balance': newBalance,
+      });
+
+      // İşlem kaydını tut
+      final transactionId = _firestore.collection('transactions').doc().id;
+      await _firestore.collection('transactions').add({
+        'userId': userId,
+        'transactionId': transactionId,
+        'type': 'wallet_payment',
+        'amount': amount,
+        'description': description,
+        'previousBalance': currentBalance,
+        'newBalance': newBalance,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return {
+        'success': true,
+        'message': 'Payment deducted from wallet successfully',
+        'transactionId': transactionId,
+        'amount': amount,
+        'newBalance': newBalance,
+      };
+    } catch (e) {
+      debugPrint('Error deducting from wallet: $e');
+      return {'success': false, 'message': 'Failed to deduct from wallet'};
+    }
+  }
 }

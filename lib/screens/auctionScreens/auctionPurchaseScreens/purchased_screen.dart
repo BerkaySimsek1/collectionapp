@@ -96,10 +96,10 @@ class _PurchasedItemState extends State<PurchasedItem> {
         .update({"status": "Completed"});
 
     // Add the auction's starting price to the creator's wallet balance
-    final String creatorId = widget.auction.creatorId!;
+    final String creatorId = widget.auction.creatorId;
     final double price = widget.auction.startingPrice.toDouble();
-    print(creatorId);
-    print(price);
+    debugPrint(creatorId);
+    debugPrint(price.toString());
     await FirebaseFirestore.instance
         .collection("users")
         .doc(creatorId)

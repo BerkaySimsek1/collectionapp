@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Klavyeyi kapat
+        // Dismiss the keyboard when tapping outside of a text field
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: MaterialApp(

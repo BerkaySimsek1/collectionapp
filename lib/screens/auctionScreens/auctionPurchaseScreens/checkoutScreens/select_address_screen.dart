@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:collectionapp/models/auction_model.dart';
 import 'package:collectionapp/screens/adressScreens/add_address_screen.dart';
-import 'package:collectionapp/screens/adressScreens/address_main_screen.dart';
 import 'package:collectionapp/screens/auctionScreens/auctionPurchaseScreens/checkoutScreens/select_payment_screen.dart';
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +69,12 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                   );
                 }
                 if (!snapshot.hasData || !snapshot.data!.exists) {
-                  return _buildEmptyState();
+                  return buildEmptyState(
+                    icon: Icons.location_off,
+                    title: 'No saved addresses found.',
+                    subtitle:
+                        'Tap the button below to add a new shipping address.',
+                  );
                 }
 
                 final data = snapshot.data!.data() as Map<String, dynamic>;
@@ -151,7 +156,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AddressMainScreen(),
+                    builder: (context) => const AddAddressScreen(),
                   ),
                 );
               },
@@ -166,79 +171,6 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.deepPurple.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.location_off,
-                size: 64,
-                color: Colors.deepPurple.withValues(alpha: 0.75),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No saved addresses found.',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tap the button below to add a new shipping address.',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddAddressPage(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: Text(
-                'Add Address',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -17,6 +17,7 @@ class SumAndProceedScreen extends StatefulWidget {
     required this.userUid,
     required this.addressId,
     required this.paymentMethod,
+    required Map<String, dynamic> paymentData,
   });
 
   @override
