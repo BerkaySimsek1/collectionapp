@@ -1120,3 +1120,120 @@ Future<void> showPhotoDialog(
     ),
   );
 }
+
+Widget buildSearchWidget({
+  required TextEditingController controller,
+  required Function(String) onChanged,
+  required VoidCallback onClear,
+  String hintText = "Search...",
+  EdgeInsets? padding,
+}) {
+  return Padding(
+    padding: padding ?? const EdgeInsets.all(16),
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: controller.text.isNotEmpty
+              ? Colors.deepPurple.withValues(alpha: 0.5)
+              : Colors.grey[300]!,
+          width: controller.text.isNotEmpty ? 2 : 1,
+        ),
+        boxShadow: controller.text.isNotEmpty
+            ? [
+                BoxShadow(
+                  color: Colors.deepPurple.withValues(alpha: 0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
+      ),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        style: GoogleFonts.poppins(
+          fontSize: 14,
+          color: Colors.grey[800],
+        ),
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: GoogleFonts.poppins(
+            color: Colors.grey[400],
+            fontSize: 14,
+          ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: controller.text.isNotEmpty
+                ? Colors.deepPurple
+                : Colors.grey[400],
+          ),
+          suffixIcon: controller.text.isNotEmpty
+              ? IconButton(
+                  icon: Icon(
+                    Icons.clear,
+                    color: Colors.grey[600],
+                  ),
+                  onPressed: onClear,
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+Widget buildActionButton({
+  required IconData icon,
+  required String label,
+  required VoidCallback onTap,
+  bool isSelected = false,
+}) {
+  return Material(
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Colors.deepPurple.withValues(alpha: 0.1)
+              : Colors.transparent,
+          border: Border.all(
+            color: isSelected ? Colors.deepPurple : Colors.grey[300]!,
+            width: isSelected ? 2 : 1,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.deepPurple : Colors.deepPurple,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                label,
+                style: GoogleFonts.poppins(
+                  color: isSelected ? Colors.deepPurple : Colors.deepPurple,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}

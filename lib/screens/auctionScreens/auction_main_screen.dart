@@ -96,45 +96,17 @@ class _AuctionMainScreenState extends State<AuctionMainScreen> {
                   child: Column(
                     children: [
                       // Search Bar
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey[200]!),
-                        ),
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: (value) {
-                            auctionViewModel.updateSearchQuery(value);
-                          },
-                          decoration: InputDecoration(
-                            hintText: "Search auctions...",
-                            hintStyle: GoogleFonts.poppins(
-                              color: Colors.grey[400],
-                            ),
-                            prefixIcon: Icon(
-                              Icons.search,
-                              color: Colors.grey[400],
-                            ),
-                            suffixIcon: _searchController.text.isNotEmpty
-                                ? IconButton(
-                                    icon: Icon(
-                                      Icons.clear,
-                                      color: Colors.grey[400],
-                                    ),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      auctionViewModel.updateSearchQuery("");
-                                    },
-                                  )
-                                : null,
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                          ),
-                        ),
+                      buildSearchWidget(
+                        controller: _searchController,
+                        onChanged: (value) {
+                          auctionViewModel.updateSearchQuery(value);
+                        },
+                        onClear: () {
+                          _searchController.clear();
+                          auctionViewModel.updateSearchQuery("");
+                        },
+                        hintText: "Search auctions...",
+                        padding: EdgeInsets.zero,
                       ),
                       const SizedBox(height: 16),
 
@@ -142,7 +114,7 @@ class _AuctionMainScreenState extends State<AuctionMainScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: _buildActionButton(
+                            child: buildActionButton(
                               icon: Icons.sort,
                               label: getSortLabel(_selectedSort),
                               onTap: () =>
@@ -151,7 +123,7 @@ class _AuctionMainScreenState extends State<AuctionMainScreen> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: _buildActionButton(
+                            child: buildActionButton(
                               icon: Icons.filter_list,
                               label: getFilterLabel(_selectedFilter),
                               onTap: () =>
@@ -277,44 +249,6 @@ class _AuctionMainScreenState extends State<AuctionMainScreen> {
           },
           title: "Create Auction",
           icon: Icons.gavel_outlined,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.deepPurple, size: 20),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  label,
-                  style: GoogleFonts.poppins(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

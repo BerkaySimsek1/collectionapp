@@ -28,7 +28,6 @@ class CollectionMainScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Search and Filter Section
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 24),
             decoration: BoxDecoration(

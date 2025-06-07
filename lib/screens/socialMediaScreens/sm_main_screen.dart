@@ -58,50 +58,21 @@ class SmMainScreenState extends State<SmMainScreen> {
             child: Column(
               children: [
                 // Search Bar
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey[200]!),
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value.toLowerCase();
-                      });
-                    },
-                    style: GoogleFonts.poppins(),
-                    decoration: InputDecoration(
-                      hintText: "Search groups...",
-                      hintStyle: GoogleFonts.poppins(
-                        color: Colors.grey[400],
-                      ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.grey[400],
-                      ),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(
-                                Icons.clear,
-                                color: Colors.grey[400],
-                              ),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {
-                                  _searchQuery = "";
-                                });
-                              },
-                            )
-                          : null,
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                    ),
-                  ),
+                buildSearchWidget(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value.toLowerCase();
+                    });
+                  },
+                  onClear: () {
+                    _searchController.clear();
+                    setState(() {
+                      _searchQuery = "";
+                    });
+                  },
+                  hintText: "Search groups...",
+                  padding: EdgeInsets.zero,
                 ),
                 const SizedBox(height: 16),
 
@@ -109,7 +80,7 @@ class SmMainScreenState extends State<SmMainScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: _buildActionButton(
+                      child: buildActionButton(
                         icon: Icons.filter_list,
                         label: _selectedFilter,
                         onTap: _showFilterDialog,
@@ -117,7 +88,7 @@ class SmMainScreenState extends State<SmMainScreen> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildActionButton(
+                      child: buildActionButton(
                         icon: Icons.sort,
                         label: _selectedSort,
                         onTap: () => _showSortDialog(),
@@ -200,41 +171,6 @@ class SmMainScreenState extends State<SmMainScreen> {
           },
           title: "Create Group",
           icon: Icons.add),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.deepPurple, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 

@@ -132,65 +132,14 @@ class _CollectionItemsScreenState extends State<CollectionItemsScreen> {
                 // Arama çubuğunu sadece öğe varsa göster
                 if (_hasItems) ...[
                   // Enhanced Search Bar
-                  Padding(
+                  buildSearchWidget(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      // Debounce logic is already handled in _onSearchChanged
+                    },
+                    onClear: _clearSearch,
+                    hintText: "Search items by name, description, category...",
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: _searchQuery.isNotEmpty
-                              ? Colors.deepPurple.withValues(alpha: 0.5)
-                              : Colors.grey[400]!,
-                          width: _searchQuery.isNotEmpty ? 2 : 1,
-                        ),
-                        boxShadow: _searchQuery.isNotEmpty
-                            ? [
-                                BoxShadow(
-                                  color:
-                                      Colors.deepPurple.withValues(alpha: 0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText:
-                              "Search items by name, description, category...",
-                          hintStyle: GoogleFonts.poppins(
-                            color: Colors.grey[400],
-                            fontSize: 14,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: _searchQuery.isNotEmpty
-                                ? Colors.deepPurple
-                                : Colors.grey[400],
-                          ),
-                          suffixIcon: _searchQuery.isNotEmpty
-                              ? IconButton(
-                                  icon: Icon(
-                                    Icons.clear,
-                                    color: Colors.grey[600],
-                                  ),
-                                  onPressed: _clearSearch,
-                                )
-                              : null,
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-                    ),
                   ),
 
                   // Search Results Info
