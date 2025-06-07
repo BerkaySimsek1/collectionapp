@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collectionapp/designElements/common_ui_methods.dart';
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
+import 'package:collectionapp/screens/paymentScreens/successful_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -63,45 +65,15 @@ class _PrepareOrderForShippingPageState
       'status': 'Shipped',
     });
 
-    // 4) Başarılı olunca alert dialog göster
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.check_circle,
-              size: 64,
-              color: Colors.green,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Successful!',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
+    // Navigate to success screen instead of showing dialog
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SuccessfulScreen(
+          successType: SuccessType.shipping,
+          auction: widget.auction,
+          shippingCode: _shippingCode,
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop(); // Dialogu kapat
-              Navigator.of(context).pop(); // Bir önceki sayfaya dön
-            },
-            child: Text(
-              'OK',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.deepPurple,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -130,45 +102,10 @@ class _PrepareOrderForShippingPageState
           if (snapshot.hasError ||
               !snapshot.hasData ||
               !snapshot.data!.exists) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.red.withValues(alpha: 0.75),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Could not load address.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Please check the buyer information and try again.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+            return buildEmptyState(
+              icon: Icons.error_outline,
+              title: "Could not load address.",
+              subtitle: "Please check the buyer information and try again.",
             );
           }
 

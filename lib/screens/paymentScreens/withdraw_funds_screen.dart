@@ -52,7 +52,7 @@ class _WithdrawFundsScreenState extends State<WithdrawFundsScreen> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => SuccessfulScreen(
-              isWithdrawal: true,
+              successType: SuccessType.withdrawal,
               amount: result['amount'],
               transactionId: result['transactionId'],
               accountInfo: result['accountInfo'],
@@ -81,105 +81,114 @@ class _WithdrawFundsScreenState extends State<WithdrawFundsScreen> {
       buttonText: _isLoading ? "Processing..." : "Confirm Withdrawal",
       buttonIcon:
           _isLoading ? Icons.hourglass_empty : Icons.check_circle_outline,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Wallet Balance Card
-              buildPrimaryCard(
-                icon: Icons.account_balance_wallet,
-                title: 'Available Balance',
-                value: '\$${_userBalance.toStringAsFixed(2)}',
-                margin: const EdgeInsets.only(bottom: 16),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Colors.deepPurple.shade300,
               ),
-
-              Text(
-                "Withdrawal Details",
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-              const SizedBox(height: 24),
-              _buildTextField(
-                controller: _amountController,
-                label: "Amount (USD)",
-                icon: Icons.attach_money,
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an amount';
-                  }
-                  final amount = double.tryParse(value);
-                  if (amount == null) {
-                    return 'Please enter a valid amount';
-                  }
-                  if (amount < 10) {
-                    return 'Minimum withdrawal amount is \$10';
-                  }
-                  if (amount > _userBalance) {
-                    return 'Insufficient balance';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                controller: _accountController,
-                label: "Bank Account / IBAN",
-                icon: Icons.account_balance,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter account details';
-                  }
-                  if (value.length < 10) {
-                    return 'Please enter valid account details';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-
-              // Info Card
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.blue.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.blue[700],
-                      size: 24,
+                    // Wallet Balance Card
+                    buildPrimaryCard(
+                      icon: Icons.account_balance_wallet,
+                      title: 'Available Balance',
+                      value: '\$${_userBalance.toStringAsFixed(2)}',
+                      margin: const EdgeInsets.only(bottom: 16),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+
+                    Text(
+                      "Withdrawal Details",
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildTextField(
+                      controller: _amountController,
+                      label: "Amount (USD)",
+                      icon: Icons.attach_money,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter an amount';
+                        }
+                        final amount = double.tryParse(value);
+                        if (amount == null) {
+                          return 'Please enter a valid amount';
+                        }
+                        if (amount < 10) {
+                          return 'Minimum withdrawal amount is \$10';
+                        }
+                        if (amount > _userBalance) {
+                          return 'Insufficient balance';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: _accountController,
+                      label: "Bank Account / IBAN",
+                      icon: Icons.account_balance,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter account details';
+                        }
+                        if (value.length < 10) {
+                          return 'Please enter valid account details';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Info Card
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.blue.withValues(alpha: 0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
                         children: [
-                          Text(
-                            'Processing Information',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.blue[700],
-                            ),
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.blue[700],
+                            size: 24,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Withdrawal requests are processed within 1-3 business days. Minimum amount is \$10.',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.blue[600],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Processing Information',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.blue[700],
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Withdrawal requests are processed within 1-3 business days. Minimum amount is \$10.',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    color: Colors.blue[600],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -188,10 +197,7 @@ class _WithdrawFundsScreenState extends State<WithdrawFundsScreen> {
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
@@ -208,32 +214,19 @@ class _WithdrawFundsScreenState extends State<WithdrawFundsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
+        validator: validator,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.poppins(
-            color: Colors.grey[600],
-          ),
-          prefixIcon: Container(
-            padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.15),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                bottomLeft: Radius.circular(16),
-              ),
-            ),
-            child: Icon(icon, color: Colors.deepPurple),
-          ),
+          prefixIcon: Icon(icon, color: Colors.deepPurple),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
@@ -241,17 +234,10 @@ class _WithdrawFundsScreenState extends State<WithdrawFundsScreen> {
           filled: true,
           fillColor: Colors.white,
           contentPadding: const EdgeInsets.all(16),
+          labelStyle: GoogleFonts.poppins(color: Colors.grey[600]),
         ),
-        validator: validator,
         style: GoogleFonts.poppins(),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _amountController.dispose();
-    _accountController.dispose();
-    super.dispose();
   }
 }

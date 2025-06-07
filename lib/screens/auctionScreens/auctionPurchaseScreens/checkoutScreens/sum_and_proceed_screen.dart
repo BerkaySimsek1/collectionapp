@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collectionapp/models/auction_model.dart';
 import 'package:collectionapp/designElements/layouts/project_single_layout.dart';
+import 'package:collectionapp/screens/paymentScreens/successful_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'order_successful_screen.dart';
 
 class SumAndProceedScreen extends StatefulWidget {
   final AuctionModel auction;
@@ -90,7 +90,8 @@ class _SumAndProceedScreenState extends State<SumAndProceedScreen> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => OrderSuccessfulScreen(
+                  builder: (context) => SuccessfulScreen(
+                    successType: SuccessType.order,
                     auction: widget.auction,
                     addressData: addressData,
                     paymentData: paymentData,

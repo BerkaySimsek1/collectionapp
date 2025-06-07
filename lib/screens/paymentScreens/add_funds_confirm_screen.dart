@@ -41,10 +41,9 @@ class _AddFundsConfirmScreenState extends State<AddFundsConfirmScreen> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => SuccessfulScreen(
-              isWithdrawal: false,
+              successType: SuccessType.addFunds,
               amount: widget.amount,
               transactionId: result['transactionId'],
-              accountInfo: null,
             ),
           ),
         );
@@ -104,114 +103,122 @@ class _AddFundsConfirmScreenState extends State<AddFundsConfirmScreen> {
               : '****';
           final expiry = pmData['expiryDate'] ?? '';
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                // Amount Summary Card
-                buildPrimaryCard(
-                  icon: Icons.account_balance_wallet,
-                  title: 'Amount to Add',
-                  value: '\$${widget.amount.toStringAsFixed(2)}',
-                ),
+          if (_isProcessing) {
+            return Center(
+                child: CircularProgressIndicator(
+              color: Colors.deepPurple.shade300,
+            ));
+          } else {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // Amount Summary Card
+                  buildPrimaryCard(
+                    icon: Icons.account_balance_wallet,
+                    title: 'Amount to Add',
+                    value: '\$${widget.amount.toStringAsFixed(2)}',
+                  ),
 
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: projectLinearGradient,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'This amount will be added to your wallet',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.white.withValues(alpha: 0.9),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Payment Method Card
-                _buildDetailCard(
-                  icon: Icons.credit_card_outlined,
-                  title: 'Payment Method',
-                  children: [
-                    _buildDetailRow('Card Holder', cardHolder),
-                    _buildDetailRow('Card Number', '**** **** **** $cardLast4'),
-                    _buildDetailRow('Expires', expiry),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Transaction Details Card
-                _buildDetailCard(
-                  icon: Icons.receipt_long_outlined,
-                  title: 'Transaction Details',
-                  children: [
-                    _buildDetailRow(
-                        'Amount', '\$${widget.amount.toStringAsFixed(2)}'),
-                    _buildDetailRow('Processing Fee', 'Free'),
-                    const Divider(height: 20),
-                    _buildDetailRow(
-                      'Total',
-                      '\$${widget.amount.toStringAsFixed(2)}',
-                      isTotal: true,
+                    decoration: BoxDecoration(
+                      gradient: projectLinearGradient,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 24),
-
-                // Security Info
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.green.withValues(alpha: 0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.security_outlined,
-                        color: Colors.green[700],
-                        size: 24,
+                    child: Text(
+                      'This amount will be added to your wallet',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Secure Payment',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.green[700],
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Your payment information is encrypted and secure.',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.green[600],
-                              ),
-                            ),
-                          ],
-                        ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Payment Method Card
+                  _buildDetailCard(
+                    icon: Icons.credit_card_outlined,
+                    title: 'Payment Method',
+                    children: [
+                      _buildDetailRow('Card Holder', cardHolder),
+                      _buildDetailRow(
+                          'Card Number', '**** **** **** $cardLast4'),
+                      _buildDetailRow('Expires', expiry),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Transaction Details Card
+                  _buildDetailCard(
+                    icon: Icons.receipt_long_outlined,
+                    title: 'Transaction Details',
+                    children: [
+                      _buildDetailRow(
+                          'Amount', '\$${widget.amount.toStringAsFixed(2)}'),
+                      _buildDetailRow('Processing Fee', 'Free'),
+                      const Divider(height: 20),
+                      _buildDetailRow(
+                        'Total',
+                        '\$${widget.amount.toStringAsFixed(2)}',
+                        isTotal: true,
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          );
+
+                  const SizedBox(height: 24),
+
+                  // Security Info
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.green.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.security_outlined,
+                          color: Colors.green[700],
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Secure Payment',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.green[700],
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Your payment information is encrypted and secure.',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: Colors.green[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
         },
       ),
     );
